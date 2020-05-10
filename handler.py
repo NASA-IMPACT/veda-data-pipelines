@@ -19,7 +19,7 @@ def handler(event, context):
     output_raster = gdal.GetDriverByName('GTiff').Create(f'{filename}.tif', ncols, nrows, 1, gdal.GDT_Float64)  # Open the file
     output_raster.SetGeoTransform(geotransform)
     output_raster.GetRasterBand(1).WriteArray(no2trop[:])
-    output_raster.GetRasterBand(1).SetNoDataValue(no2trop.fillvalue)
+    output_raster.GetRasterBand(1).SetNoDataValue(-1.26765E+30)
 
     srs = osr.SpatialReference()
     srs.ImportFromEPSG(4326)
