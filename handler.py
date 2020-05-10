@@ -4,9 +4,9 @@ import argparse
 
 def handler(event, context):
     # 0.1 degree file
-    filename = event.filename
+    filename = event['filename']
     hdf_file = h5py.File(filename)
-    no2trop = hdf_file['NO2.COLUMN.VERTICAL.TROPOSPHERIC.CS30_BACKSCATTER.SOLAR'][:]
+    no2trop = hdf_file['NO2.COLUMN.VERTICAL.TROPOSPHERIC.CS30_BACKSCATTER.SOLAR']
     lat = hdf_file['LATITUDE'][:]
     lon = hdf_file['LONGITUDE'][:]
 
@@ -19,7 +19,7 @@ def handler(event, context):
     output_raster = gdal.GetDriverByName('GTiff').Create(f'{filename}.tif', ncols, nrows, 1, gdal.GDT_Float64)  # Open the file
     output_raster.SetGeoTransform(geotransform)
     output_raster.GetRasterBand(1).WriteArray(no2trop[:])
-    output_raster.GetRasterBand(1).SetNoDataValue(-1.26765E+30)
+    output_raster.GetRasterBand(1).SetNoDataValue(no2trop.fillvalue)
 
     srs = osr.SpatialReference()
     srs.ImportFromEPSG(4326)
@@ -29,11 +29,11 @@ def handler(event, context):
     output_raster = None
     print('Done')
 
-if name == '__main__':
+if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate COG from HDF5 file')
     parser.add_argument('-f', '--filename', help='HDF5 filename to convert')
-    parser.add_argument('filename', type=str, nargs=1)
     args = parser.parse_args()
-    event = {'filename': parser.filename}
+    print(args)
+    event = {'filename': args.filename}
     handler(event, None)
 
