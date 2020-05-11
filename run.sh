@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # S3 bucket and path to read urls from and write COGs to
+# TODO example shows filepath as initial input
 AWS_S3_PATH=$1
 
 # Determine which URL to fetch
@@ -8,10 +9,10 @@ if [[ -n $AWS_BATCH_JOB_ARRAY_INDEX ]]
 then
   LINE_NUMBER=$(($AWS_BATCH_JOB_ARRAY_INDEX + 1))
   SRC_URL=`sed -n ''$LINE_NUMBER','$LINE_NUMBER'p' < urls.txt`
-elif [[ -n $2 ]]
+elif [[ -n $1 ]]
 then
   # In case we pass a specific url
-  SRC_URL=$2
+  SRC_URL=$1
 else
   echo 'No url parameter, please pass a URL for testing'
   exit 1
@@ -24,6 +25,7 @@ aws s3 cp s3://$AWS_S3_PATH/urls.txt .
 FILENAME=`url="${SRC_URL}"; echo "${url##*/}"`
 echo 'Generating COG from '$FILENAME
 
+# TODO install GDAL or find new image so we don't need to unset GDAL_DATA
 unset GDAL_DATA
 python3 handler.py -f $FILENAME
 
