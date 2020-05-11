@@ -8,6 +8,8 @@ RUN export CPLUS_INCLUDE_PATH=/usr/include/gdal  # path from `gdal-config --cfla
 RUN export C_INCLUDE_PATH=/usr/include/gdal
 RUN pip install GDAL==$(gdal-config --version | awk -F'[.]' '{print $1"."$2}')
 RUN yum install wget -y
+RUN pip install rio-cogeo~=1.0
+
 COPY handler.py ${PACKAGE_PREFIX}/handler.py
 COPY run.sh ${PACKAGE_PREFIX}/run.sh
 
