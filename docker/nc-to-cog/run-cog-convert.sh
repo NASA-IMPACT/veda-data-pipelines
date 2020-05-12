@@ -25,6 +25,6 @@ aws s3 cp s3://$AWS_S3_PATH/urls.txt .
 FILENAME=`url="${SRC_URL}"; echo "${url##*/}"`
 echo 'Generating COG from '$FILENAME
 
-python3 handler.py -f $FILENAME
+python3 /home/handler.py -f $FILENAME
 
 aws s3 cp ${FILENAME}.cog.tif $AWS_S3_COG_LOCATION
