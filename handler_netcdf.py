@@ -7,6 +7,7 @@ import argparse
 
 
 def handler(event, context):
+    # Example dataset https://avdc.gsfc.nasa.gov/pub/data/satellite/Aura/OMI/V03/L3/OMNO2d_HR/OMNO2d_HRM/OMI_trno2_0.10x0.10_200410_Col3_V4.nc
     # Inputs
     filename = event["filename"]
 
