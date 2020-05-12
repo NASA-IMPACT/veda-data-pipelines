@@ -25,12 +25,6 @@ aws s3 cp s3://$AWS_S3_PATH/urls.txt .
 FILENAME=`url="${SRC_URL}"; echo "${url##*/}"`
 echo 'Generating COG from '$FILENAME
 
-# TODO install GDAL or find new image so we don't need to unset GDAL_DATA
-unset GDAL_DATA
 python3 handler.py -f $FILENAME
 
-rio cogeo create ${FILENAME}.tif ${FILENAME}.cog.tif
-rio cogeo validate ${FILENAME}.cog.tif
-
 aws s3 cp ${FILENAME}.cog.tif $AWS_S3_COG_LOCATION
-
