@@ -47,6 +47,7 @@ def to_cog(src_path: str, variable_name: str, lat_name: str, lon_name: str):
     # Manual calculation of affine
     xmin, ymin, xmax, ymax = [lon.min(), lat.min(), lon.max(), lat.max()]
     nrows, ncols = variable.shape[0], variable.shape[1]
+    print("nrows, ncols: ", nrows, ncols)
     xres = (xmax - xmin) / float(ncols)
     yres = (ymax - ymin) / float(nrows)
     geotransform = (xmin, xres, 0, ymax, 0, -yres)
@@ -60,7 +61,7 @@ def to_cog(src_path: str, variable_name: str, lat_name: str, lon_name: str):
         dtype=variable.dtype,
         count=1,
         height=nrows,
-        width=nrows,
+        width=ncols,
         crs=CRS.from_epsg(4326),
         transform=dst_transform,
         # nodata=variable.fill_value,  # TODO Deal with invalid nodata value
@@ -69,6 +70,7 @@ def to_cog(src_path: str, variable_name: str, lat_name: str, lon_name: str):
         blockxsize=256,
         blockysize=256,
     )
+    print("profile h/w: ", output_profile["height"], output_profile["width"])
     with MemoryFile() as memfile:
         with memfile.open(**output_profile) as mem:
             mem.write(variable[:], indexes=1)
