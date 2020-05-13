@@ -29,7 +29,7 @@ python3 /home/handler.py -f $FILENAME
 
 if [[ -n $AWS_S3_PATH ]]
 then
-  echo "Writing ${FILENAME}.cog.tif to $AWS_S3_PATH"
-  aws s3 cp ${FILENAME}.cog.tif $AWS_S3_PATH/${FILENAME}.cog.tif
+  echo "Writing ${FILENAME}.tif to $AWS_S3_PATH"
+  aws s3 cp ${FILENAME}.tif $AWS_S3_PATH/${FILENAME}.tif
 fi
 
