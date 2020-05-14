@@ -4,7 +4,7 @@ from rasterio.crs import CRS
 from rasterio.io import MemoryFile
 from rio_cogeo.cogeo import cog_translate
 from rio_cogeo.profiles import cog_profiles
-
+import numpy as np
 import argparse
 
 """
@@ -73,7 +73,7 @@ def to_cog(src_path: str, variable_name: str, lat_name: str, lon_name: str):
     print("profile h/w: ", output_profile["height"], output_profile["width"])
     with MemoryFile() as memfile:
         with memfile.open(**output_profile) as mem:
-            mem.write(variable[:], indexes=1)
+            mem.write(np.flipud(variable[:]), indexes=1)
         cog_translate(
             memfile,
             f"{src_path}.tif",
