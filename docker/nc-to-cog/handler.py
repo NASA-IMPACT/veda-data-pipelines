@@ -64,7 +64,7 @@ def to_cog(src_path: str, variable_name: str, lat_name: str, lon_name: str):
         width=ncols,
         crs=CRS.from_epsg(4326),
         transform=dst_transform,
-        nodata=9.96920996838686905e+36,
+        nodata=-1.2676506e30,
         tiled=True,
         compress="deflate",
         blockxsize=256,
