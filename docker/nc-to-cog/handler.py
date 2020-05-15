@@ -15,7 +15,7 @@ It only accepts data which as the variables TroposphericNO2, LatitudeCenter and 
 
 
 parser = argparse.ArgumentParser(description="Generate COG from file and schema")
-parser.add_argument("-f", "--filename", help="HDF5 filename to convert")
+parser.add_argument("-f", "--filename", help="HDF5 or NetCDF filename to convert")
 args = parser.parse_args()
 
 # input file schema
@@ -24,6 +24,7 @@ f1 = dict(
     variable_name="TroposphericNO2",
     lat_name="LatitudeCenter",
     lon_name="LongitudeCenter",
+    variable_transform=np.flipud
 )
 
 # Set COG inputs
@@ -34,7 +35,8 @@ output_profile["blockxsize"] = 256
 output_profile["blockysize"] = 256
 
 
-def to_cog(src_path: str, variable_name: str, lat_name: str, lon_name: str):
+def to_cog(src_path: str, variable_name: str, lat_name: str, lon_name: str,
+        variable_transform: callable):
     """HDF/NetCDF to COG."""
     # Open existing dataset
     with Dataset(src_path, "r") as src:
@@ -73,7 +75,7 @@ def to_cog(src_path: str, variable_name: str, lat_name: str, lon_name: str):
     print("profile h/w: ", output_profile["height"], output_profile["width"])
     with MemoryFile() as memfile:
         with memfile.open(**output_profile) as mem:
-            mem.write(np.flipud(variable[:]), indexes=1)
+            mem.write(variable_transform(variable[:]), indexes=1)
         cog_translate(
             memfile,
             f"{src_path}.tif",

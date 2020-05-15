@@ -1,6 +1,16 @@
 # covid-data-pipeline
 
-## Build and Test
+## Local
+
+```
+wget -O OMI_trno2_0.10x0.10_202003_Col3_V4.nc https://avdc.gsfc.nasa.gov/pub/data/satellite/Aura/OMI/V03/L3/OMNO2d_HR/OMNO2d_HRM/OMI_trno2_0.10x0.10_202003_Col3_V4.nc
+python handler.py -f OMI_trno2_0.10x0.10_202003_Col3_V4.nc
+rio viz OMI_trno2_0.10x0.10_202003_Col3_V4.nc.tif
+```
+
+## Docker
+
+### Build and Test
 
 ```bash
 export DOCKER_TAG=nc-to-cog
