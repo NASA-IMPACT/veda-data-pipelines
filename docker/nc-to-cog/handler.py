@@ -13,7 +13,6 @@ It only accepts data which as the variables TroposphericNO2, LatitudeCenter and 
 (i.e. https://avdc.gsfc.nasa.gov/pub/data/satellite/Aura/OMI/V03/L3/OMNO2d_HR/OMNO2d_HRM/OMI_trno2_0.10x0.10_200410_Col3_V4.nc)
 """
 
-
 parser = argparse.ArgumentParser(description="Generate COG from file and schema")
 parser.add_argument("-f", "--filename", help="HDF5 or NetCDF filename to convert")
 args = parser.parse_args()
@@ -24,6 +23,7 @@ f1 = dict(
     variable_name="TroposphericNO2",
     lat_name="LatitudeCenter",
     lon_name="LongitudeCenter",
+    nodata_value=-1.2676506e30,
     variable_transform=np.flipud
 )
 
@@ -34,8 +34,12 @@ output_profile = cog_profiles.get(
 output_profile["blockxsize"] = 256
 output_profile["blockysize"] = 256
 
-
-def to_cog(src_path: str, variable_name: str, lat_name: str, lon_name: str,
+def to_cog(
+        src_path: str,
+        variable_name: str,
+        lat_name: str,
+        lon_name: str,
+        nodata_value: float,
         variable_transform: callable):
     """HDF/NetCDF to COG."""
     # Open existing dataset
@@ -55,8 +59,6 @@ def to_cog(src_path: str, variable_name: str, lat_name: str, lon_name: str,
     geotransform = (xmin, xres, 0, ymax, 0, -yres)
     dst_transform = Affine.from_gdal(*geotransform)
 
-    # TODO is the data still flipped?
-
     # Save output as COG
     output_profile = dict(
         driver="GTiff",
@@ -66,7 +68,7 @@ def to_cog(src_path: str, variable_name: str, lat_name: str, lon_name: str,
         width=ncols,
         crs=CRS.from_epsg(4326),
         transform=dst_transform,
-        nodata=-1.2676506e30,
+        nodata=nodata_value,
         tiled=True,
         compress="deflate",
         blockxsize=256,
