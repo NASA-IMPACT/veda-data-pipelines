@@ -1,7 +1,7 @@
 # Terraform Deployment
 
 This terraform deployment deploys AWS resources detailed in `main.tf` to AWS
-using an S3 backend store (currently `s3://covid-eo-data-tf/terraform.tfstate).
+using an S3 backend store (currently `s3://covid-eo-data-tf/terraform.tfstate`).
 
 This deployment assumes:
 * You have the necessary AWS credentials to create the resources in `main.tf` in
