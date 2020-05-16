@@ -6,7 +6,7 @@ using an S3 backend store (currently `s3://covid-eo-data-tf/terraform.tfstate).
 This deployment assumes:
 * You have the necessary AWS credentials to create the resources in `main.tf` in
   the AWS account associated with your active `AWS_PROFILE`.
-* You have pushed the [`docker/nc-to-cog`](../docker/nc-to-cog) docker image to AWS ECR 
+* You have pushed the [`docker/nc-to-cog`](../docker/nc-to-cog) docker image to AWS ECR.
 
 ```bash
 export AWS_PROFILE=xxx
@@ -15,5 +15,4 @@ cp variables.tf.example variables.tf
 terraform init
 terraform apply
 ```
-
 

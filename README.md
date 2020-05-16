@@ -25,11 +25,11 @@ https://github.com/NASA-IMPACT/covid-dashboard.
 
 ## Scripts
 
-`/scripts/batch/submit-job.sh` submits a NetCDF/HDF conversion job to the AWS
+`/scripts/batch/submit-job.sh` submits a NetCDF/HDF to COG conversion job to the AWS
 Batch Queue to be picked up by the AWS Batch Compute environment. It assumes:
 
 * You have pushed the [`docker/nc-to-cog`](./docker/nc-to-cog) docker image
-  with AWS ECR
+  with AWS ECR.
 
 Example:
 
