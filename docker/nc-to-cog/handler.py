@@ -27,16 +27,6 @@ f1 = dict(
     variable_transform=np.flipud
 )
 
-# input file schema
-f2 = dict(
-    src_path=args.filename,
-    variable_name="grid1km:Optical_Depth_047",
-    lat_name="LatitudeCenter",
-    lon_name="LongitudeCenter",
-    nodata_value=-1.2676506e30,
-    variable_transform=np.flipud
-)
-
 # Set COG inputs
 output_profile = cog_profiles.get(
     "deflate"
