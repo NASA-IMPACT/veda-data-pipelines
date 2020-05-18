@@ -1,0 +1,4 @@
+FROM continuumio/miniconda
+
+RUN conda install -c hcc python-hdf4
+

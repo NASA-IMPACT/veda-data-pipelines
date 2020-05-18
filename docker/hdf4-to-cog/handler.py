@@ -6,9 +6,11 @@ from rio_cogeo.cogeo import cog_translate
 from rio_cogeo.profiles import cog_profiles
 import numpy as np
 
-src_path = 'data/MCD19A2.A2020134.h00v08.006.2020136040432.hdf'
+#src_path = 'data/MCD19A2.A2020134.h00v08.006.2020136040432.hdf'
+src_path = 'data/MCD19A2.A2020134.h00v09.006.2020136042404.hdf'
 hdf = SD(src_path, SDC.READ)
 variable = hdf.select('Optical_Depth_047')[0][:]
+print(getattr(hdf, 'EASTBOUNDINGCOORDINATE'))
 nodata_value = variable.min()
 EASTBOUNDINGCOORDINATE=-169.991666651401
 NORTHBOUNDINGCOORDINATE=9.99999999910196
