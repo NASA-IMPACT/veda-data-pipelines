@@ -1,3 +1,5 @@
 *.hdf5
 *.tif
 *.nc
+.terraform
+variables.tf

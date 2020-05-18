@@ -1,0 +1,5 @@
+variable "subnets" {
+  type = list(string)
+  default = []
+}
+
