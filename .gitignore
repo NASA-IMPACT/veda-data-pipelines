@@ -6,3 +6,4 @@ variables.tf
 HDF-4.2.15-Darwin/
 hdf-4.2.15-osx1013_64-clang.tar.gz
 pyhdf*
+*.hdf*
