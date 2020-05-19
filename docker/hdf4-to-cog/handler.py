@@ -26,9 +26,9 @@ f1 = dict(
 )
 
 hdf = SD(f1['src_path'], SDC.READ)
-variable = hdf.select(f1['variable_name'])[0][:]
-# Not sure how else to get this value at this time.
-nodata_value = variable.min()
+variable = hdf.select(f1['variable_name'])
+var_data = variable[0]
+nodata_value = variable.getfillvalue() 
 
 # Get latitude / longitude bounds from metadata
 metadata_strings = hdf.attributes()['ArchiveMetadata.0'].split('\n\n')
@@ -60,7 +60,7 @@ xmin, ymin, xmax, ymax = [
 #lat = list(map(lambda p: float(p.find('PointLatitude').text), points))
 #xmin, ymin, xmax, ymax = [min(lon), min(lat), max(lon), max(lat)]
 
-nrows, ncols = variable.shape[0], variable.shape[1]
+nrows, ncols = var_data.shape[0], var_data.shape[1]
 xres = (xmax - xmin) / float(ncols)
 yres = (ymax - ymin) / float(nrows)
 geotransform = (xmin, xres, 0, ymax, 0, -yres)
@@ -69,7 +69,7 @@ dst_transform = Affine.from_gdal(*geotransform)
 # Save output as COG
 output_profile = dict(
     driver="GTiff",
-    dtype=variable.dtype,
+    dtype=var_data.dtype,
     count=1,
     height=nrows,
     width=ncols,
@@ -90,7 +90,7 @@ src_profile['crs'] = '+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=637100
 print("profile h/w: ", output_profile["height"], output_profile["width"])
 with MemoryFile() as memfile:
     with memfile.open(**src_profile) as mem:
-        mem.write(variable, indexes=1)
+        mem.write(var_data[:], indexes=1)
     cog_translate(
         memfile,
         f"{f1['src_path']}.tif",

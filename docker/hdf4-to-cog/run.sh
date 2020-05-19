@@ -20,12 +20,13 @@ else
   echo 'No url parameter, please pass a URL for testing'
   exit 1
 fi
-#wget --user $EARTHDATA_USERNAME --password $EARTHDATA_PASSWORD $SRC_URL
-#wget --user $EARTHDATA_USERNAME --password $EARTHDATA_PASSWORD $SRC_URL.xml
+wget --user $EARTHDATA_USERNAME --password $EARTHDATA_PASSWORD $SRC_URL
+wget --user $EARTHDATA_USERNAME --password $EARTHDATA_PASSWORD $SRC_URL.xml
 
 FILENAME=`url="${SRC_URL}"; echo "${url##*/}"`
 echo 'Generating COG from '$FILENAME
 
+unset GDAL_DATA
 python handler.py -f $FILENAME
 
 if [[ -n $AWS_S3_PATH ]]
