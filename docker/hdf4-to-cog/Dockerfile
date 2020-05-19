@@ -11,6 +11,13 @@ ENV INCLUDE_DIRS /home/$HDF4_SRC/include
 RUN conda install numpy
 RUN conda install -c conda-forge pyhdf
 RUN pip install rio-cogeo
-RUN mkdir data
+
+ARG EARTHDATA_USERNAME
+ARG EARTHDATA_PASSWORD
+RUN echo machine urs.earthdata.nasa.gov login $EARTHDATA_USERNAME password $EARTHDATA_PASSWORD > ~/.netrc
+
+RUN apt-get instally -y libgdal-dev
+RUN pip install gdal
+
 COPY handler.py handler.py
 COPY run.sh run.sh

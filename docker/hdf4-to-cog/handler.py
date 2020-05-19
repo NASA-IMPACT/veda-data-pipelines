@@ -22,13 +22,15 @@ args = parser.parse_args()
 # input file schema
 f1 = dict(
   src_path=args.filename,
-  variable_name="Optical_Depth_047"
+  variable_names=["Optical_Depth_047", "Optical_Depth_055"]
 )
 
 hdf = SD(f1['src_path'], SDC.READ)
-variable = hdf.select(f1['variable_name'])
-var_data = variable[0]
-nodata_value = variable.getfillvalue() 
+variables = [] 
+for var_name in f1['variable_names']:
+  variable = hdf.select(var_name)
+  variables.append(variable[0])
+  nodata_value = variable.getfillvalue() 
 
 # Get latitude / longitude bounds from metadata
 metadata_strings = hdf.attributes()['ArchiveMetadata.0'].split('\n\n')
@@ -60,7 +62,8 @@ xmin, ymin, xmax, ymax = [
 #lat = list(map(lambda p: float(p.find('PointLatitude').text), points))
 #xmin, ymin, xmax, ymax = [min(lon), min(lat), max(lon), max(lat)]
 
-nrows, ncols = var_data.shape[0], var_data.shape[1]
+# Review: Are we ever concerned that multiple variables will have different shapes?
+nrows, ncols = variables[0].shape[0], variables[0].shape[1]
 xres = (xmax - xmin) / float(ncols)
 yres = (ymax - ymin) / float(nrows)
 geotransform = (xmin, xres, 0, ymax, 0, -yres)
@@ -69,8 +72,9 @@ dst_transform = Affine.from_gdal(*geotransform)
 # Save output as COG
 output_profile = dict(
     driver="GTiff",
-    dtype=var_data.dtype,
-    count=1,
+    # TODO: Expand for greater than 2 variables
+    dtype=variables[0].dtype,
+    count=2,
     height=nrows,
     width=ncols,
     crs=CRS.from_epsg(4326),
@@ -90,7 +94,9 @@ src_profile['crs'] = '+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=637100
 print("profile h/w: ", output_profile["height"], output_profile["width"])
 with MemoryFile() as memfile:
     with memfile.open(**src_profile) as mem:
-        mem.write(var_data[:], indexes=1)
+        # TODO: Expand for greater than 2 variables
+        mem.write(variables[0][:], indexes=1)
+        mem.write(variables[1][:], indexes=2)
     cog_translate(
         memfile,
         f"{f1['src_path']}.tif",

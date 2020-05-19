@@ -4,34 +4,57 @@
 if [[ -n $AWS_BATCH_JOB_ARRAY_INDEX ]]
 then
   # S3 bucket and path to read urls from and write COGs to
-  # TODO example shows filepath as initial input
   AWS_S3_PATH=$1
 
-  # Get list of urls
-  aws s3 cp $AWS_S3_PATH/urls.txt .
+  # Get list of parent paths
+  aws s3 cp $AWS_S3_PATH/parent_paths.txt .
 
   LINE_NUMBER=$(($AWS_BATCH_JOB_ARRAY_INDEX + 1))
-  SRC_URL=`sed -n ''$LINE_NUMBER','$LINE_NUMBER'p' < urls.txt`
+  PARENT_DIRECTORY=`sed -n ''$LINE_NUMBER','$LINE_NUMBER'p' < urls.txt`
 elif [[ -n $1 ]]
 then
   # Run for a specific url
-  SRC_URL=$1
+  PARENT_DIRECTORY=$1
 else
   echo 'No url parameter, please pass a URL for testing'
   exit 1
 fi
-wget --user $EARTHDATA_USERNAME --password $EARTHDATA_PASSWORD $SRC_URL
-wget --user $EARTHDATA_USERNAME --password $EARTHDATA_PASSWORD $SRC_URL.xml
-
-FILENAME=`url="${SRC_URL}"; echo "${url##*/}"`
-echo 'Generating COG from '$FILENAME
 
 unset GDAL_DATA
-python handler.py -f $FILENAME
+# Generate a list of filenames for this day
+wget -e robots=off --force-html -O - $PARENT_DIRECTORY | \
+  grep ".hdf\"" | awk '{ print $6 }' | sed 's/.*href="\([^ ]*\.hdf\)".*/\1/' > filenames.txt
+
+# Form complete urls from parent directory and filename
+#cat filenames.txt | while read line; do echo ${PARENT_DIRECTORY}$line ; done > urls.txt
+head -n 2 filenames.txt | while read line; do echo ${PARENT_DIRECTORY}$line ; done > urls.txt
+
+# Download all the files in parallel
+xargs -n 1 -P 10 wget -P data/ \
+  --load-cookies ~/.urs_cookies \
+  --save-cookies ~/.urs_cookies \
+  --auth-no-challenge=on \
+  --keep-session-cookies \
+  --content-disposition < urls.txt
+
+# Generate a COG for each file
+#cat filenames.txt | while read filename
+head -n 2 filenames.txt | while read filename
+do
+  echo 'Generating COG from '$filename
+  python handler.py -f data/$filename
+done
+
+# Merge + create COG
+## Do we need the nodata value here?
+output_filename=`echo $(basename $PARENT_DIRECTORY).tif`
+ls data/*.tif | xargs gdal_merge.py -n -28672 -o merged.tif
+rio cogeo create merged.tif $output_filename
+rio cogeo validate $output_filename
 
 if [[ -n $AWS_S3_PATH ]]
 then
-  echo "Writing ${FILENAME}.tif to $AWS_S3_PATH"
-  aws s3 cp ${FILENAME}.tif $AWS_S3_PATH/${FILENAME}.tif
+  echo "Writing ${output_filename}.tif to $AWS_S3_PATH"
+  aws s3 cp $output_filename $AWS_S3_PATH/$output_filename
 fi
 
