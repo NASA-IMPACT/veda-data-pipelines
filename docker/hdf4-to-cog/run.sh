@@ -15,6 +15,7 @@ elif [[ -n $1 ]]
 then
   # Run for a specific url
   PARENT_DIRECTORY=$1
+  AWS_S3_PATH=$2
 else
   echo 'No url parameter, please pass a URL for testing'
   exit 1
@@ -26,8 +27,8 @@ wget -e robots=off --force-html -O - $PARENT_DIRECTORY | \
   grep ".hdf\"" | awk '{ print $6 }' | sed 's/.*href="\([^ ]*\.hdf\)".*/\1/' > filenames.txt
 
 # Form complete urls from parent directory and filename
-#cat filenames.txt | while read line; do echo ${PARENT_DIRECTORY}$line ; done > urls.txt
-head -n 2 filenames.txt | while read line; do echo ${PARENT_DIRECTORY}$line ; done > urls.txt
+cat filenames.txt | while read line; do echo ${PARENT_DIRECTORY}$line ; done > urls.txt
+#head -n 50 filenames.txt | while read line; do echo ${PARENT_DIRECTORY}$line ; done > urls.txt
 
 # Download all the files in parallel
 xargs -n 1 -P 10 wget -P data/ \
@@ -38,8 +39,8 @@ xargs -n 1 -P 10 wget -P data/ \
   --content-disposition < urls.txt
 
 # Generate a COG for each file
-#cat filenames.txt | while read filename
-head -n 2 filenames.txt | while read filename
+#head -n 50 filenames.txt | while read filename
+cat filenames.txt | while read filename
 do
   echo 'Generating COG from '$filename
   python handler.py -f data/$filename
@@ -48,7 +49,7 @@ done
 # Merge + create COG
 ## Do we need the nodata value here?
 output_filename=`echo $(basename $PARENT_DIRECTORY).tif`
-ls data/*.tif | xargs gdal_merge.py -n -28672 -o merged.tif
+ls data/*.tif | xargs rio merge -o merged.tif --overwrite
 rio cogeo create merged.tif $output_filename
 rio cogeo validate $output_filename
 
