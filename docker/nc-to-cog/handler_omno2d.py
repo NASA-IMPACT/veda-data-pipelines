@@ -8,6 +8,7 @@ from ast import literal_eval
 import numpy as np
 import argparse
 import h5py
+import os
 
 """
 This script converts an netCDF file stored on the local machine to COG.
@@ -106,7 +107,7 @@ def to_cog(
             mem.update_tags(**file_tags)
         cog_translate(
             memfile,
-            f"{src_path}.tif",
+            f"{os.path.splitext(src_path)[0]}.tif",
             output_profile,
             config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
         )
