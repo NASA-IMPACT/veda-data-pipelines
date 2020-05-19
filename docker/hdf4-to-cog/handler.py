@@ -7,6 +7,8 @@ from rio_cogeo.profiles import cog_profiles
 import numpy as np
 import argparse
 from xml.etree.ElementTree import ElementTree
+import re
+
 """
 This script converts an netCDF file stored on the local machine to COG.
 It only accepts data which as the variables TroposphericNO2, LatitudeCenter and LongitudeCenter
@@ -27,17 +29,37 @@ hdf = SD(f1['src_path'], SDC.READ)
 variable = hdf.select(f1['variable_name'])[0][:]
 # Not sure how else to get this value at this time.
 nodata_value = variable.min()
-tree = ElementTree()
-xml = tree.parse(f"{f1['src_path']}.xml")
-print(xml)
-points = list(xml.find('GranuleURMetaData/SpatialDomainContainer/HorizontalSpatialDomainContainer/GPolygon/Boundary'))
-lon = list(map(lambda p: float(p.find('PointLongitude').text), points))
-lat = list(map(lambda p: float(p.find('PointLatitude').text), points))
-xmin, ymin, xmax, ymax = [min(lon), min(lat), max(lon), max(lat)]
-print(xmin)
-print(ymin)
-print(xmax)
-print(ymax)
+
+# Get latitude / longitude bounds from metadata
+metadata_strings = hdf.attributes()['ArchiveMetadata.0'].split('\n\n')
+metadata_dict = dict()
+for metadata_string in metadata_strings:
+    if 'OBJECT' in metadata_string:
+        key_matches = re.search('OBJECT += (.+)$', metadata_string)
+        value_matches = re.search('VALUE += (.+)\n', metadata_string)
+        if key_matches and value_matches:
+          metadata_dict[key_matches.group(1)] = value_matches.group(1)
+
+xmin, ymin, xmax, ymax = [
+  float(metadata_dict['WESTBOUNDINGCOORDINATE']),
+  float(metadata_dict['SOUTHBOUNDINGCOORDINATE']),
+  float(metadata_dict['EASTBOUNDINGCOORDINATE']),
+  float(metadata_dict['NORTHBOUNDINGCOORDINATE'])
+]
+
+# Get latitude / longitude from XML
+# Note: this seems problematic. At least in one case, one of the bounds
+# was much different in the metadata from the `bounding coordinate` (e.g.
+# longitudinal bounding coordinates were 179 + 172 but the minimum latitude in
+# the XML metadata was -179.
+#tree = ElementTree()
+#xml = tree.parse(f"{f1['src_path']}.xml")
+#print(xml)
+#points = list(xml.find('GranuleURMetaData/SpatialDomainContainer/HorizontalSpatialDomainContainer/GPolygon/Boundary'))
+#lon = list(map(lambda p: float(p.find('PointLongitude').text), points))
+#lat = list(map(lambda p: float(p.find('PointLatitude').text), points))
+#xmin, ymin, xmax, ymax = [min(lon), min(lat), max(lon), max(lat)]
+
 nrows, ncols = variable.shape[0], variable.shape[1]
 xres = (xmax - xmin) / float(ncols)
 yres = (ymax - ymin) / float(nrows)
@@ -52,7 +74,6 @@ output_profile = dict(
     height=nrows,
     width=ncols,
     crs=CRS.from_epsg(4326),
-    #crs='+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs',
     transform=dst_transform,
     nodata=nodata_value,
     tiled=True,
@@ -60,9 +81,15 @@ output_profile = dict(
     blockxsize=256,
     blockysize=256,
 )
+
+# Review: should other parameters of the src profile be different than the
+# output profile?
+src_profile = output_profile
+src_profile['crs'] = '+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs'
+
 print("profile h/w: ", output_profile["height"], output_profile["width"])
 with MemoryFile() as memfile:
-    with memfile.open(**output_profile) as mem:
+    with memfile.open(**src_profile) as mem:
         mem.write(variable, indexes=1)
     cog_translate(
         memfile,
