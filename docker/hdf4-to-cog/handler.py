@@ -115,7 +115,8 @@ print("dst_transform: ", dst_transform)
 # src_crs = CRS.from_string(
 #     "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"
 # )
-# TODO should this be working?
+
+# # TODO should this be working?
 # transform, width, height = calculate_default_transform(
 #     src_crs,
 #     CRS.from_epsg(4326),
@@ -126,10 +127,10 @@ print("dst_transform: ", dst_transform)
 #     xmax_bound,
 #     ymax_bound,
 # )
-# print("rasterios default calc: ", transform, width, height)
+# print("rasterios default calc: ", transform, width, height)  # 1324 1061
 
 # Reproject (this could be cleaned with a direct write, not two steps)
-# output_var = np.zeros((nrows, ncols), np.float)
+# output_var = np.zeros((nrows, ncols), variables[0].dtype)
 
 # reproject(
 #     variables[0][:],
