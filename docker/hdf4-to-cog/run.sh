@@ -56,6 +56,6 @@ rio cogeo validate $output_filename
 if [[ -n $AWS_S3_PATH ]]
 then
   echo "Writing ${output_filename}.tif to $AWS_S3_PATH"
-  aws s3 cp $output_filename $AWS_S3_PATH/$output_filename
+  aws s3 cp $output_filename $AWS_S3_PATH/$output_filename --acl public-read
 fi
 
