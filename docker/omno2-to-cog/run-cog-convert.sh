@@ -40,9 +40,12 @@ echo 'Generating COG from '$FILENAME
 
 python3 /home/${COLLECTION}/handler.py -f $FILENAME
 
+# the script replaces the original extension with "tif"
+FILENAME_NO_EXT="${FILENAME%.*}"
+
 if [[ -n $AWS_S3_PATH ]]
 then
-  echo "Writing ${FILENAME}.tif to $AWS_S3_PATH"
-  aws s3 cp ${FILENAME}.tif $AWS_S3_PATH/${FILENAME}.tif --acl public-read
+  echo "Writing ${FILENAME_NO_EXT}.tif to $AWS_S3_PATH"
+  aws s3 cp ${FILENAME_NO_EXT}.tif $AWS_S3_PATH/${FILENAME_NO_EXT}.tif --acl public-read
 fi
 
