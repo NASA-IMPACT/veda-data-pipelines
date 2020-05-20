@@ -1,13 +1,15 @@
 from pyhdf.SD import SD, SDC
 from affine import Affine
+import rasterio
 from rasterio.crs import CRS
 from rasterio.io import MemoryFile
 from rio_cogeo.cogeo import cog_translate
 from rio_cogeo.profiles import cog_profiles
+from rasterio.warp import reproject, Resampling
 import numpy as np
 import argparse
 from xml.etree.ElementTree import ElementTree
-import re
+import re, os
 
 """
 This script converts an netCDF file stored on the local machine to COG.
@@ -41,13 +43,13 @@ for metadata_string in metadata_strings:
         if key_matches and value_matches:
             metadata_dict[key_matches.group(1)] = value_matches.group(1)
 
-xmin, ymin, xmax, ymax = [
+xmin_bound, ymin_bound, xmax_bound, ymax_bound = [
     float(metadata_dict["WESTBOUNDINGCOORDINATE"]),
     float(metadata_dict["SOUTHBOUNDINGCOORDINATE"]),
     float(metadata_dict["EASTBOUNDINGCOORDINATE"]),
     float(metadata_dict["NORTHBOUNDINGCOORDINATE"]),
 ]
-print("from bounding: ", xmin, ymin, xmax, ymax)
+print("from bounding: ", xmin_bound, ymin_bound, xmax_bound, ymax_bound)
 
 # Get latitude / longitude from XML
 # Note: this seems problematic. At least in one case, one of the bounds
@@ -63,18 +65,24 @@ print("from bounding: ", xmin, ymin, xmax, ymax)
 #     )
 # )
 # lon = list(map(lambda p: float(p.find("PointLongitude").text), points))
+# print("lons ", lon)
 # lat = list(map(lambda p: float(p.find("PointLatitude").text), points))
+# print("lats ", lat)
 # xmin, ymin, xmax, ymax = [min(lon), min(lat), max(lon), max(lat)]
 # print("from gring: ", xmin, ymin, xmax, ymax)
+# Hard coding some things for now:
+ulx = -160.016157073218
+uly = 0.0150044604742833
 
 # Review: Are we ever concerned that multiple variables will have different shapes?
 nrows, ncols = variables[0].shape[0], variables[0].shape[1]
-xres = (xmax - xmin) / float(ncols)
-yres = (ymax - ymin) / float(nrows)
+xres = (10) / float(ncols)
+yres = (10) / float(nrows)
 # geotransform = (xmin, xres, 0, ymax, 0, -yres)
 # dst_transform = Affine.from_gdal(*geotransform)
 # If you want to use Affine directly this is the same as `Affine.from_gdal()`:
-dst_transform = Affine(xres, 0, xmin, 0, -yres, ymax)
+src_transform = Affine(xres, 0, ulx, 0, -yres, uly)
+print("src_transform: ", src_transform)
 
 # Save output as COG
 output_profile = dict(
@@ -85,7 +93,7 @@ output_profile = dict(
     height=nrows,
     width=ncols,
     crs=CRS.from_epsg(4326),
-    transform=dst_transform,
+    transform=src_transform,
     nodata=nodata_value,
     tiled=True,
     compress="deflate",
@@ -99,6 +107,37 @@ src_profile = output_profile
 src_profile["crs"] = CRS.from_string(
     "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"
 )
+
+dst_transform = Affine(xres, 0, xmin_bound, 0, -yres, ymax_bound)
+print("dst_transform: ", dst_transform)
+
+# Reproject (this could be cleaned with a direct write, not two steps)
+output_var = np.zeros((nrows, ncols), np.float)
+
+reproject(
+    variables[0][:],
+    output_var,
+    src_transform=src_transform,
+    src_crs=src_profile["crs"],
+    dst_transform=dst_transform,
+    dst_crs=CRS.from_epsg(4326),
+    resampling=Resampling.nearest,
+)
+print("confirming data: ", output_var.max())
+print(variables[0][:].mean())
+
+with rasterio.open(
+    "/test_reproject.tif",
+    "w",
+    driver="GTiff",
+    height=output_var.shape[0],
+    width=output_var.shape[1],
+    count=1,
+    dtype=output_var.dtype,
+    crs=CRS.from_epsg(4326),
+    transform=dst_transform,
+) as dst:
+    dst.write(output_var, indexes=1)
 
 print("profile h/w: ", output_profile["height"], output_profile["width"])
 with MemoryFile() as memfile:
