@@ -5,7 +5,7 @@ from rasterio.crs import CRS
 from rasterio.io import MemoryFile
 from rio_cogeo.cogeo import cog_translate
 from rio_cogeo.profiles import cog_profiles
-from rasterio.warp import reproject, Resampling
+from rasterio.warp import reproject, Resampling, calculate_default_transform
 import numpy as np
 import argparse
 from xml.etree.ElementTree import ElementTree
@@ -51,7 +51,9 @@ xmin_bound, ymin_bound, xmax_bound, ymax_bound = [
 ]
 print("from bounding: ", xmin_bound, ymin_bound, xmax_bound, ymax_bound)
 
+####
 # Get latitude / longitude from XML
+####
 # Note: this seems problematic. At least in one case, one of the bounds
 # was much different in the metadata from the `bounding coordinate` (e.g.
 # longitudinal bounding coordinates were 179 + 172 but the minimum latitude in
@@ -76,78 +78,93 @@ uly = 0.0150044604742833
 
 # Review: Are we ever concerned that multiple variables will have different shapes?
 nrows, ncols = variables[0].shape[0], variables[0].shape[1]
-xres = (10) / float(ncols)
-yres = (10) / float(nrows)
+xres_g = (10) / float(ncols)
+yres_g = (10) / float(nrows)
 # geotransform = (xmin, xres, 0, ymax, 0, -yres)
 # dst_transform = Affine.from_gdal(*geotransform)
 # If you want to use Affine directly this is the same as `Affine.from_gdal()`:
-src_transform = Affine(xres, 0, ulx, 0, -yres, uly)
-print("src_transform: ", src_transform)
+src_transform = Affine(xres_g, 0, ulx, 0, -yres_g, uly)
+print("transform from g_ring: ", src_transform)
 
+
+###
 # Save output as COG
-output_profile = dict(
-    driver="GTiff",
-    # TODO: Expand for greater than 2 variables
-    dtype=variables[0].dtype,
-    count=2,
-    height=nrows,
-    width=ncols,
-    crs=CRS.from_epsg(4326),
-    transform=src_transform,
-    nodata=nodata_value,
-    tiled=True,
-    compress="deflate",
-    blockxsize=256,
-    blockysize=256,
-)
+###
+# output_profile = dict(
+#     driver="GTiff",
+#     # TODO: Expand for greater than 2 variables
+#     dtype=variables[0].dtype,
+#     count=2,
+#     height=nrows,
+#     width=ncols,
+#     crs=CRS.from_string(
+#         "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"
+#     ),
+#     transform=src_transform,
+#     nodata=nodata_value,
+#     tiled=True,
+#     compress="deflate",
+#     blockxsize=256,
+#     blockysize=256,
+# )
 
-# Review: should other parameters of the src profile be different than the
-# output profile?
-src_profile = output_profile
-src_profile["crs"] = CRS.from_string(
-    "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"
-)
-
-dst_transform = Affine(xres, 0, xmin_bound, 0, -yres, ymax_bound)
+dst_transform = Affine(xres_g, 0, xmin_bound, 0, -yres_g, ymax_bound)
 print("dst_transform: ", dst_transform)
 
+# Calculating transform with rasterio
+# src_crs = CRS.from_string(
+#     "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"
+# )
+# TODO should this be working?
+# transform, width, height = calculate_default_transform(
+#     src_crs,
+#     CRS.from_epsg(4326),
+#     ncols,
+#     nrows,
+#     xmin_bound,
+#     ymin_bound,
+#     xmax_bound,
+#     ymax_bound,
+# )
+# print("rasterios default calc: ", transform, width, height)
+
 # Reproject (this could be cleaned with a direct write, not two steps)
-output_var = np.zeros((nrows, ncols), np.float)
+# output_var = np.zeros((nrows, ncols), np.float)
 
-reproject(
-    variables[0][:],
-    output_var,
-    src_transform=src_transform,
-    src_crs=src_profile["crs"],
-    dst_transform=dst_transform,
-    dst_crs=CRS.from_epsg(4326),
-    resampling=Resampling.nearest,
-)
-print("confirming data: ", output_var.max())
-print(variables[0][:].mean())
+# reproject(
+#     variables[0][:],
+#     output_var,
+#     src_transform=src_transform,
+#     src_crs=src_profile["crs"],
+#     dst_transform=dst_transform,
+#     dst_crs=CRS.from_epsg(4326),
+#     resampling=Resampling.nearest,
+# )
+# print("confirming data: ", output_var.max())
+# print(variables[0][:].mean())
 
-with rasterio.open(
-    "/test_reproject.tif",
-    "w",
-    driver="GTiff",
-    height=output_var.shape[0],
-    width=output_var.shape[1],
-    count=1,
-    dtype=output_var.dtype,
-    crs=CRS.from_epsg(4326),
-    transform=dst_transform,
-) as dst:
-    dst.write(output_var, indexes=1)
+# with rasterio.open(
+#     "/test_reproject.tif",
+#     "w",
+#     driver="GTiff",
+#     height=output_var.shape[0],
+#     width=output_var.shape[1],
+#     count=1,
+#     dtype=output_var.dtype,
+#     crs=CRS.from_epsg(4326),
+#     transform=dst_transform,
+# ) as dst:
+#     dst.write(output_var, indexes=1)
 
-print("profile h/w: ", output_profile["height"], output_profile["width"])
-with MemoryFile() as memfile:
-    with memfile.open(**src_profile) as mem:
-        # TODO: Expand for greater than 2 variables
-        mem.write(variables[0][:], indexes=1)
-        mem.write(variables[1][:], indexes=2)
-    cog_translate(
-        memfile,
-        f"{f1['src_path']}.tif",
-        output_profile,
-        config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
-    )
+# print("profile h/w: ", output_profile["height"], output_profile["width"])
+# with MemoryFile() as memfile:
+#     with memfile.open(**output_profile) as mem:
+#         # TODO: Expand for greater than 2 variables
+#         mem.write(variables[0][:], indexes=1)
+#         mem.write(variables[1][:], indexes=2)
+#     cog_translate(
+#         memfile,
+#         f"{f1['src_path']}.tif",
+#         output_profile,
+#         config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
+#     )
