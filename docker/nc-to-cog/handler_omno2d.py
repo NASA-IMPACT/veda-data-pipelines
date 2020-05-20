@@ -12,8 +12,7 @@ import os
 
 """
 This script converts an netCDF file stored on the local machine to COG.
-It only accepts data which as the variables TroposphericNO2, LatitudeCenter and LongitudeCenter
-(i.e. https://avdc.gsfc.nasa.gov/pub/data/satellite/Aura/OMI/V03/L3/OMNO2d_HR/OMNO2d_HRM/OMI_trno2_0.10x0.10_200410_Col3_V4.nc)
+Grab data from: https://acdisc.gesdisc.eosdis.nasa.gov/data/Aura_OMI_Level3/OMNO2d.003/
 """
 
 parser = argparse.ArgumentParser(description="Generate COG from file and schema")
@@ -105,6 +104,7 @@ def to_cog(
             mem.write(variable_transform(variable[:]), indexes=1)
             mem.update_tags(**dataset_tags)
             mem.update_tags(**file_tags)
+            mem.set_band_description(1, "ColumnAmountNO2TropCloudScreened")
         cog_translate(
             memfile,
             f"{os.path.splitext(src_path)[0]}.tif",
