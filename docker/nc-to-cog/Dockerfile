@@ -5,7 +5,7 @@ RUN apt-get upgrade -y
 
 # Install Python & spatial libraries
 RUN apt-get install python3-pip -y
-RUN pip3 install rasterio netCDF4 rio-cogeo
+RUN pip3 install rasterio netCDF4 rio-cogeo h5py
 
 # Install CLI tools
 RUN apt-get install wget -y
