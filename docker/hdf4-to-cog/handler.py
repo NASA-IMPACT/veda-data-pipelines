@@ -89,7 +89,7 @@ output_profile = dict(
 # Review: should other parameters of the src profile be different than the
 # output profile?
 src_profile = output_profile
-src_profile['crs'] = '+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs'
+src_profile['crs'] = CRS.from_string('+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs')
 
 print("profile h/w: ", output_profile["height"], output_profile["width"])
 with MemoryFile() as memfile:
