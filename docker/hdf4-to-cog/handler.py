@@ -21,53 +21,60 @@ args = parser.parse_args()
 
 # input file schema
 f1 = dict(
-  src_path=args.filename,
-  variable_names=["Optical_Depth_047", "Optical_Depth_055"]
+    src_path=args.filename, variable_names=["Optical_Depth_047", "Optical_Depth_055"]
 )
 
-hdf = SD(f1['src_path'], SDC.READ)
-variables = [] 
-for var_name in f1['variable_names']:
-  variable = hdf.select(var_name)
-  variables.append(variable[0])
-  nodata_value = variable.getfillvalue() 
+hdf = SD(f1["src_path"], SDC.READ)
+variables = []
+for var_name in f1["variable_names"]:
+    variable = hdf.select(var_name)
+    variables.append(variable[0])
+    nodata_value = variable.getfillvalue()
 
 # Get latitude / longitude bounds from metadata
-metadata_strings = hdf.attributes()['ArchiveMetadata.0'].split('\n\n')
+metadata_strings = hdf.attributes()["ArchiveMetadata.0"].split("\n\n")
 metadata_dict = dict()
 for metadata_string in metadata_strings:
-    if 'OBJECT' in metadata_string:
-        key_matches = re.search('OBJECT += (.+)$', metadata_string)
-        value_matches = re.search('VALUE += (.+)\n', metadata_string)
+    if "OBJECT" in metadata_string:
+        key_matches = re.search("OBJECT += (.+)$", metadata_string)
+        value_matches = re.search("VALUE += (.+)\n", metadata_string)
         if key_matches and value_matches:
-          metadata_dict[key_matches.group(1)] = value_matches.group(1)
+            metadata_dict[key_matches.group(1)] = value_matches.group(1)
 
 xmin, ymin, xmax, ymax = [
-  float(metadata_dict['WESTBOUNDINGCOORDINATE']),
-  float(metadata_dict['SOUTHBOUNDINGCOORDINATE']),
-  float(metadata_dict['EASTBOUNDINGCOORDINATE']),
-  float(metadata_dict['NORTHBOUNDINGCOORDINATE'])
+    float(metadata_dict["WESTBOUNDINGCOORDINATE"]),
+    float(metadata_dict["SOUTHBOUNDINGCOORDINATE"]),
+    float(metadata_dict["EASTBOUNDINGCOORDINATE"]),
+    float(metadata_dict["NORTHBOUNDINGCOORDINATE"]),
 ]
+print("from bounding: ", xmin, ymin, xmax, ymax)
 
 # Get latitude / longitude from XML
 # Note: this seems problematic. At least in one case, one of the bounds
 # was much different in the metadata from the `bounding coordinate` (e.g.
 # longitudinal bounding coordinates were 179 + 172 but the minimum latitude in
 # the XML metadata was -179.
-#tree = ElementTree()
-#xml = tree.parse(f"{f1['src_path']}.xml")
-#print(xml)
-#points = list(xml.find('GranuleURMetaData/SpatialDomainContainer/HorizontalSpatialDomainContainer/GPolygon/Boundary'))
-#lon = list(map(lambda p: float(p.find('PointLongitude').text), points))
-#lat = list(map(lambda p: float(p.find('PointLatitude').text), points))
-#xmin, ymin, xmax, ymax = [min(lon), min(lat), max(lon), max(lat)]
+# tree = ElementTree()
+# xml = tree.parse(f"{f1['src_path']}.xml")
+# print(xml)
+# points = list(
+#     xml.find(
+#         "GranuleURMetaData/SpatialDomainContainer/HorizontalSpatialDomainContainer/GPolygon/Boundary"
+#     )
+# )
+# lon = list(map(lambda p: float(p.find("PointLongitude").text), points))
+# lat = list(map(lambda p: float(p.find("PointLatitude").text), points))
+# xmin, ymin, xmax, ymax = [min(lon), min(lat), max(lon), max(lat)]
+# print("from gring: ", xmin, ymin, xmax, ymax)
 
 # Review: Are we ever concerned that multiple variables will have different shapes?
 nrows, ncols = variables[0].shape[0], variables[0].shape[1]
 xres = (xmax - xmin) / float(ncols)
 yres = (ymax - ymin) / float(nrows)
-geotransform = (xmin, xres, 0, ymax, 0, -yres)
-dst_transform = Affine.from_gdal(*geotransform)
+# geotransform = (xmin, xres, 0, ymax, 0, -yres)
+# dst_transform = Affine.from_gdal(*geotransform)
+# If you want to use Affine directly this is the same as `Affine.from_gdal()`:
+dst_transform = Affine(xres, 0, xmin, 0, -yres, ymax)
 
 # Save output as COG
 output_profile = dict(
@@ -89,7 +96,9 @@ output_profile = dict(
 # Review: should other parameters of the src profile be different than the
 # output profile?
 src_profile = output_profile
-src_profile['crs'] = CRS.from_string('+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs')
+src_profile["crs"] = CRS.from_string(
+    "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"
+)
 
 print("profile h/w: ", output_profile["height"], output_profile["width"])
 with MemoryFile() as memfile:
