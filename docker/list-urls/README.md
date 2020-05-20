@@ -1,12 +1,21 @@
 # covid-data-pipeline
 
-List URLS of files from a provider.
+Create a list of URLs for a given parent directory and upload them to S3. To be
+used in combination with an AWS Batch Job which operates on the list in
+parallel.
 
-```
+Example:
+
+```bash
+# ./run.sh <FILE SUFFIX> <PARENT DIRECTORY> <S3 PUT LOCATION>
 ./run.sh he5 \
   https://acdisc.gesdisc.eosdis.nasa.gov/data/Aura_OMI_Level3/OMNO2d.003/2020/ \
   s3://omi-no2-nasa/validation
 ```
+
+Will generate a list of files ending in the suffix `.he5` and upload a
+`urls.txt` file to s3://omi-no2-nasa/validation. Assumes access to put objects
+in the S3 location.
 
 ## Build and Test
 

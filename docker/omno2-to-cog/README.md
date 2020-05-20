@@ -2,10 +2,11 @@
 
 Code for converting NetCDF and HDF OMI NO2 data to Cloud-Optimized GeoTiff.
 
-This code currently works for the following OMI NO2 colletions:
-* [OMNO2d: OMI/Aura NO2 Cloud-Screened Total and Tropospheric Column L3 Global Gridded 0.25 degree x 0.25 degree V3](https://acdisc.gesdisc.eosdis.nasa.gov/data/Aura_OMI_Level3/OMNO2d.003/)
-* 
-
+Currently supports the following OMI NO2 colletions:
+* Standard product: [OMNO2d: OMI/Aura NO2 Cloud-Screened Total and Tropospheric Column L3 Global Gridded 0.25 degree x 0.25 degree V3](https://acdisc.gesdisc.eosdis.nasa.gov/data/Aura_OMI_Level3/OMNO2d.003/)
+* [Products available from the Aura Validation Center from Dr. Lok Lamsal](https://avdc.gsfc.nasa.gov/pub/data/satellite/Aura/OMI/V03/L3/OMNO2d_HR/OMNO2d_HR_description_AVDC.pdf):
+  * [OMNO2d\_HRD Level 3 daily tropospheric NO2 column product at high spatial resolution (0.1º×0.1º)](https://avdc.gsfc.nasa.gov/pub/data/satellite/Aura/OMI/V03/L3/OMNO2d_HR/OMNO2d_HRD/)
+  * [OMNO2d\_HRM Level 3 monthly average](https://avdc.gsfc.nasa.gov/pub/data/satellite/Aura/OMI/V03/L3/OMNO2d_HR/OMNO2d_HRM/)
 
 ## Test handler.py
 
