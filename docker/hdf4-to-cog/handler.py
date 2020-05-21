@@ -20,7 +20,9 @@ It only accepts data which as the variables TroposphericNO2, LatitudeCenter and 
 
 parser = argparse.ArgumentParser(description="Generate COG from file and schema")
 parser.add_argument("-f", "--filename", help="HDF5 or NetCDF filename to convert")
-parser.add_argument('--cog', action='store_true', help="Output should be a cloud-optimized geotiff")
+parser.add_argument(
+    "--cog", action="store_true", help="Output should be a cloud-optimized geotiff"
+)
 args = parser.parse_args()
 
 # input file schema
@@ -90,45 +92,43 @@ dst_transform, dst_width, dst_height = calculate_default_transform(
 # nodata_values = tuple(var.getfillvalue() for var in variables)
 
 # Define profile values for final tif
+# Assumption: nodata value is the same for all bands
+scale_factor = variables[0].attributes()["scale_factor"]
 output_profile = dict(
     driver="GTiff",
-    dtype=variables[0][0].dtype,
+    dtype=np.float32,
     count=2,
     height=dst_height,
     width=dst_width,
     crs=dst_crs,
     transform=dst_transform,
-    nodata=variables[0].getfillvalue(),
+    nodata=np.float32(variables[0].getfillvalue()) * scale_factor,
     tiled=True,
     compress="deflate",
     blockxsize=256,
     blockysize=256,
 )
-print("src: ", src_transform)
-print(src_width, src_height)
-print("dst: ", dst_transform)
-print(dst_width, dst_height)
 
 # Reproject, tile, and save
 with MemoryFile() as memfile:
     with memfile.open(**output_profile) as mem:
         for idx, data_var in enumerate(variables):
             print(f"idx is {idx}")
-            mem.set_band_description(idx+1, f1['variable_names'][idx])
+            mem.set_band_description(idx + 1, f1["variable_names"][idx])
             # TODO appropriate tags
             reproject(
-                source=data_var[0][:],
-                destination=rasterio.band(mem, idx+1),
+                source=data_var[0][:].astype(np.float32) * scale_factor,
+                destination=rasterio.band(mem, idx + 1),
                 src_transform=src_transform,
                 src_crs=src_crs,
                 dst_transform=mem.transform,
                 dst_crs=mem.crs,
-                resampling=Resampling.nearest
+                resampling=Resampling.nearest,
             )
 
     output_filename = f"{os.path.splitext(f1['src_path'])[0]}.tif"
     if args.cog == False:
-        with rasterio.open(output_filename, 'w', **output_profile) as dst:
+        with rasterio.open(output_filename, "w", **output_profile) as dst:
             dst.write(memfile.open().read())
             dst.close()
     else:
@@ -138,4 +138,3 @@ with MemoryFile() as memfile:
             output_profile,
             config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
         )
-
