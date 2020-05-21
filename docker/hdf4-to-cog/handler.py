@@ -28,6 +28,7 @@ f1 = dict(
 )
 
 hdf = SD(f1["src_path"], SDC.READ)
+# TODO dataset tags
 # print("hdf attribute keys: ", hdf.attributes().keys())
 ## ['HDFEOSVersion', 'StructMetadata.0', 'Orbit_amount', 'Orbit_time_stamp',
 # 'CoreMetadata.0', 'ArchiveMetadata.0', 'identifier_product_doi',
@@ -55,17 +56,19 @@ for metadata_string in metadata_strings:
         key = re.sub("\t", "", key)
         value = metadata_string.split("=")[1]
         metadata_dict[key] = literal_eval(value)
-print("Mtrs corners: ", metadata_dict)
 
 # Construct src affine transform
-ulx = metadata_dict["UpperLeftPointMtrs"][0]
-uly = metadata_dict["UpperLeftPointMtrs"][1]
+minx, maxy, maxx, miny = [
+    metadata_dict["UpperLeftPointMtrs"][0],
+    metadata_dict["UpperLeftPointMtrs"][1],
+    metadata_dict["LowerRightMtrs"][0],
+    metadata_dict["LowerRightMtrs"][1],
+]
 
 src_width, src_height = variables[0].shape[1], variables[0].shape[0]
-xres_g = (10) / float(src_width)
-yres_g = (10) / float(src_height)
-# TODO this should not be hard coded
-src_transform = Affine(926.625, 0, ulx, 0, -926.625, uly)
+xres_g = (maxx - minx) / float(src_width)
+yres_g = (maxy - miny) / float(src_height)
+src_transform = Affine(xres_g, 0, minx, 0, -yres_g, maxy)
 
 # Define src and dst CRS
 src_crs = CRS.from_string(
@@ -74,14 +77,8 @@ src_crs = CRS.from_string(
 dst_crs = "EPSG:4326"
 
 # calculate dst transform
-minx_proj = metadata_dict["UpperLeftPointMtrs"][0]
-maxy_proj = metadata_dict["UpperLeftPointMtrs"][1]
-maxx_proj = metadata_dict["LowerRightMtrs"][0]
-miny_proj = metadata_dict["LowerRightMtrs"][1]
-src_bounds = (minx_proj, miny_proj, maxx_proj, maxy_proj)
-
 dst_transform, dst_width, dst_height = calculate_default_transform(
-    src_crs, dst_crs, src_width, src_height, *src_bounds
+    src_crs, dst_crs, src_width, src_height, minx, miny, maxx, maxy
 )
 
 # Define profile values for final tif
