@@ -9,3 +9,4 @@ pyhdf*
 *.hdf*
 *.DS_Store
 *.he5
+*.xml

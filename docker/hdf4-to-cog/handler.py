@@ -20,6 +20,7 @@ It only accepts data which as the variables TroposphericNO2, LatitudeCenter and 
 
 parser = argparse.ArgumentParser(description="Generate COG from file and schema")
 parser.add_argument("-f", "--filename", help="HDF5 or NetCDF filename to convert")
+parser.add_argument('--cog', action='store_true', help="Output should be a cloud-optimized geotiff")
 args = parser.parse_args()
 
 # input file schema
@@ -35,11 +36,7 @@ hdf = SD(f1["src_path"], SDC.READ)
 # 'identifier_product_doi_authority']
 # print(hdf.attributes()["identifier_product_doi"])  # 10.5067/MODIS/MCD19A2.006
 
-variables = []
-for var_name in f1["variable_names"]:
-    variable = hdf.select(var_name)
-    variables.append(variable[0])
-    nodata_value = variable.getfillvalue()
+variables = [hdf.select(var_name) for var_name in f1["variable_names"]]
 
 # Get projected coord polygon from metadata for src_tranform
 metadata_strings = hdf.attributes()["StructMetadata.0"].rstrip("\x00").split("\n")
@@ -65,7 +62,14 @@ minx, maxy, maxx, miny = [
     metadata_dict["LowerRightMtrs"][1],
 ]
 
-src_width, src_height = variables[0].shape[1], variables[0].shape[0]
+# TODO: This is problematic for 2 reasons:
+# 1. It is possible different variables have different dimensions
+# 2. Dimensions actually start at index 0, here we have dims 1 and 2 which is
+# specific to the AOD data set which has a first dimension we are ignoring
+# 'Orbits:grid1km'
+# REVIEW: Should we be ignoring this dimension? we may want to include each
+# orbit as a new band?
+src_width, src_height = variables[0].dim(1).length(), variables[0].dim(2).length()
 xres_g = (maxx - minx) / float(src_width)
 yres_g = (maxy - miny) / float(src_height)
 src_transform = Affine(xres_g, 0, minx, 0, -yres_g, maxy)
@@ -81,17 +85,20 @@ dst_transform, dst_width, dst_height = calculate_default_transform(
     src_crs, dst_crs, src_width, src_height, minx, miny, maxx, maxy
 )
 
+# TODO: Expand dtype and nodata value for greater than 2 variables
+# dtypes = tuple(var[0].dtype for var in variables)
+# nodata_values = tuple(var.getfillvalue() for var in variables)
+
 # Define profile values for final tif
 output_profile = dict(
     driver="GTiff",
-    # TODO: Expand for greater than 2 variables
-    dtype=variables[0].dtype,
-    count=1,
+    dtype=variables[0][0].dtype,
+    count=2,
     height=dst_height,
     width=dst_width,
     crs=dst_crs,
     transform=dst_transform,
-    nodata=nodata_value,
+    nodata=variables[0].getfillvalue(),
     tiled=True,
     compress="deflate",
     blockxsize=256,
@@ -105,23 +112,30 @@ print(dst_width, dst_height)
 # Reproject, tile, and save
 with MemoryFile() as memfile:
     with memfile.open(**output_profile) as mem:
-        # TODO: Expand for greater than 2 variables
-        mem.set_band_description(1, "Optical_Depth_047")
-        # TODO appropriate tags
-        reproject(
-            source=variables[0][:],
-            destination=rasterio.band(mem, 1),
-            src_transform=src_transform,
-            src_crs=src_crs,
-            dst_transform=mem.transform,
-            dst_crs=mem.crs,
-            resampling=Resampling.nearest,
-        )
-        # TODO write out second variable
+        for idx, data_var in enumerate(variables):
+            print(f"idx is {idx}")
+            mem.set_band_description(idx+1, f1['variable_names'][idx])
+            # TODO appropriate tags
+            reproject(
+                source=data_var[0][:],
+                destination=rasterio.band(mem, idx+1),
+                src_transform=src_transform,
+                src_crs=src_crs,
+                dst_transform=mem.transform,
+                dst_crs=mem.crs,
+                resampling=Resampling.nearest
+            )
 
-    cog_translate(
-        memfile,
-        f"{os.path.splitext(f1['src_path'])[0]}.tif",
-        output_profile,
-        config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
-    )
+    output_filename = f"{os.path.splitext(f1['src_path'])[0]}.tif"
+    if args.cog == False:
+        with rasterio.open(output_filename, 'w', **output_profile) as dst:
+            dst.write(memfile.open().read())
+            dst.close()
+    else:
+        cog_translate(
+            memfile,
+            output_filename.replace(".tif", ".cog.tif"),
+            output_profile,
+            config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
+        )
+
