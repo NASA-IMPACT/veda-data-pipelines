@@ -31,12 +31,6 @@ f1 = dict(
 )
 
 hdf = SD(f1["src_path"], SDC.READ)
-# TODO dataset tags
-# print("hdf attribute keys: ", hdf.attributes().keys())
-## ['HDFEOSVersion', 'StructMetadata.0', 'Orbit_amount', 'Orbit_time_stamp',
-# 'CoreMetadata.0', 'ArchiveMetadata.0', 'identifier_product_doi',
-# 'identifier_product_doi_authority']
-# print(hdf.attributes()["identifier_product_doi"])  # 10.5067/MODIS/MCD19A2.006
 
 variables = [hdf.select(var_name) for var_name in f1["variable_names"]]
 
@@ -115,7 +109,6 @@ with MemoryFile() as memfile:
         for idx, data_var in enumerate(variables):
             print(f"idx is {idx}")
             mem.set_band_description(idx + 1, f1["variable_names"][idx])
-            # TODO appropriate tags
             reproject(
                 source=data_var[0][:].astype(np.float32) * scale_factor,
                 destination=rasterio.band(mem, idx + 1),
