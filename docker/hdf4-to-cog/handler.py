@@ -9,7 +9,6 @@ from rasterio.warp import reproject, Resampling, calculate_default_transform
 import numpy as np
 from ast import literal_eval
 import argparse
-from xml.etree.ElementTree import ElementTree
 import re, os
 
 """
