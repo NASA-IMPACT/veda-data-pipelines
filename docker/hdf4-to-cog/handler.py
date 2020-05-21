@@ -134,7 +134,7 @@ with MemoryFile() as memfile:
     else:
         cog_translate(
             memfile,
-            output_filename.replace(".tif", ".cog.tif"),
+            output_filename.replace(".tif", "_cog.tif"),
             output_profile,
             config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
         )
