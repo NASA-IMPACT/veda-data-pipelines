@@ -108,14 +108,14 @@ resource "aws_batch_compute_environment" "covid_data_pipeline" {
   depends_on   = ["aws_iam_role_policy_attachment.aws_batch_service_role"]
 }
 
-resource "aws_batch_job_definition" "nc_to_cog_batch_job_def" {
-  name = "nc_to_cog_batch_job_def"
+resource "aws_batch_job_definition" "omno2_to_cog_batch_job_def" {
+  name = "omno2_to_cog_batch_job_def"
   type = "container"
 
   container_properties = <<CONTAINER_PROPERTIES
 {
-    "command": ["./home/run-cog-convert.sh"],
-    "image": "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/nc-to-cog:latest",
+    "command": ["./run-cog-convert.sh"],
+    "image": "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/omno2-to-cog:latest",
     "memory": 1024,
     "vcpus": 1,
     "volumes": [],
