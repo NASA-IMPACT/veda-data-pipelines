@@ -9,7 +9,6 @@ from rasterio.warp import reproject, Resampling, calculate_default_transform
 import numpy as np
 from ast import literal_eval
 import argparse
-from xml.etree.ElementTree import ElementTree
 import re, os
 
 """
@@ -20,7 +19,9 @@ It only accepts data which as the variables TroposphericNO2, LatitudeCenter and 
 
 parser = argparse.ArgumentParser(description="Generate COG from file and schema")
 parser.add_argument("-f", "--filename", help="HDF5 or NetCDF filename to convert")
-parser.add_argument('--cog', action='store_true', help="Output should be a cloud-optimized geotiff")
+parser.add_argument(
+    "--cog", action="store_true", help="Output should be a cloud-optimized geotiff"
+)
 args = parser.parse_args()
 
 # input file schema
@@ -29,12 +30,6 @@ f1 = dict(
 )
 
 hdf = SD(f1["src_path"], SDC.READ)
-# TODO dataset tags
-# print("hdf attribute keys: ", hdf.attributes().keys())
-## ['HDFEOSVersion', 'StructMetadata.0', 'Orbit_amount', 'Orbit_time_stamp',
-# 'CoreMetadata.0', 'ArchiveMetadata.0', 'identifier_product_doi',
-# 'identifier_product_doi_authority']
-# print(hdf.attributes()["identifier_product_doi"])  # 10.5067/MODIS/MCD19A2.006
 
 variables = [hdf.select(var_name) for var_name in f1["variable_names"]]
 
@@ -90,52 +85,48 @@ dst_transform, dst_width, dst_height = calculate_default_transform(
 # nodata_values = tuple(var.getfillvalue() for var in variables)
 
 # Define profile values for final tif
+# Assumption: nodata value is the same for all bands
+scale_factor = variables[0].attributes()["scale_factor"]
 output_profile = dict(
     driver="GTiff",
-    dtype=variables[0][0].dtype,
+    dtype=np.float32,
     count=2,
     height=dst_height,
     width=dst_width,
     crs=dst_crs,
     transform=dst_transform,
-    nodata=variables[0].getfillvalue(),
+    nodata=np.float32(variables[0].getfillvalue()) * scale_factor,
     tiled=True,
     compress="deflate",
     blockxsize=256,
     blockysize=256,
 )
-print("src: ", src_transform)
-print(src_width, src_height)
-print("dst: ", dst_transform)
-print(dst_width, dst_height)
 
 # Reproject, tile, and save
 with MemoryFile() as memfile:
     with memfile.open(**output_profile) as mem:
         for idx, data_var in enumerate(variables):
             print(f"idx is {idx}")
-            mem.set_band_description(idx+1, f1['variable_names'][idx])
-            # TODO appropriate tags
+            mem.set_band_description(idx + 1, f1["variable_names"][idx])
             reproject(
-                source=data_var[0][:],
-                destination=rasterio.band(mem, idx+1),
+                source=data_var[0][:].astype(np.float32) * scale_factor,
+                destination=rasterio.band(mem, idx + 1),
                 src_transform=src_transform,
                 src_crs=src_crs,
                 dst_transform=mem.transform,
                 dst_crs=mem.crs,
-                resampling=Resampling.nearest
+                resampling=Resampling.nearest,
             )
 
     output_filename = f"{os.path.splitext(f1['src_path'])[0]}.tif"
     if args.cog == False:
-        with rasterio.open(output_filename, 'w', **output_profile) as dst:
+        with rasterio.open(output_filename, "w", **output_profile) as dst:
             dst.write(memfile.open().read())
             dst.close()
     else:
         cog_translate(
             memfile,
-            output_filename.replace(".tif", ".cog.tif"),
+            output_filename.replace(".tif", "_cog.tif"),
             output_profile,
             config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
         )
-
