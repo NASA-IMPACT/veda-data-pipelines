@@ -10,3 +10,4 @@ pyhdf*
 *.DS_Store
 *.he5
 *.xml
+*.vrt

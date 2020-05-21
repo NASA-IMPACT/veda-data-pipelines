@@ -20,6 +20,7 @@ ARG EARTHDATA_PASSWORD
 RUN echo machine urs.earthdata.nasa.gov login $EARTHDATA_USERNAME password $EARTHDATA_PASSWORD > ~/.netrc
 
 RUN pip install awscli
+RUN conda install -c conda-forge gdal
 
 COPY handler.py handler.py
 COPY run.sh run.sh
