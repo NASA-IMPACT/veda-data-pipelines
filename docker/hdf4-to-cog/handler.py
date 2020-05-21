@@ -7,6 +7,7 @@ from rio_cogeo.cogeo import cog_translate
 from rio_cogeo.profiles import cog_profiles
 from rasterio.warp import reproject, Resampling, calculate_default_transform
 import numpy as np
+from ast import literal_eval
 import argparse
 from xml.etree.ElementTree import ElementTree
 import re, os
@@ -27,145 +28,103 @@ f1 = dict(
 )
 
 hdf = SD(f1["src_path"], SDC.READ)
+# print("hdf attribute keys: ", hdf.attributes().keys())
+## ['HDFEOSVersion', 'StructMetadata.0', 'Orbit_amount', 'Orbit_time_stamp',
+# 'CoreMetadata.0', 'ArchiveMetadata.0', 'identifier_product_doi',
+# 'identifier_product_doi_authority']
+# print(hdf.attributes()["identifier_product_doi"])  # 10.5067/MODIS/MCD19A2.006
+
 variables = []
 for var_name in f1["variable_names"]:
     variable = hdf.select(var_name)
     variables.append(variable[0])
     nodata_value = variable.getfillvalue()
 
-# Get latitude / longitude bounds from metadata
-metadata_strings = hdf.attributes()["ArchiveMetadata.0"].split("\n\n")
+# Get projected coord polygon from metadata for src_tranform
+metadata_strings = hdf.attributes()["StructMetadata.0"].rstrip("\x00").split("\n")
 metadata_dict = dict()
 for metadata_string in metadata_strings:
-    if "OBJECT" in metadata_string:
-        key_matches = re.search("OBJECT += (.+)$", metadata_string)
-        value_matches = re.search("VALUE += (.+)\n", metadata_string)
-        if key_matches and value_matches:
-            metadata_dict[key_matches.group(1)] = value_matches.group(1)
+    # TODO remove redundant code
+    if "UpperLeftPointMtrs" in metadata_string:
+        key = metadata_string.split("=")[0]
+        key = re.sub("\t", "", key)
+        value = metadata_string.split("=")[1]
+        metadata_dict[key] = literal_eval(value)
+    if "LowerRightMtrs" in metadata_string:
+        key = metadata_string.split("=")[0]
+        key = re.sub("\t", "", key)
+        value = metadata_string.split("=")[1]
+        metadata_dict[key] = literal_eval(value)
+print("Mtrs corners: ", metadata_dict)
 
-xmin_bound, ymin_bound, xmax_bound, ymax_bound = [
-    float(metadata_dict["WESTBOUNDINGCOORDINATE"]),
-    float(metadata_dict["SOUTHBOUNDINGCOORDINATE"]),
-    float(metadata_dict["EASTBOUNDINGCOORDINATE"]),
-    float(metadata_dict["NORTHBOUNDINGCOORDINATE"]),
-]
-print("from bounding: ", xmin_bound, ymin_bound, xmax_bound, ymax_bound)
+# Construct src affine transform
+ulx = metadata_dict["UpperLeftPointMtrs"][0]
+uly = metadata_dict["UpperLeftPointMtrs"][1]
 
-####
-# Get latitude / longitude from XML
-####
-# Note: this seems problematic. At least in one case, one of the bounds
-# was much different in the metadata from the `bounding coordinate` (e.g.
-# longitudinal bounding coordinates were 179 + 172 but the minimum latitude in
-# the XML metadata was -179.
-# tree = ElementTree()
-# xml = tree.parse(f"{f1['src_path']}.xml")
-# print(xml)
-# points = list(
-#     xml.find(
-#         "GranuleURMetaData/SpatialDomainContainer/HorizontalSpatialDomainContainer/GPolygon/Boundary"
-#     )
-# )
-# lon = list(map(lambda p: float(p.find("PointLongitude").text), points))
-# print("lons ", lon)
-# lat = list(map(lambda p: float(p.find("PointLatitude").text), points))
-# print("lats ", lat)
-# xmin, ymin, xmax, ymax = [min(lon), min(lat), max(lon), max(lat)]
-# print("from gring: ", xmin, ymin, xmax, ymax)
-# Hard coding some things for now:
-ulx = -160.016157073218
-uly = 0.0150044604742833
+src_width, src_height = variables[0].shape[1], variables[0].shape[0]
+xres_g = (10) / float(src_width)
+yres_g = (10) / float(src_height)
+# TODO this should not be hard coded
+src_transform = Affine(926.625, 0, ulx, 0, -926.625, uly)
 
-# Review: Are we ever concerned that multiple variables will have different shapes?
-nrows, ncols = variables[0].shape[0], variables[0].shape[1]
-xres_g = (10) / float(ncols)
-yres_g = (10) / float(nrows)
-# geotransform = (xmin, xres, 0, ymax, 0, -yres)
-# dst_transform = Affine.from_gdal(*geotransform)
-# If you want to use Affine directly this is the same as `Affine.from_gdal()`:
-src_transform = Affine(xres_g, 0, ulx, 0, -yres_g, uly)
-print("transform from g_ring: ", src_transform)
+# Define src and dst CRS
+src_crs = CRS.from_string(
+    "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +R=6371007.181 +datum=WGS84 +units=m +no_defs"
+)
+dst_crs = "EPSG:4326"
 
+# calculate dst transform
+minx_proj = metadata_dict["UpperLeftPointMtrs"][0]
+maxy_proj = metadata_dict["UpperLeftPointMtrs"][1]
+maxx_proj = metadata_dict["LowerRightMtrs"][0]
+miny_proj = metadata_dict["LowerRightMtrs"][1]
+src_bounds = (minx_proj, miny_proj, maxx_proj, maxy_proj)
 
-###
-# Save output as COG
-###
-# output_profile = dict(
-#     driver="GTiff",
-#     # TODO: Expand for greater than 2 variables
-#     dtype=variables[0].dtype,
-#     count=2,
-#     height=nrows,
-#     width=ncols,
-#     crs=CRS.from_string(
-#         "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"
-#     ),
-#     transform=src_transform,
-#     nodata=nodata_value,
-#     tiled=True,
-#     compress="deflate",
-#     blockxsize=256,
-#     blockysize=256,
-# )
+dst_transform, dst_width, dst_height = calculate_default_transform(
+    src_crs, dst_crs, src_width, src_height, *src_bounds
+)
 
-dst_transform = Affine(xres_g, 0, xmin_bound, 0, -yres_g, ymax_bound)
-print("dst_transform: ", dst_transform)
+# Define profile values for final tif
+output_profile = dict(
+    driver="GTiff",
+    # TODO: Expand for greater than 2 variables
+    dtype=variables[0].dtype,
+    count=1,
+    height=dst_height,
+    width=dst_width,
+    crs=dst_crs,
+    transform=dst_transform,
+    nodata=nodata_value,
+    tiled=True,
+    compress="deflate",
+    blockxsize=256,
+    blockysize=256,
+)
+print("src: ", src_transform)
+print(src_width, src_height)
+print("dst: ", dst_transform)
+print(dst_width, dst_height)
 
-# Calculating transform with rasterio
-# src_crs = CRS.from_string(
-#     "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"
-# )
+# Reproject, tile, and save
+with MemoryFile() as memfile:
+    with memfile.open(**output_profile) as mem:
+        # TODO: Expand for greater than 2 variables
+        mem.set_band_description(1, "Optical_Depth_047")
+        # TODO appropriate tags
+        reproject(
+            source=variables[0][:],
+            destination=rasterio.band(mem, 1),
+            src_transform=src_transform,
+            src_crs=src_crs,
+            dst_transform=mem.transform,
+            dst_crs=mem.crs,
+            resampling=Resampling.nearest,
+        )
+        # TODO write out second variable
 
-# # TODO should this be working?
-# transform, width, height = calculate_default_transform(
-#     src_crs,
-#     CRS.from_epsg(4326),
-#     ncols,
-#     nrows,
-#     xmin_bound,
-#     ymin_bound,
-#     xmax_bound,
-#     ymax_bound,
-# )
-# print("rasterios default calc: ", transform, width, height)  # 1324 1061
-
-# Reproject (this could be cleaned with a direct write, not two steps)
-# output_var = np.zeros((nrows, ncols), variables[0].dtype)
-
-# reproject(
-#     variables[0][:],
-#     output_var,
-#     src_transform=src_transform,
-#     src_crs=src_profile["crs"],
-#     dst_transform=dst_transform,
-#     dst_crs=CRS.from_epsg(4326),
-#     resampling=Resampling.nearest,
-# )
-# print("confirming data: ", output_var.max())
-# print(variables[0][:].mean())
-
-# with rasterio.open(
-#     "/test_reproject.tif",
-#     "w",
-#     driver="GTiff",
-#     height=output_var.shape[0],
-#     width=output_var.shape[1],
-#     count=1,
-#     dtype=output_var.dtype,
-#     crs=CRS.from_epsg(4326),
-#     transform=dst_transform,
-# ) as dst:
-#     dst.write(output_var, indexes=1)
-
-# print("profile h/w: ", output_profile["height"], output_profile["width"])
-# with MemoryFile() as memfile:
-#     with memfile.open(**output_profile) as mem:
-#         # TODO: Expand for greater than 2 variables
-#         mem.write(variables[0][:], indexes=1)
-#         mem.write(variables[1][:], indexes=2)
-#     cog_translate(
-#         memfile,
-#         f"{f1['src_path']}.tif",
-#         output_profile,
-#         config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
-#     )
+    cog_translate(
+        memfile,
+        f"{os.path.splitext(f1['src_path'])[0]}.tif",
+        output_profile,
+        config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
+    )
