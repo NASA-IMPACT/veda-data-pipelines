@@ -6,7 +6,7 @@ from rio_cogeo.cogeo import cog_translate
 from rio_cogeo.profiles import cog_profiles
 import numpy as np
 import argparse
-
+import os
 """
 This script converts an netCDF file stored on the local machine to COG.
 It only accepts data which as the variables TroposphericNO2, LatitudeCenter and LongitudeCenter
@@ -80,7 +80,7 @@ def to_cog(
             mem.write(variable_transform(variable[:]), indexes=1)
         cog_translate(
             memfile,
-            f"{src_path}.tif",
+            f"{os.path.splitext(src_path)[0]}.tif",
             output_profile,
             config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
         )

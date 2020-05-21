@@ -3,3 +3,4 @@
 *.nc
 .terraform
 variables.tf
+*.hdf
