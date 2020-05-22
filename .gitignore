@@ -3,4 +3,11 @@
 *.nc
 .terraform
 variables.tf
+HDF-4.2.15-Darwin/
+hdf-4.2.15-osx1013_64-clang.tar.gz
+pyhdf*
+*.hdf*
+*.DS_Store
+*.he5
+*.xml
 *.hdf

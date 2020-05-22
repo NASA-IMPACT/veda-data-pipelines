@@ -132,6 +132,23 @@ resource "aws_batch_job_definition" "omno2_to_cog_batch_job_def" {
 CONTAINER_PROPERTIES
 }
 
+resource "aws_batch_job_definition" "hdf4_to_cog_batch_job_def" {
+  name = "hdf4_to_cog_batch_job_def"
+  type = "container"
+
+  container_properties = <<CONTAINER_PROPERTIES
+{
+    "command": ["./run.sh"],
+    "image": "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/hdf4-to-cog:latest",
+    "memory": 32000,
+    "vcpus": 16,
+    "volumes": [],
+    "environment": [],
+    "mountPoints": []
+}
+CONTAINER_PROPERTIES
+}
+
 resource "aws_batch_job_queue" "default_job_queue" {
   name                 = "default-job-queue"
   state                = "ENABLED"
