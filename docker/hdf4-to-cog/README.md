@@ -6,7 +6,7 @@ Code for converting HDF4 to Cloud-Optimized GeoTiff.
 
 ```bash
 wget -O MCD19A2.A2020134.h35v10.006.2020136043337.hdf https://e4ftl01.cr.usgs.gov/MOTA/MCD19A2.006/2020.05.13/MCD19A2.A2020134.h35v10.006.2020136043337.hdf
-python handler.py -f MCD19A2.A2020134.h35v10.006.2020136043337.hdf --cog
+python handler.py -f MCD19A2.A2020134.h35v10.006.2020136043337.hdf --cog --collection AOD
 rio cogeo validate MCD19A2.A2020134.h35v10.006.2020136043337.hdf.tif
 ```
 

@@ -10,8 +10,7 @@ import numpy as np
 from ast import literal_eval
 import argparse
 import re, os
-import scipy.ndimage
-import math
+import collection_helpers
 
 """
 This script converts an netCDF file stored on the local machine to COG.
@@ -20,34 +19,54 @@ It only accepts data which as the variables TroposphericNO2, LatitudeCenter and 
 """
 
 parser = argparse.ArgumentParser(description="Generate COG from file and schema")
-parser.add_argument("-f", "--filename", help="HDF5 or NetCDF filename to convert")
+parser.add_argument("-f", "--filename", help="MODIS HDF4 filename to convert")
 parser.add_argument(
     "--cog", action="store_true", help="Output should be a cloud-optimized geotiff"
 )
+parser.add_argument(
+    "-c", "--collection",
+    help="Indicates the input file is associated with this MODIS collection. " +
+         "AOD and VI supported. Used in configuring COG conversion."
+)
 args = parser.parse_args()
 
-# input file schema
-f1 = dict(
-    src_path=args.filename,
-    variable_names=["Optical_Depth_047", "Optical_Depth_055"],
-    zenith_var = "cosVZA"
+# input schemas
+modis_config = dict(
+    src_crs="+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +R=6371007.181 +datum=WGS84 +units=m +no_defs"
 )
 
-hdf = SD(f1["src_path"], SDC.READ)
+modis_aod_config = dict(
+    variable_names=["Optical_Depth_047", "Optical_Depth_055"],
+    twod_band_dims = [1,2],
+    src_crs=modis_config['src_crs'],
+    dimension_select_function='select_from_orbits',
+    selection_args = dict(orbit_sds_name='cosVZA')
+)
 
-variables = [hdf.select(var_name) for var_name in f1["variable_names"]]
+modis_vi_config = dict(
+    variable_names=["250m 16 days NDVI", "250m 16 days EVI"],
+    twod_band_dims = [0,1],
+    src_crs=modis_config['src_crs']
+)
+
+collection_configs = dict(
+    AOD=modis_aod_config,
+    VI=modis_vi_config
+)
+
+config = collection_configs[args.collection]
+print(config)
+
+hdf = SD(args.filename, SDC.READ)
+
+variables = [hdf.select(var_name) for var_name in config["variable_names"]]
 
 # Get projected coord polygon from metadata for src_tranform
 metadata_strings = hdf.attributes()["StructMetadata.0"].rstrip("\x00").split("\n")
 metadata_dict = dict()
+
 for metadata_string in metadata_strings:
-    # TODO remove redundant code
-    if "UpperLeftPointMtrs" in metadata_string:
-        key = metadata_string.split("=")[0]
-        key = re.sub("\t", "", key)
-        value = metadata_string.split("=")[1]
-        metadata_dict[key] = literal_eval(value)
-    if "LowerRightMtrs" in metadata_string:
+    if "UpperLeftPointMtrs" in metadata_string or "LowerRightMtrs" in metadata_string:
         key = metadata_string.split("=")[0]
         key = re.sub("\t", "", key)
         value = metadata_string.split("=")[1]
@@ -61,22 +80,14 @@ minx, maxy, maxx, miny = [
     metadata_dict["LowerRightMtrs"][1],
 ]
 
-# TODO: This is problematic for 2 reasons:
-# 1. It is possible different variables have different dimensions
-# 2. Dimensions actually start at index 0, here we have dims 1 and 2 which is
-# specific to the AOD data set which has a first dimension we are ignoring
-# 'Orbits:grid1km'
-# REVIEW: Should we be ignoring this dimension? we may want to include each
-# orbit as a new band?
-src_width, src_height = variables[0].dim(1).length(), variables[0].dim(2).length()
+src_width = variables[0].dim(config['twod_band_dims'][0]).length()
+src_height = variables[0].dim(config['twod_band_dims'][1]).length()
 xres_g = (maxx - minx) / float(src_width)
 yres_g = (maxy - miny) / float(src_height)
 src_transform = Affine(xres_g, 0, minx, 0, -yres_g, maxy)
 
 # Define src and dst CRS
-src_crs = CRS.from_string(
-    "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +R=6371007.181 +datum=WGS84 +units=m +no_defs"
-)
+src_crs = CRS.from_string(config['src_crs'])
 dst_crs = "EPSG:4326"
 
 # calculate dst transform
@@ -106,45 +117,20 @@ output_profile = dict(
     blockysize=256,
 )
 
-# Create the zenith mask by creating multiple arrays from different orbits
-orbit_data = hdf.select(f1['zenith_var'])
-orbit_height = orbit_data.dim(1).length()
-orbit_width = orbit_data.dim(2).length()
-upscale_height_factor = src_height / orbit_height
-upscale_width_factor = src_width / orbit_width
-
-# get num_orbitsx1200x1200 grid
-angle_scale_factor = orbit_data.attributes()["scale_factor"]
-angle_nodata = orbit_data.getfillvalue()
-def mycos(v):
-    if v == angle_nodata:
-        return angle_nodata
-    try: 
-        return np.abs((math.acos(v*angle_scale_factor)) * (np.pi * 180))
-    except Exception as e:
-        return angle_nodata
-
-angles = np.vectorize(mycos)(orbit_data[:])
-# Fix me!!! ignore any angles which are invalid (nodata values)
-angles[angles == angle_nodata] = 1000
-print(angles)
-orbit_resampled = scipy.ndimage.zoom(
-    angles,
-    (1, upscale_height_factor, upscale_width_factor),
-    order=0
-)
-orbit_min_indices = np.argmin(orbit_resampled, axis=0)
-
 # Reproject, tile, and save
 with MemoryFile() as memfile:
     with memfile.open(**output_profile) as mem:
         for idx, data_var in enumerate(variables):
-            print(f"idx is {idx}, var is {f1['variable_names'][idx]}")
-            mem.set_band_description(idx + 1, f1["variable_names"][idx])
-            data_select_orbit = np.choose(orbit_min_indices, data_var[:])
+            print(f"idx is {idx}, var is {config['variable_names'][idx]}")
+            mem.set_band_description(idx + 1, config["variable_names"][idx])
+            if config['dimension_select_function']:
+                function_to_call = getattr(collection_helpers, config['dimension_select_function'])
+                band_data = function_to_call(config['selection_args'], hdf, data_var)
+            else:
+                band_data = data_var[:]
             reproject(
                 # Choose which orbit to put in the band
-                source=data_select_orbit,
+                source=band_data,
                 destination=rasterio.band(mem, idx + 1),
                 src_transform=src_transform,
                 src_crs=src_crs,
@@ -153,7 +139,7 @@ with MemoryFile() as memfile:
                 resampling=Resampling.nearest,
             )
 
-    output_filename = f"{os.path.splitext(f1['src_path'])[0]}.tif"
+    output_filename = f"{os.path.splitext(args.filename)[0]}.tif"
     if args.cog == False:
         with rasterio.open(output_filename, "w", **output_profile) as dst:
             dst.write(memfile.open().read())

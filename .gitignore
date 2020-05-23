@@ -11,3 +11,4 @@ pyhdf*
 *.he5
 *.xml
 *.vrt
+__pycache__
