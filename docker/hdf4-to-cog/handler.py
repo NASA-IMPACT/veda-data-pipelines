@@ -123,7 +123,7 @@ with MemoryFile() as memfile:
         for idx, data_var in enumerate(variables):
             print(f"idx is {idx}, var is {config['variable_names'][idx]}")
             mem.set_band_description(idx + 1, config["variable_names"][idx])
-            if config['dimension_select_function']:
+            if config.get('dimension_select_function'):
                 function_to_call = getattr(collection_helpers, config['dimension_select_function'])
                 band_data = function_to_call(config['selection_args'], hdf, data_var)
             else:
