@@ -10,6 +10,8 @@ import numpy as np
 from ast import literal_eval
 import argparse
 import re, os
+import scipy.ndimage
+import math
 
 """
 This script converts an netCDF file stored on the local machine to COG.
@@ -26,7 +28,9 @@ args = parser.parse_args()
 
 # input file schema
 f1 = dict(
-    src_path=args.filename, variable_names=["Optical_Depth_047", "Optical_Depth_055"]
+    src_path=args.filename,
+    variable_names=["Optical_Depth_047", "Optical_Depth_055"],
+    zenith_var = "cosVZA"
 )
 
 hdf = SD(f1["src_path"], SDC.READ)
@@ -90,26 +94,57 @@ scale_factor = variables[0].attributes()["scale_factor"]
 output_profile = dict(
     driver="GTiff",
     dtype=np.float32,
-    count=2,
+    count=len(variables),
     height=dst_height,
     width=dst_width,
     crs=dst_crs,
     transform=dst_transform,
-    nodata=np.float32(variables[0].getfillvalue()) * scale_factor,
+    nodata=variables[0].getfillvalue(),
     tiled=True,
     compress="deflate",
     blockxsize=256,
     blockysize=256,
 )
 
+# Create the zenith mask by creating multiple arrays from different orbits
+orbit_data = hdf.select(f1['zenith_var'])
+orbit_height = orbit_data.dim(1).length()
+orbit_width = orbit_data.dim(2).length()
+upscale_height_factor = src_height / orbit_height
+upscale_width_factor = src_width / orbit_width
+
+# get num_orbitsx1200x1200 grid
+angle_scale_factor = orbit_data.attributes()["scale_factor"]
+angle_nodata = orbit_data.getfillvalue()
+def mycos(v):
+    if v == angle_nodata:
+        return angle_nodata
+    try: 
+        return np.abs((math.acos(v*angle_scale_factor)) * (np.pi * 180))
+    except Exception as e:
+        return angle_nodata
+
+angles = np.vectorize(mycos)(orbit_data[:])
+# Fix me!!! ignore any angles which are invalid (nodata values)
+angles[angles == angle_nodata] = 1000
+print(angles)
+orbit_resampled = scipy.ndimage.zoom(
+    angles,
+    (1, upscale_height_factor, upscale_width_factor),
+    order=0
+)
+orbit_min_indices = np.argmin(orbit_resampled, axis=0)
+
 # Reproject, tile, and save
 with MemoryFile() as memfile:
     with memfile.open(**output_profile) as mem:
         for idx, data_var in enumerate(variables):
-            print(f"idx is {idx}")
+            print(f"idx is {idx}, var is {f1['variable_names'][idx]}")
             mem.set_band_description(idx + 1, f1["variable_names"][idx])
+            data_select_orbit = np.choose(orbit_min_indices, data_var[:])
             reproject(
-                source=data_var[0][:].astype(np.float32) * scale_factor,
+                # Choose which orbit to put in the band
+                source=data_select_orbit,
                 destination=rasterio.band(mem, idx + 1),
                 src_transform=src_transform,
                 src_crs=src_crs,
