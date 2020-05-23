@@ -12,7 +12,7 @@ ENV INCLUDE_DIRS /home/$HDF4_SRC/include
 # Install python libraries
 RUN conda install numpy
 RUN conda install -c conda-forge pyhdf
-RUN pip install rio-cogeo
+RUN pip install rio-cogeo scipy
 
 # Store Earthdata credentials
 ARG EARTHDATA_USERNAME
