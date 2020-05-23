@@ -1,10 +1,25 @@
 #!/bin/bash
+#
+# `run.sh` is specific to MODIS HDF4 collections which call for global
+# mosaicing A parent directory is passed in (unless running in AWS Batch mode)
+# and all files within a parent directory are from the same date but different
+# bounding boxes A tif is generated from each file using `handler.py` and then
+# merged into a global cloud-optimized geotiff.
+# 
+if [[ -n $1 ]]
+then
+  COLLECTION=$1
+else
+  echo 'No collection parameter, please pass a collection name to indicate which
+  handler to call.'
+  exit 1
+fi
 
 # Run in batch
 if [[ -n $AWS_BATCH_JOB_ARRAY_INDEX ]]
 then
   # S3 bucket and path to read urls from and write COGs to
-  AWS_S3_PATH=$1
+  AWS_S3_PATH=$2
 
   # Get list of parent paths
   aws s3 cp $AWS_S3_PATH/directories.txt .
@@ -14,12 +29,12 @@ then
 elif [[ -n $1 ]]
 then
   # For local testing or testing in a "single" type batch job
-  # we can run for a specific url ($1)
+  # we can run for a specific parent url ($2)
   # limit the number of files to mosaic ($2)
   # upload the result to AWS_S3_PATH ($3)
-  PARENT_DIRECTORY=$1
-  FILES_LIMIT=$2
-  AWS_S3_PATH=$3
+  PARENT_DIRECTORY=$2
+  FILES_LIMIT=$3
+  AWS_S3_PATH=$4
 else
   echo 'No url parameter, please pass a URL for testing'
   exit 1
@@ -52,8 +67,8 @@ xargs -n 1 -P 10 wget -P data/ \
 # Generate a TIF for each file
 echo "$FILENAMES" | while read filename
 do
-  echo 'Generating COG from '$filename
-  python handler.py -f data/$filename
+  echo 'Generating tif from '$filename
+  python handler.py -f data/$filename -c $COLLECTION
 done
 
 # Merge + create COG
