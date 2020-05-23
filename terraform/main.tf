@@ -92,6 +92,7 @@ resource "aws_batch_compute_environment" "covid_data_pipeline" {
     ]
 
     max_vcpus = 256
+    desired_vcpus = 16
     min_vcpus = 0
 
     security_group_ids = [
