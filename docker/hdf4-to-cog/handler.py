@@ -13,9 +13,7 @@ import re, os
 import collection_helpers
 
 """
-This script converts an netCDF file stored on the local machine to COG.
-It only accepts data which as the variables TroposphericNO2, LatitudeCenter and LongitudeCenter
-(i.e. https://avdc.gsfc.nasa.gov/pub/data/satellite/Aura/OMI/V03/L3/OMNO2d_HR/OMNO2d_HRM/OMI_trno2_0.10x0.10_200410_Col3_V4.nc)
+This script converts an HDF4 file stored on the local machine to COG.
 """
 
 parser = argparse.ArgumentParser(description="Generate COG from file and schema")
