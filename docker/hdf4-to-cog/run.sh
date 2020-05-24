@@ -65,11 +65,7 @@ xargs -n 1 -P 10 wget -P data/ \
   --content-disposition < urls.txt
 
 # Generate a TIF for each file
-echo "$FILENAMES" | while read filename
-do
-  echo 'Generating tif from '$filename
-  python handler.py -f data/$filename -c $COLLECTION
-done
+echo "${FILENAMES}" | xargs -n 1 -P 10 python handler.py --directory data/ -c $COLLECTION -f
 
 # Merge + create COG
 output_filename=`echo $(basename $PARENT_DIRECTORY).tif`
