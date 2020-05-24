@@ -81,17 +81,37 @@ resource "aws_security_group" "batch_security_group" {
   }
 }
 
+resource "aws_launch_template" "batch_compute_launch_template" {
+  name = "batch_compute_launch_template"
+
+  block_device_mappings {
+    device_name = "/dev/xvda"
+
+    ebs {
+      volume_size = 210
+    }
+  }
+}
+
 resource "aws_batch_compute_environment" "covid_data_pipeline" {
   compute_environment_name = "covid_data_pipeline"
 
   compute_resources {
+    image_id = "ami-0aee8ced190c05726"
+
     instance_role = "${aws_iam_instance_profile.ecs_instance_role.arn}"
+    launch_template {
+      launch_template_id = "${aws_launch_template.batch_compute_launch_template.id}"
+    }
+
+    ec2_key_pair = "devseed-aimee"
 
     instance_type = [
       "optimal",
     ]
 
     max_vcpus = 256
+    desired_vcpus = 0
     min_vcpus = 0
 
     security_group_ids = [
@@ -118,9 +138,7 @@ resource "aws_batch_job_definition" "omno2_to_cog_batch_job_def" {
     "image": "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/omno2-to-cog:latest",
     "memory": 1024,
     "vcpus": 1,
-    "volumes": [],
     "environment": [],
-    "mountPoints": [],
     "ulimits": [
       {
         "hardLimit": 1024,
@@ -142,9 +160,7 @@ resource "aws_batch_job_definition" "hdf4_to_cog_batch_job_def" {
     "image": "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/hdf4-to-cog:latest",
     "memory": 32000,
     "vcpus": 16,
-    "volumes": [],
-    "environment": [],
-    "mountPoints": []
+    "environment": []
 }
 CONTAINER_PROPERTIES
 }

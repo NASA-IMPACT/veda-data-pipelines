@@ -26,6 +26,11 @@ parser.add_argument(
     help="Indicates the input file is associated with this MODIS collection. " +
          "AOD and VI supported. Used in configuring COG conversion."
 )
+parser.add_argument(
+    "-d", "--directory",
+    help="Directory where file is stored",
+    default=""
+)
 args = parser.parse_args()
 
 # input schemas
@@ -47,15 +52,21 @@ modis_vi_config = dict(
     src_crs=modis_config['src_crs']
 )
 
+modis_vi_monthly_config = modis_vi_config.copy()
+modis_vi_monthly_config['variable_names'] = ["1 km monthly NDVI", "1 km monthly EVI"]
+modis_vi_500m_config = modis_vi_config.copy()
+modis_vi_500m_config['variable_names'] = ["500m 16 days NDVI", "500m 16 days EVI"]
+
 collection_configs = dict(
     AOD=modis_aod_config,
-    VI=modis_vi_config
+    VI=modis_vi_config,
+    VI_MONTHLY=modis_vi_monthly_config,
+    VI_500M=modis_vi_500km_config
 )
 
 config = collection_configs[args.collection]
-print(config)
-
-hdf = SD(args.filename, SDC.READ)
+print(f"Starting on {args.directory}{args.filename}")
+hdf = SD(f"{args.directory}{args.filename}", SDC.READ)
 
 variables = [hdf.select(var_name) for var_name in config["variable_names"]]
 
@@ -119,7 +130,6 @@ output_profile = dict(
 with MemoryFile() as memfile:
     with memfile.open(**output_profile) as mem:
         for idx, data_var in enumerate(variables):
-            print(f"idx is {idx}, var is {config['variable_names'][idx]}")
             mem.set_band_description(idx + 1, config["variable_names"][idx])
             if config.get('dimension_select_function'):
                 function_to_call = getattr(collection_helpers, config['dimension_select_function'])
@@ -137,7 +147,8 @@ with MemoryFile() as memfile:
                 resampling=Resampling.nearest,
             )
 
-    output_filename = f"{os.path.splitext(args.filename)[0]}.tif"
+    output_filename = f"{args.directory}{os.path.splitext(args.filename)[0]}.tif"
+    print(f"Generating tif {output_filename}")
     if args.cog == False:
         with rasterio.open(output_filename, "w", **output_profile) as dst:
             dst.write(memfile.open().read())
