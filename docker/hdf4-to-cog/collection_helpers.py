@@ -32,7 +32,6 @@ def select_from_orbits(args, hdf_file, data_var):
     angles = np.vectorize(mycos)(orbit_data[:])
     # Fix me!!! ignore any angles which are invalid (nodata values)
     angles[angles == angle_nodata] = 1000
-    print(angles)
     orbit_resampled = scipy.ndimage.zoom(
         angles,
         (1, upscale_height_factor, upscale_width_factor),
