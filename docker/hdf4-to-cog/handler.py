@@ -2,7 +2,6 @@ from pyhdf.SD import SD, SDC
 from affine import Affine
 import rasterio
 from rasterio.crs import CRS
-from rasterio.io import MemoryFile
 from rio_cogeo.cogeo import cog_translate
 from rio_cogeo.profiles import cog_profiles
 from rasterio.warp import reproject, Resampling, calculate_default_transform
@@ -61,7 +60,7 @@ collection_configs = dict(
     AOD=modis_aod_config,
     VI=modis_vi_config,
     VI_MONTHLY=modis_vi_monthly_config,
-    VI_500M=modis_vi_500km_config
+    VI_500M=modis_vi_500m_config
 )
 
 config = collection_configs[args.collection]
@@ -127,36 +126,35 @@ output_profile = dict(
 )
 
 # Reproject, tile, and save
-with MemoryFile() as memfile:
-    with memfile.open(**output_profile) as mem:
-        for idx, data_var in enumerate(variables):
-            mem.set_band_description(idx + 1, config["variable_names"][idx])
-            if config.get('dimension_select_function'):
-                function_to_call = getattr(collection_helpers, config['dimension_select_function'])
-                band_data = function_to_call(config['selection_args'], hdf, data_var)
-            else:
-                band_data = data_var[:]
-            reproject(
-                # Choose which orbit to put in the band
-                source=band_data,
-                destination=rasterio.band(mem, idx + 1),
-                src_transform=src_transform,
-                src_crs=src_crs,
-                dst_transform=mem.transform,
-                dst_crs=mem.crs,
-                resampling=Resampling.nearest,
-            )
-
-    output_filename = f"{args.directory}{os.path.splitext(args.filename)[0]}.tif"
-    print(f"Generating tif {output_filename}")
+output_filename = f"{args.directory}{os.path.splitext(args.filename)[0]}.tif"
+with rasterio.open(output_filename, 'w', **output_profile) as outfile:
+    for idx, data_var in enumerate(variables):
+        outfile.set_band_description(idx + 1, config["variable_names"][idx])
+        if config.get('dimension_select_function'):
+            function_to_call = getattr(collection_helpers, config['dimension_select_function'])
+            band_data = function_to_call(config['selection_args'], hdf, data_var)
+        else:
+            band_data = data_var[:]
+        reproject(
+            # Choose which orbit to put in the band
+            source=band_data,
+            destination=rasterio.band(outfile, idx + 1),
+            src_transform=src_transform,
+            src_crs=src_crs,
+            dst_transform=outfile.transform,
+            dst_crs=outfile.crs,
+            resampling=Resampling.nearest,
+        )
     if args.cog == False:
-        with rasterio.open(output_filename, "w", **output_profile) as dst:
-            dst.write(memfile.open().read())
-            dst.close()
+        print(f"Generated tif {output_filename}")
+        outfile.close()
     else:
+        output_filename = output_filename.replace(".tif", "_cog.tif")
         cog_translate(
-            memfile,
-            output_filename.replace(".tif", "_cog.tif"),
+            outfile,
+            output_filename,
             output_profile,
             config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
         )
+        print(f"Generated cloud-optimized tif {output_filename}")
+        os.remove(output_filename)
