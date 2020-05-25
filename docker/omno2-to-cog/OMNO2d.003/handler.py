@@ -65,6 +65,12 @@ def to_cog(
     with h5py.File(src_path, "r") as src:
         no2_attrs = src["HDFEOS"]["GRIDS"]["ColumnAmountNO2"].attrs
         xmin, xmax, ymin, ymax = literal_eval(no2_attrs["GridSpan"].decode("utf-8"))
+        # FIXME: Haxx for COG viewer which gives errors:
+        # Y can not be computed: lat=90.0
+        # Y can not be computed: lat=-90.00000000000001
+        lat_lon_padding = 0.0001
+        ymin = ymin + lat_lon_padding
+        ymax = ymax - lat_lon_padding
         variable = src["HDFEOS"]["GRIDS"]["ColumnAmountNO2"]["Data Fields"][
             "ColumnAmountNO2TropCloudScreened"
         ][:]

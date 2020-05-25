@@ -12,3 +12,4 @@ pyhdf*
 *.xml
 *.vrt
 __pycache__
+*.hdf
