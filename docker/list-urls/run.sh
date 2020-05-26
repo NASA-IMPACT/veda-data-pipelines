@@ -1,6 +1,6 @@
 #!/bin/bash
 # EXAMPLE:
-# ./run.sh he5 \
+# ./run.sh he5\" \
 #   https://acdisc.gesdisc.eosdis.nasa.gov/data/Aura_OMI_Level3/OMNO2d.003/2020/ \
 #   4 \
 #   s3://omi-no2-nasa/validation/urls.txt
@@ -19,7 +19,7 @@ PARENT_DIRECTORY=$2
 AWK_ARG=$3
 AWS_S3_PATH=$4
 
-wget -e robots=off --force-html -O - https://e4ftl01.cr.usgs.gov/MOTA/MCD19A2.006/ | \
+wget -e robots=off --force-html -O - $PARENT_DIRECTORY | \
   grep ${LINK_FINDER} | awk '{ print $'$AWK_ARG' }' | sed -e 's/.*href=['"'"'"]//' -e 's/["'"'"'].*$//' > filenames.txt
 
 # Form complete urls from parent directory and filename

@@ -107,7 +107,7 @@ resource "aws_batch_compute_environment" "covid_data_pipeline" {
     ec2_key_pair = "devseed-aimee"
 
     instance_type = [
-      "optimal",
+      "c4.8xlarge",
     ]
 
     max_vcpus = 256
@@ -158,8 +158,8 @@ resource "aws_batch_job_definition" "hdf4_to_cog_batch_job_def" {
 {
     "command": ["./run.sh"],
     "image": "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/hdf4-to-cog:latest",
-    "memory": 32000,
-    "vcpus": 16,
+    "memory": 58000,
+    "vcpus": 34,
     "environment": []
 }
 CONTAINER_PROPERTIES
