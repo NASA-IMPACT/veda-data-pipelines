@@ -57,7 +57,7 @@ fi
 echo "$FILENAMES" | while read line; do echo ${PARENT_DIRECTORY}$line ; done > urls.txt
 
 # Download all the files in parallel
-xargs -n 1 -P 10 wget -P data/ \
+xargs -n 1 -P 18 wget -P data/ \
   --load-cookies ~/.urs_cookies \
   --save-cookies ~/.urs_cookies \
   --auth-no-challenge=on \
@@ -65,7 +65,7 @@ xargs -n 1 -P 10 wget -P data/ \
   --content-disposition < urls.txt
 
 # Generate a TIF for each file
-echo "${FILENAMES}" | xargs -n 1 -P 10 python handler.py --directory data/ -c $COLLECTION -f
+echo "${FILENAMES}" | xargs -n 1 -P 18 python handler.py --directory data/ -c $COLLECTION -f
 
 # Merge + create COG
 output_filename=`echo $(basename $PARENT_DIRECTORY).tif`
