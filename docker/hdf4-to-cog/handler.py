@@ -110,15 +110,16 @@ dst_transform, dst_width, dst_height = calculate_default_transform(
 # Define profile values for final tif
 # Assumption: nodata value is the same for all bands
 scale_factor = variables[0].attributes()["scale_factor"]
+nodata_value = variables[0].getfillvalue()
 output_profile = dict(
     driver="GTiff",
-    dtype=np.float32,
+    dtype=np.int16,
     count=len(variables),
     height=dst_height,
     width=dst_width,
     crs=dst_crs,
     transform=dst_transform,
-    nodata=variables[0].getfillvalue(),
+    nodata=nodata_value,
     tiled=True,
     compress="deflate",
     blockxsize=256,
@@ -135,6 +136,7 @@ with rasterio.open(output_filename, 'w', **output_profile) as outfile:
             band_data = function_to_call(config['selection_args'], hdf, data_var)
         else:
             band_data = data_var[:]
+        band_data = np.where(band_data != nodata_value, band_data*scale_factor, nodata_value)
         reproject(
             # Choose which orbit to put in the band
             source=band_data,

@@ -25,7 +25,7 @@ def select_from_orbits(args, hdf_file, data_var):
         if v == angle_nodata:
             return angle_nodata
         try: 
-            return np.abs((math.acos(v*angle_scale_factor)) * (np.pi * 180))
+            return np.abs((math.acos(v*angle_scale_factor)) * (180 / np.pi))
         except Exception as e:
             return angle_nodata
 
