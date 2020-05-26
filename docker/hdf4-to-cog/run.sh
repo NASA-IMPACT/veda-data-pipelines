@@ -71,6 +71,23 @@ echo "${FILENAMES}" | xargs -n 1 -P 10 python handler.py --directory data/ -c $C
 output_filename=`echo $(basename $PARENT_DIRECTORY).tif`
 ls data/*.tif > my_list_of_cog.txt
 gdalbuildvrt cog.vrt -input_file_list my_list_of_cog.txt
+# FIXME - Only known solution to adding band names
+if [[ "$COLLECTION" == "AOD" ]]; then
+  rio edit-info cog.vrt --bidx 1 --description Optical_Depth_047
+  rio edit-info cog.vrt --bidx 2 --description Optical_Depth_055
+elif [[ "$COLLECTION" == "VI" ]]; then
+  rio edit-info cog.vrt --bidx 1 --description '250m 16 days NDVI'
+  rio edit-info cog.vrt --bidx 2 --description '250m 16 days EVI'
+elif [[ "$COLLECTION" == "VI_500M" ]]; then
+  rio edit-info cog.vrt --bidx 1 --description '500m 16 days NDVI'
+  rio edit-info cog.vrt --bidx 2 --description '500m 16 days EVI'
+elif [[ "$COLLECTION" == "VI_MONTHLY" ]]; then
+  rio edit-info cog.vrt --bidx 1 --description '1 km monthly NDVI'
+  rio edit-info cog.vrt --bidx 2 --description '1 km monthly EVI'
+else
+  echo 'No band names for '$COLLECTION
+fi
+
 rio cogeo create cog.vrt $output_filename --co blockxsize=256 --co blockysize=256
 rio cogeo validate $output_filename
 
