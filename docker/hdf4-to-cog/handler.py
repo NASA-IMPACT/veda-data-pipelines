@@ -42,13 +42,15 @@ modis_aod_config = dict(
     twod_band_dims = [1,2],
     src_crs=modis_config['src_crs'],
     dimension_select_function='select_from_orbits',
-    selection_args = dict(orbit_sds_name='cosVZA')
+    selection_args = dict(orbit_sds_name='cosVZA'),
+    dtype=np.float32
 )
 
 modis_vi_config = dict(
     variable_names=["250m 16 days NDVI", "250m 16 days EVI"],
     twod_band_dims = [0,1],
-    src_crs=modis_config['src_crs']
+    src_crs=modis_config['src_crs'],
+    dtype=np.int16
 )
 
 modis_vi_monthly_config = modis_vi_config.copy()
@@ -113,7 +115,7 @@ scale_factor = variables[0].attributes()["scale_factor"]
 nodata_value = variables[0].getfillvalue()
 output_profile = dict(
     driver="GTiff",
-    dtype=np.int16,
+    dtype=config['dtype'],
     count=len(variables),
     height=dst_height,
     width=dst_width,
@@ -136,7 +138,13 @@ with rasterio.open(output_filename, 'w', **output_profile) as outfile:
             band_data = function_to_call(config['selection_args'], hdf, data_var)
         else:
             band_data = data_var[:]
-        band_data = np.where(band_data != nodata_value, band_data*scale_factor, nodata_value)
+
+        # FIXME
+        if args.collection == 'AOD':
+            band_data = np.where(band_data != nodata_value, band_data * scale_factor, nodata_value)
+        else:
+            band_data = np.where(band_data != nodata_value, band_data / scale_factor, nodata_value)
+
         reproject(
             # Choose which orbit to put in the band
             source=band_data,
@@ -159,4 +167,3 @@ with rasterio.open(output_filename, 'w', **output_profile) as outfile:
             config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
         )
         print(f"Generated cloud-optimized tif {output_filename}")
-        os.remove(output_filename)
