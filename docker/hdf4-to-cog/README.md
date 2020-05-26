@@ -36,7 +36,7 @@ Build:
 Test run for AOD:
 
 ```bash
-# Test run for generating a global mosaic for 10 files
+# Test run for generating a global mosaic for 2 files
 docker run -it $DOCKER_TAG:latest ./run.sh AOD https://e4ftl01.cr.usgs.gov/MOTA/MCD19A2.006/2020.05.13/ 2
 ```
 
