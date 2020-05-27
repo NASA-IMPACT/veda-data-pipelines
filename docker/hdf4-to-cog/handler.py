@@ -50,7 +50,7 @@ modis_vi_config = dict(
     variable_names=["250m 16 days NDVI", "250m 16 days EVI"],
     twod_band_dims = [0,1],
     src_crs=modis_config['src_crs'],
-    dtype=np.int16
+    dtype=np.float32
 )
 
 modis_vi_monthly_config = modis_vi_config.copy()
