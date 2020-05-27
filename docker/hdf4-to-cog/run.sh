@@ -57,7 +57,7 @@ fi
 echo "$FILENAMES" | while read line; do echo ${PARENT_DIRECTORY}$line ; done > urls.txt
 
 # Download all the files in parallel
-xargs -n 1 -P 18 wget -P data/ \
+xargs -n 1 -P 10 wget -P data/ \
   --load-cookies ~/.urs_cookies \
   --save-cookies ~/.urs_cookies \
   --auth-no-challenge=on \
@@ -89,7 +89,7 @@ else
 fi
 
 rio cogeo create cog.vrt $output_filename --co blockxsize=256 --co blockysize=256
-rio cogeo validate $output_filename
+# rio cogeo validate $output_filename
 
 if [[ -n $AWS_S3_PATH ]]
 then
