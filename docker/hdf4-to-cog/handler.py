@@ -57,12 +57,15 @@ modis_vi_monthly_config = modis_vi_config.copy()
 modis_vi_monthly_config['variable_names'] = ["1 km monthly NDVI", "1 km monthly EVI"]
 modis_vi_500m_config = modis_vi_config.copy()
 modis_vi_500m_config['variable_names'] = ["500m 16 days NDVI", "500m 16 days EVI"]
+modis_vi_16day1km_config = modis_vi_config.copy()
+modis_vi_16day1km_config['variable_names'] = ["1 km 16 days NDVI", "1 km 16 days EVI"]
 
 collection_configs = dict(
     AOD=modis_aod_config,
     VI=modis_vi_config,
     VI_MONTHLY=modis_vi_monthly_config,
-    VI_500M=modis_vi_500m_config
+    VI_500M=modis_vi_500m_config,
+    VI_16DAY_1KM=modis_vi_16day1km_config
 )
 
 config = collection_configs[args.collection]

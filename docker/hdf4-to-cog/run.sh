@@ -84,6 +84,9 @@ elif [[ "$COLLECTION" == "VI_500M" ]]; then
 elif [[ "$COLLECTION" == "VI_MONTHLY" ]]; then
   rio edit-info cog.vrt --bidx 1 --description '1 km monthly NDVI'
   rio edit-info cog.vrt --bidx 2 --description '1 km monthly EVI'
+elif [[ "$COLLECTION" == "VI_16DAY_1KM" ]]; then
+  rio edit-info cog.vrt --bidx 1 --description '1 km 16 days NDVI'
+  rio edit-info cog.vrt --bidx 2 --description '1 km 16 days EVI'
 else
   echo 'No band names for '$COLLECTION
 fi
