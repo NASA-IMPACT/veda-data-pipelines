@@ -110,7 +110,7 @@ resource "aws_batch_compute_environment" "covid_data_pipeline" {
       "c4.8xlarge",
     ]
 
-    max_vcpus = 256
+    max_vcpus = 1440
     desired_vcpus = 0
     min_vcpus = 0
 
