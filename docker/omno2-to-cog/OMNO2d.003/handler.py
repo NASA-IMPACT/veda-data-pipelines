@@ -83,10 +83,6 @@ def to_cog(
     geotransform = (xmin, xres, 0, ymax, 0, -yres)
     dst_transform = Affine.from_gdal(*geotransform)
 
-    # Save output as COG
-    # sentinel hub prefers ints and valid range for OMI NO2 is 1.0e16 to 2.0e16
-    new_nodata_value = int(-1.0e17)
-    variable[:][variable[:] == nodata_value] = new_nodata_value
     output_profile = dict(
         driver="GTiff",
         dtype=variable.dtype,
@@ -95,7 +91,7 @@ def to_cog(
         width=ncols,
         crs=CRS.from_epsg(4326),
         transform=dst_transform,
-        nodata=new_nodata_value,
+        nodata=nodata_value,
         tiled=True,
         compress="deflate",
         blockxsize=256,
