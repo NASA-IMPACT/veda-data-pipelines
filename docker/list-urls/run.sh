@@ -2,7 +2,7 @@
 # EXAMPLE:
 # ./run.sh he5\" \
 #   https://acdisc.gesdisc.eosdis.nasa.gov/data/Aura_OMI_Level3/OMNO2d.003/2020/ \
-#   4 \
+#   3 \
 #   s3://omi-no2-nasa/validation/urls.txt
 # ./run.sh 2020 \
 #   https://e4ftl01.cr.usgs.gov/MOTA/MCD19A2.006/ \

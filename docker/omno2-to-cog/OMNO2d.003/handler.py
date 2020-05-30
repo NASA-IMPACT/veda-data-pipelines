@@ -84,6 +84,8 @@ def to_cog(
     dst_transform = Affine.from_gdal(*geotransform)
 
     # Save output as COG
+    new_nodata_value = None # sentinel hub prefers
+    variable[:][variable[:] == nodata_value] = new_nodata_value
     output_profile = dict(
         driver="GTiff",
         dtype=variable.dtype,
@@ -92,7 +94,7 @@ def to_cog(
         width=ncols,
         crs=CRS.from_epsg(4326),
         transform=dst_transform,
-        nodata=nodata_value,
+        nodata=new_nodata_value,
         tiled=True,
         compress="deflate",
         blockxsize=256,
