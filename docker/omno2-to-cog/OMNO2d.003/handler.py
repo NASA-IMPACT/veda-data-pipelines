@@ -84,7 +84,8 @@ def to_cog(
     dst_transform = Affine.from_gdal(*geotransform)
 
     # Save output as COG
-    new_nodata_value = None # sentinel hub prefers
+    # sentinel hub prefers ints and valid range for OMI NO2 is 1.0e16 to 2.0e16
+    new_nodata_value = int(-1.0e17)
     variable[:][variable[:] == nodata_value] = new_nodata_value
     output_profile = dict(
         driver="GTiff",
