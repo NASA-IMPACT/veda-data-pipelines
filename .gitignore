@@ -11,3 +11,5 @@ pyhdf*
 *.he5
 *.xml
 *.hdf
+*.img
+*.hdr
