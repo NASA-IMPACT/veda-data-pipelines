@@ -111,7 +111,7 @@ resource "aws_batch_compute_environment" "covid_data_pipeline" {
     ]
 
     max_vcpus = 256
-    desired_vcpus = 0
+    desired_vcpus = 144
     min_vcpus = 0
 
     security_group_ids = [
@@ -173,6 +173,21 @@ resource "aws_batch_job_definition" "tif_to_cog_batch_job_def" {
 {
     "command": ["./run.sh"],
     "image": "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/tif-to-cog:latest",
+    "memory": 2048,
+    "vcpus": 4,
+    "environment": []
+}
+CONTAINER_PROPERTIES
+}
+
+resource "aws_batch_job_definition" "envi_to_cog_batch_job_def" {
+  name = "envi_to_cog_batch_job_def"
+  type = "container"
+
+  container_properties = <<CONTAINER_PROPERTIES
+{
+    "command": ["./run.sh"],
+    "image": "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/envi-to-cog:latest",
     "memory": 2048,
     "vcpus": 4,
     "environment": []

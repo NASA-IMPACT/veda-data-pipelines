@@ -1,5 +1,3 @@
-from netCDF4 import Dataset
-from affine import Affine
 from rasterio.crs import CRS
 from rasterio.io import MemoryFile
 from rio_cogeo.cogeo import cog_translate
@@ -15,12 +13,7 @@ args = parser.parse_args()
 
 # input file schema
 f1 = dict(
-    src_path=args.filename,
-    # variable_name="TroposphericNO2",
-    # lat_name="LatitudeCenter",
-    # lon_name="LongitudeCenter",
-    # nodata_value=-1.2676506e30,
-    # variable_transform=np.flipud
+    src_path=args.filename
 )
 
 # Set COG inputs
@@ -32,12 +25,7 @@ output_profile["blockysize"] = 256
 
 
 def to_cog(
-    src_path: str,
-    # variable_name: str,
-    # lat_name: str,
-    # lon_name: str,
-    # nodata_value: float,
-    # variable_transform: callable,
+    src_path: str
 ):
     with rasterio.open(src_path) as src:
         print(src.meta)

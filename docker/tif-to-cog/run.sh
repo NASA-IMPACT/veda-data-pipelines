@@ -8,10 +8,10 @@ then
   AWS_S3_PATH=$1
 
   # Get list of urls
-  aws s3 cp $AWS_S3_PATH/s3-paths.txt .
+  aws s3 cp $AWS_S3_PATH/s3-urls.txt .
 
   LINE_NUMBER=$(($AWS_BATCH_JOB_ARRAY_INDEX + 1))
-  SRC_URL=`sed -n ''$LINE_NUMBER','$LINE_NUMBER'p' < s3-paths.txt`
+  SRC_URL=`sed -n ''$LINE_NUMBER','$LINE_NUMBER'p' < s3-urls.txt`
 elif [[ -n $1 ]]
 then
   # Run for a specific url
@@ -31,6 +31,5 @@ rio cogeo create $FILENAME $COG_FILENAME
 if [[ -n $AWS_S3_PATH ]]
 then
   echo "Writing ${FILENAME_NO_EXT} to $AWS_S3_PATH"
-  aws s3 cp COG_FILENAME $AWS_S3_PATH/COG_FILENAME --acl public-read
+  aws s3 cp $COG_FILENAME $AWS_S3_PATH/$COG_FILENAME
 fi
-

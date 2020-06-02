@@ -13,3 +13,4 @@ pyhdf*
 *.hdf
 *.img
 *.hdr
+*.img*
