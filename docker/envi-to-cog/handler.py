@@ -57,7 +57,7 @@ def to_cog(
             mem.write(variable[:].astype("float32") * scale_factor, indexes=1)
         cog_translate(
             memfile,
-            f"{os.path.splitext(src_path)[0]}.tif",
+            f"{os.path.splitext(src_path)[0]}_cog.tif",
             output_profile,
             config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
         )
