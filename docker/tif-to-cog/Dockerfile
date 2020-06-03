@@ -7,3 +7,4 @@ RUN pip install rio-cogeo
 RUN pip install awscli
 
 COPY run.sh run.sh
+COPY convert_date.py convert_date.py

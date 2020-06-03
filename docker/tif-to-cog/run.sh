@@ -27,9 +27,10 @@ aws s3 cp $SRC_URL $FILENAME
 
 COG_FILENAME="${FILENAME%.*}_cog.tif"
 rio cogeo create $FILENAME $COG_FILENAME
+export new_filename=$(python convert_date.py -f $COG_FILENAME)
 
 if [[ -n $AWS_S3_PATH ]]
 then
-  echo "Writing ${FILENAME_NO_EXT} to $AWS_S3_PATH"
-  aws s3 cp $COG_FILENAME $AWS_S3_PATH/$COG_FILENAME
+  echo "Writing ${new_filename} to $AWS_S3_PATH"
+  aws s3 cp $new_filename $AWS_S3_PATH/$new_filename
 fi

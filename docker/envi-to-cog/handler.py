@@ -6,6 +6,8 @@ import rasterio
 import numpy as np
 import argparse
 import os
+import datetime
+import re
 
 parser = argparse.ArgumentParser(description="Generate COG from .img file and schema")
 parser.add_argument("-f", "--filename", help="filename to convert")
@@ -55,12 +57,17 @@ def to_cog(
     with MemoryFile() as memfile:
         with memfile.open(**output_profile) as mem:
             mem.write(variable[:].astype("float32") * scale_factor, indexes=1)
+        filename = os.path.splitext(src_path)[0]
+        date_part = filename.split('.')[2]
+        date_str = re.sub(r'[a-zA-Z]', '', date_part)
+        formatted_date = datetime.datetime.strptime("{0}".format(date_str), "%Y%j").strftime("%Y_%m_%d")
+        new_filename = f"{filename.replace(date_part, formatted_date)}_cog.tif"
         cog_translate(
             memfile,
-            f"{os.path.splitext(src_path)[0]}_cog.tif",
+            new_filename,
             output_profile,
             config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
         )
+        return new_filename
 
-
-to_cog(**f1)
+print(to_cog(**f1))
