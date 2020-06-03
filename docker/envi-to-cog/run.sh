@@ -26,8 +26,9 @@ echo 'Generating COG from '$FILENAME
 aws s3 cp $SRC_URL $FILENAME
 aws s3 cp ${SRC_URL}.hdr ${FILENAME}.hdr
 
-COG_FILENAME=$(python handler.py -f $FILENAME)
-echo "cog FILENAME $COG_FILENAME"
+python handler.py -f $FILENAME
+COG_FILENAME=$(ls *_cog.tif)
+echo "cog filename: $COG_FILENAME"
 
 if [[ -n $AWS_S3_PATH ]]
 then
