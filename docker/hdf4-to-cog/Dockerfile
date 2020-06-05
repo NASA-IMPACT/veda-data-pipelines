@@ -12,14 +12,16 @@ ENV INCLUDE_DIRS /home/$HDF4_SRC/include
 # Install python libraries
 RUN conda install numpy
 RUN conda install -c conda-forge pyhdf
-RUN pip install rio-cogeo
+RUN pip install rio-cogeo scipy
+
+RUN pip install awscli
+RUN conda install -c conda-forge gdal
 
 # Store Earthdata credentials
 ARG EARTHDATA_USERNAME
 ARG EARTHDATA_PASSWORD
 RUN echo machine urs.earthdata.nasa.gov login $EARTHDATA_USERNAME password $EARTHDATA_PASSWORD > ~/.netrc
 
-RUN pip install awscli
-
 COPY handler.py handler.py
+COPY collection_helpers.py collection_helpers.py
 COPY run.sh run.sh

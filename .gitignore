@@ -10,6 +10,8 @@ pyhdf*
 *.DS_Store
 *.he5
 *.xml
+*.vrt
+__pycache__
 *.hdf
 *.img
 *.hdr
