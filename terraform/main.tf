@@ -106,9 +106,6 @@ resource "aws_batch_compute_environment" "covid_data_pipeline" {
       launch_template_id = "${aws_launch_template.batch_compute_launch_template.id}"
     }
 
-    max_vcpus = 256
-    desired_vcpus = 144
-
     instance_type = [
       // Modify this to something like c4.8xlarge if you need to match max vCPUs
       // to a specific number of instances, for example if you want to ensure no
