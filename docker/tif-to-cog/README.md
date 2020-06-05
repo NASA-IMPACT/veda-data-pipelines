@@ -1,6 +1,8 @@
 # tif-to-cog docker
 
-Too easy! Convert geotiff to cloud-optimized geotiff using rio-cogeo
+Too simple?! Convert geotiff to cloud-optimized geotiff using rio-cogeo.
+
+Also modifies the filename to make the date more template friendly.
 
 ## Test run.sh
 
