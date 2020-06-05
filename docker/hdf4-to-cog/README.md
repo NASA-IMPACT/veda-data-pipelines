@@ -53,7 +53,7 @@ docker run -it $DOCKER_TAG:latest ./run.sh VI https://e4ftl01.cr.usgs.gov/MOLT/M
 export AWS_PROFILE=XXX
 export AWS_ACCOUNT_ID=XXX
 export AWS_REGION=XXX
-$(aws2 ecr get-login --no-include-email --region $AWS_REGION)
+$(aws ecr get-login --no-include-email --region $AWS_REGION)
 docker tag $DOCKER_TAG:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_TAG:latest
 docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_TAG:latest
 ```
