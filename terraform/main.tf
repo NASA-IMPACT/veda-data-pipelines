@@ -164,8 +164,8 @@ resource "aws_batch_job_definition" "hdf4_to_cog_batch_job_def" {
 {
     "command": ["./run.sh"],
     "image": "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/hdf4-to-cog:latest",
-    "memory": 58000,
-    "vcpus": 34,
+    "memory": 32000,
+    "vcpus": 16,
     "environment": []
 }
 CONTAINER_PROPERTIES
