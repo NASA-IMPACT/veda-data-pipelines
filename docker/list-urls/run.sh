@@ -36,5 +36,5 @@ wget -e robots=off --force-html -O - $PARENT_DIRECTORY | \
 cat filenames.txt | while read line; do echo ${PARENT_DIRECTORY}$line ; done >> urls.txt
 
 echo "Done generating urls.txt"
-aws2 s3 cp urls.txt $AWS_S3_PATH --acl public-read
+aws s3 cp urls.txt $AWS_S3_PATH --acl public-read
 
