@@ -83,6 +83,7 @@ def to_cog(
     geotransform = (xmin, xres, 0, ymax, 0, -yres)
     dst_transform = Affine.from_gdal(*geotransform)
 
+    # Save output as COG
     output_profile = dict(
         driver="GTiff",
         dtype=variable.dtype,
