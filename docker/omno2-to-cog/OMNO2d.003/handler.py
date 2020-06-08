@@ -1,4 +1,3 @@
-from netCDF4 import Dataset
 from affine import Affine
 from rasterio.crs import CRS
 from rasterio.io import MemoryFile

@@ -1,8 +1,9 @@
-# covid-data-pipeline
+# List files scripts
 
-Create a list of URLs for a given parent directory and upload them to S3. To be
-used in combination with an AWS Batch Job which operates on the list in
-parallel.
+Scripts for generating lists of files to process and upload that list to S3. These lists are used in AWS Batch Array jobs where each child job can pick from the list based off its `AWS_BATCH_JOB_ARRAY_INDEX` (and then the whole list can be processed in parallel). `AWS_BATCH_JOB_ARRAY_INDEX` is AWS Batch array job environment variable, learn more here: [AWS Docs: Array Jobs](https://docs.aws.amazon.com/batch/latest/userguide/array_jobs.html).
+
+* `run.sh` creates a list of URLs for a given parent directory and uploads the list to S3.
+* `list-s3-files.sh` creates a list of S3 URLs using `aws s3 ls`.
 
 Example:
 
@@ -22,7 +23,7 @@ in the S3 location.
 ```bash
 export DOCKER_TAG=list-urls
 docker build --tag $DOCKER_TAG:latest .
-docker run -it list-urls ./run.sh he5 \
+docker run -it $DOCKER_TAG ./run.sh he5 \
   https://acdisc.gesdisc.eosdis.nasa.gov/data/Aura_OMI_Level3/OMNO2d.003/2020/ \
   s3://omi-no2-nasa/validation
 ```

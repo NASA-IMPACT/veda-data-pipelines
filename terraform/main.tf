@@ -171,6 +171,38 @@ resource "aws_batch_job_definition" "hdf4_to_cog_batch_job_def" {
 CONTAINER_PROPERTIES
 }
 
+resource "aws_batch_job_definition" "tif_to_cog_batch_job_def" {
+  name = "tif_to_cog_batch_job_def"
+  type = "container"
+
+  container_properties = <<CONTAINER_PROPERTIES
+{
+    "command": ["./run.sh"],
+    "image": "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/tif-to-cog:latest",
+    "memory": 2048,
+    "vcpus": 4,
+    "environment": []
+}
+CONTAINER_PROPERTIES
+}
+
+resource "aws_batch_job_definition" "envi_to_cog_batch_job_def" {
+  name = "envi_to_cog_batch_job_def"
+  type = "container"
+
+  container_properties = <<CONTAINER_PROPERTIES
+{
+    "command": ["./run.sh"],
+    "image": "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/envi-to-cog:latest",
+    "memory": 2048,
+    "vcpus": 4,
+    "memory": 32000,
+    "vcpus": 16,
+    "environment": []
+}
+CONTAINER_PROPERTIES
+}
+
 resource "aws_batch_job_queue" "default_job_queue" {
   name                 = "default-job-queue"
   state                = "ENABLED"
