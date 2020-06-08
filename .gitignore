@@ -1,15 +1,25 @@
-*.hdf5
-*.tif
-*.nc
+# Ignore terraform files
 .terraform
 variables.tf
+
+# Ignore files downloaded when installing HDF4 libraries
 HDF-4.2.15-Darwin/
 hdf-4.2.15-osx1013_64-clang.tar.gz
 pyhdf*
-*.hdf*
+
+# Ignore MacOSX desktop services store
 *.DS_Store
-*.he5
+
+# Ignore pycache
+__pycache__
+
+# Ignore data files which are downloaded for local testing
 *.xml
 *.vrt
-__pycache__
+*.he5
+*.img
+*.img.hdr
 *.hdf
+*.hdf5
+*.tif
+*.nc
