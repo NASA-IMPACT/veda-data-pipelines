@@ -1,0 +1,11 @@
+[
+  {
+    "name": "omi-no2-daily",
+    "image": "853558080719.dkr.ecr.us-east-1.amazonaws.com/omno2-to-cog:latest",
+    "cpu": 10,
+    "memory": 1024,
+    "essential": true,
+    "command": ["./run-cog-convert.sh"] 
+  }
+]
+
