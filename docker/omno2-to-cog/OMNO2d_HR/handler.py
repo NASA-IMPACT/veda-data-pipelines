@@ -2,6 +2,7 @@ from netCDF4 import Dataset
 from affine import Affine
 from rasterio.crs import CRS
 from rasterio.io import MemoryFile
+import re
 from rio_cogeo.cogeo import cog_translate
 from rio_cogeo.profiles import cog_profiles
 import numpy as np
@@ -17,15 +18,22 @@ parser = argparse.ArgumentParser(description="Generate COG from file and schema"
 parser.add_argument("-f", "--filename", help="HDF5 or NetCDF filename to convert")
 args = parser.parse_args()
 
-# input file schema
+# input file schema, for monthly data
 f1 = dict(
     src_path=args.filename,
     variable_name="TroposphericNO2",
     lat_name="LatitudeCenter",
     lon_name="LongitudeCenter",
-    nodata_value=-1.2676506e30,
+    nodata_value=9.969209968386869e+36,
     variable_transform=np.flipud
 )
+
+# For daily data
+f2 = f1.copy()
+f2['variable_name'] = 'NO2.COLUMN.VERTICAL.TROPOSPHERIC.CS30_BACKSCATTER.SOLAR'
+f2['lat_name'] = 'LATITUDE'
+f2['lon_name'] = 'LONGITUDE'
+f2['nodata_value'] = -1.2676506e30
 
 # Set COG inputs
 output_profile = cog_profiles.get(
@@ -85,5 +93,8 @@ def to_cog(
             config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
         )
 
-
-to_cog(**f1)
+day_regex = re.compile('\d{4}_\d{2}_\d{2}.+')
+if day_regex.match(args.filename):
+    to_cog(**f2)
+else:
+    to_cog(**f1)
