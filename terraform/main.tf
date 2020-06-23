@@ -210,3 +210,7 @@ resource "aws_batch_job_queue" "default_job_queue" {
   compute_environments = ["${aws_batch_compute_environment.covid_data_pipeline.arn}"]
 }
 
+resource "aws_ecs_task_definition" "omi_no2_daily" {
+  family                = "omi_no2_daily"
+  container_definitions = file("task-definitions/omi-no2-task-def.json")
+}
