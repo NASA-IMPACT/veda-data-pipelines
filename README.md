@@ -1,7 +1,7 @@
-# covid-data-pipeline
+# cloud-optimized-data-pipelines
 
 This repo houses docker images and deployment code for producing cloud-optimized
-data products for COVID impact analyses and interfaces, such as
+data products for analyses and interfaces, such as
 https://github.com/NASA-IMPACT/covid-dashboard.
 
 ## Requirements
