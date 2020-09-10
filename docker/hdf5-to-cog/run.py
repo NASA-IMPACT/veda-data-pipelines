@@ -62,6 +62,7 @@ def to_cog(
     print("profile h/w: ", output_profile["height"], output_profile["width"])
     with MemoryFile() as memfile:
         with memfile.open(**output_profile) as mem:
+            # TODO: Review if necessary
             mem.write(np.rot90(variable[:]), indexes=1)        
         cog_translate(
             memfile,
