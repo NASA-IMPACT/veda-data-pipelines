@@ -28,10 +28,10 @@ jobs:
         uses: ludeeus/action-shellcheck@master
 
       - name: Build image
-        run: >
-          docker build \
-          --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
-          --build-arg AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+        run: >-
+          docker build
+          --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+          --build-arg AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           docker/hdf5-to-cog --tag hdf5-to-cog
 
       - name: Push to latest ECR
