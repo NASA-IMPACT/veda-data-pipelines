@@ -7,14 +7,16 @@ from rio_cogeo.profiles import cog_profiles
 import numpy as np
 import argparse
 import os
+import boto3
 
 parser = argparse.ArgumentParser(description="Generate COG from file and schema")
 parser.add_argument("-f", "--filename", help="HDF5 or NetCDF filename to convert")
 args = parser.parse_args()
+s3 = boto3.client('s3')
 
 # input file schema
 f1 = dict(
-    src_path=args.filename,
+    s3_path=args.filename,
     group="Grid",
     variable_name="precipitationCal"
 )
@@ -27,11 +29,15 @@ output_profile["blockxsize"] = 256
 output_profile["blockysize"] = 256
 
 def to_cog(
-        src_path: str,
+        s3_path: str,
         group: str,
         variable_name: str):
     """HDF5 to COG."""
     # Open existing dataset
+    src_path = os.path.basename(s3_path)
+    bucket = s3_path.split('://')[1].split('/')[0]
+    path = '/'.join(s3_path.split('://')[1].split('/')[1:])
+    s3.download_file(bucket, path, src_path)
     src = Dataset(src_path, "r")
     variable = src.groups[group][variable_name][:]
     xmin, ymin, xmax, ymax = [-180, -90, 180, 90]
