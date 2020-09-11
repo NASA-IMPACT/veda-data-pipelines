@@ -64,7 +64,7 @@ def to_cog(
     # TODO: Review - flipping IMERG
     xres = (xmax - xmin) / float(nrows)
     yres = (ymax - ymin) / float(ncols)
-    geotransform = (xmin, xres, 0, ymin, 0, yres)
+    geotransform = (xmin, xres, 0, ymax, 0, yres)
     dst_transform = Affine.from_gdal(*geotransform)
     nodata_value = variable.fill_value
 
