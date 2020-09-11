@@ -103,12 +103,12 @@ def to_cog(
 if os.environ.get('ENV') != 'test':
     s3_path = args.filename
     file_args = download_file(s3_path=s3_path)
-    collection, filename = file_args.collection, file_args.filename
+    collection, filename = file_args['collection'], file_args['filename']
 else:
     filename = args.filename
 
 f1['src_filename'] = filename
-to_cog(**f1)
+outfilename = to_cog(**f1)
 
 if os.environ.get('ENV') != 'test':
     upload_file(outfilename, collection)
