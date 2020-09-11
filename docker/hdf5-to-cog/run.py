@@ -19,7 +19,6 @@ output_dir = 'cloud-optimized'
 
 # input file schema
 f1 = dict(
-    s3_path=args.filename,
     group="Grid",
     variable_name="precipitationCal"
 )
@@ -36,7 +35,7 @@ def rename(filename):
     This is specific to GPM IMERG product
     """
     imerg_date = filename.split(".")[4].split('-')[0]
-    replacement_date = f"{imerg_date[0:3]}_{imerg_date[4:5]}_{imerg_date[6:7]}"
+    replacement_date = f"{imerg_date[0:4]}_{imerg_date[4:6]}_{imerg_date[6:8]}"
     return f"{os.path.splitext(filename.replace(imerg_date, replacement_date))[0]}.tif"
 
 def upload_file(outfilename, collection):
@@ -44,18 +43,21 @@ def upload_file(outfilename, collection):
         outfilename, output_bucket, f"{output_dir}/{collection}/{outfilename}"
     )
 
-def to_cog(
-        s3_path: str,
-        group: str,
-        variable_name: str):
-    """HDF5 to COG."""
-    # Open existing dataset
-    src_filename = os.path.basename(s3_path)
+def download_file(s3_path: str):
+    filename = os.path.basename(s3_path)
     path_parts = s3_path.split('://')[1].split('/')
     bucket = path_parts[0]
     path = '/'.join(path_parts[1:])
     collection = path_parts[-2]
-    s3.download_file(bucket, path, src_filename)
+    s3.download_file(bucket, path, filename)
+    return dict(filename=filename, collection=collection)
+
+def to_cog(
+        src_filename: str,
+        group: str,
+        variable_name: str):
+    """HDF5 to COG."""
+    # Open existing dataset
     src = Dataset(src_filename, "r")
     variable = src.groups[group][variable_name][:]
     xmin, ymin, xmax, ymax = [-180, -90, 180, 90]
@@ -64,7 +66,7 @@ def to_cog(
     # TODO: Review - flipping IMERG
     xres = (xmax - xmin) / float(nrows)
     yres = (ymax - ymin) / float(ncols)
-    geotransform = (xmin, xres, 0, ymax, 0, yres)
+    geotransform = (xmin, xres, 0, ymax, 0, -yres)
     dst_transform = Affine.from_gdal(*geotransform)
     nodata_value = variable.fill_value
 
@@ -96,6 +98,17 @@ def to_cog(
             output_profile,
             config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
         )
-    upload_file(outfilename, collection)
+        return outfilename
 
+if os.environ.get('ENV') != 'test':
+    s3_path = args.filename
+    file_args = download_file(s3_path=s3_path)
+    collection, filename = file_args.collection, file_args.filename
+else:
+    filename = args.filename
+
+f1['src_filename'] = filename
 to_cog(**f1)
+
+if os.environ.get('ENV') != 'test':
+    upload_file(outfilename, collection)
