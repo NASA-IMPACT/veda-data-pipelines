@@ -14,6 +14,9 @@ parser.add_argument("-f", "--filename", help="HDF5 or NetCDF filename to convert
 args = parser.parse_args()
 s3 = boto3.client('s3')
 
+output_bucket = 'cumulus-map-internal'
+output_dir = 'cloud-optimized'
+
 # input file schema
 f1 = dict(
     s3_path=args.filename,
@@ -28,24 +31,40 @@ output_profile = cog_profiles.get(
 output_profile["blockxsize"] = 256
 output_profile["blockysize"] = 256
 
+def rename(filename):
+    """
+    This is specific to GPM IMERG product
+    """
+    imerg_date = filename.split(".")[4].split('-')[0]
+    replacement_date = f"{imerg_date[0:3]}_{imerg_date[4:5]}_{imerg_date[6:7]}"
+    return f"{os.path.splitext(filename.replace(imerg_date, replacement_date))[0]}.tif"
+
+def upload_file(outfilename, collection):
+    return s3.upload_file(
+        outfilename, output_bucket, f"{output_dir}/{collection}/{outfilename}"
+    )
+
 def to_cog(
         s3_path: str,
         group: str,
         variable_name: str):
     """HDF5 to COG."""
     # Open existing dataset
-    src_path = os.path.basename(s3_path)
-    bucket = s3_path.split('://')[1].split('/')[0]
-    path = '/'.join(s3_path.split('://')[1].split('/')[1:])
-    s3.download_file(bucket, path, src_path)
-    src = Dataset(src_path, "r")
+    src_filename = os.path.basename(s3_path)
+    path_parts = s3_path.split('://')[1].split('/')
+    bucket = path_parts[0]
+    path = '/'.join(path_parts[1:])
+    collection = path_parts[-2]
+    s3.download_file(bucket, path, src_filename)
+    src = Dataset(src_filename, "r")
     variable = src.groups[group][variable_name][:]
     xmin, ymin, xmax, ymax = [-180, -90, 180, 90]
     nrows, ncols = variable.shape[0], variable.shape[1]
     print("nrows, ncols: ", nrows, ncols)
+    # TODO: Review - flipping IMERG
     xres = (xmax - xmin) / float(nrows)
     yres = (ymax - ymin) / float(ncols)
-    geotransform = (xmin, xres, 0, ymax, 0, yres)
+    geotransform = (xmin, xres, 0, ymin, 0, yres)
     dst_transform = Affine.from_gdal(*geotransform)
     nodata_value = variable.fill_value
 
@@ -54,7 +73,7 @@ def to_cog(
         driver="GTiff",
         dtype=variable.dtype,
         count=1,
-        # not sure this is correct, we need to flip things around
+        # TODO: Review - flipping IMERG
         height=ncols,
         width=nrows,
         crs=CRS.from_epsg(4326),
@@ -68,13 +87,15 @@ def to_cog(
     print("profile h/w: ", output_profile["height"], output_profile["width"])
     with MemoryFile() as memfile:
         with memfile.open(**output_profile) as mem:
-            # TODO: Review if necessary
-            mem.write(np.rot90(variable[:]), indexes=1)        
+            # TODO: Review - flipping IMERG
+            mem.write(np.rot90(variable[:]), indexes=1) 
+        outfilename = rename(src_filename)
         cog_translate(
             memfile,
-            f"{os.path.splitext(src_path)[0]}.tif",
+            rename(src_filename),
             output_profile,
             config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
         )
+    upload_file(outfilename, collection)
 
 to_cog(**f1)
