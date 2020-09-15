@@ -19,10 +19,9 @@ __pycache__
 *.he5
 *.img
 *.img.hdr
-*.hdf
-*.hdf5
+*.hdf*
 *.tif
-*.nc
+*.nc*
 *.HDF5
 
 lambdas/**/package

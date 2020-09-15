@@ -8,9 +8,11 @@ import numpy as np
 import argparse
 import os
 import boto3
+import requests
 
 parser = argparse.ArgumentParser(description="Generate COG from file and schema")
 parser.add_argument("-f", "--filename", help="HDF5 or NetCDF filename to convert")
+parser.add_argument('-c', '--collection', help='Collection name')
 args = parser.parse_args()
 s3 = boto3.client('s3')
 
@@ -18,10 +20,7 @@ output_bucket = 'cumulus-map-internal'
 output_dir = 'cloud-optimized'
 
 # input file schema
-f1 = dict(
-    group="Grid",
-    variable_name="precipitationCal"
-)
+f1 = dict(variable_name="precipitationCal")
 
 # Set COG inputs
 output_profile = cog_profiles.get(
@@ -43,25 +42,35 @@ def upload_file(outfilename, collection):
         outfilename, output_bucket, f"{output_dir}/{collection}/{outfilename}"
     )
 
-def download_file(s3_path: str):
-    filename = os.path.basename(s3_path)
-    path_parts = s3_path.split('://')[1].split('/')
-    bucket = path_parts[0]
-    path = '/'.join(path_parts[1:])
-    collection = path_parts[-2]
-    s3.download_file(bucket, path, filename)
-    return dict(filename=filename, collection=collection)
+def download_file(file_uri: str):
+    filename = os.path.basename(file_uri)
+    print(filename)
+    print(file_uri)
+    if 'http' in file_uri:
+        # download file using username password
+        response = requests.get(
+            file_uri,
+            auth=requests.auth.HTTPBasicAuth(os.environ.get('USERNAME'), os.environ.get('PASSWORD')),
+            allow_redirects=True
+        )
+        with open(filename, 'wb') as f:
+            f.write(response.content)
+    elif 's3://' in file_uri:
+        path_parts = file_uri.split('://')[1].split('/')
+        bucket = path_parts[0]
+        path = '/'.join(path_parts[1:])
+        s3.download_file(bucket, path, filename)
+    return dict(filename=filename)
 
 def to_cog(
-        src_filename: str,
-        group: str,
+        filename: str,
         variable_name: str):
     """HDF5 to COG."""
     # Open existing dataset
-    src = Dataset(src_filename, "r")
-    variable = src.groups[group][variable_name][:]
+    src = Dataset(filename, "r")
+    variable = src[variable_name][:]
     xmin, ymin, xmax, ymax = [-180, -90, 180, 90]
-    nrows, ncols = variable.shape[0], variable.shape[1]
+    nrows, ncols = variable.shape[1], variable.shape[2]
     print("nrows, ncols: ", nrows, ncols)
     # TODO: Review - flipping IMERG
     xres = (xmax - xmin) / float(nrows)
@@ -90,25 +99,28 @@ def to_cog(
     with MemoryFile() as memfile:
         with memfile.open(**output_profile) as mem:
             # TODO: Review - flipping IMERG
-            mem.write(np.rot90(variable[:]), indexes=1) 
-        outfilename = rename(src_filename)
+            mem.write(np.rot90(variable[:][0].data), indexes=1)
+        outfilename = rename(filename)
         cog_translate(
             memfile,
-            rename(src_filename),
+            outfilename,
             output_profile,
             config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
         )
         return outfilename
 
+file_uri = args.filename
+collection = args.collection
 if os.environ.get('ENV') != 'test':
-    s3_path = args.filename
-    file_args = download_file(s3_path=s3_path)
-    collection, filename = file_args['collection'], file_args['filename']
-else:
-    filename = args.filename
+    file_args = download_file(file_uri=file_uri)
+    filename = file_args['filename']
 
-f1['src_filename'] = filename
+f1['filename'] = filename
 outfilename = to_cog(**f1)
 
 if os.environ.get('ENV') != 'test':
     upload_file(outfilename, collection)
+
+# python run.py \
+#   -c GPM_3IMERGDF \
+#   -f https://gpm1.gesdisc.eosdis.nasa.gov/data/GPM_L3/GPM_3IMERGDF.06/2000/06/3B-DAY.MS.MRG.3IMERG.20000601-S000000-E235959.V06.nc4
