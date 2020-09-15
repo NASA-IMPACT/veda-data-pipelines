@@ -1,6 +1,5 @@
 # Ignore terraform files
 .terraform
-variables.tf
 
 # Ignore files downloaded when installing HDF4 libraries
 HDF-4.2.15-Darwin/
@@ -25,3 +24,4 @@ __pycache__
 *.HDF5
 
 lambdas/**/package
+terraform.tfvars
