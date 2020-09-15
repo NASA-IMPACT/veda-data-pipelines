@@ -24,3 +24,5 @@ __pycache__
 *.tif
 *.nc
 *.HDF5
+
+lambdas/**/package
