@@ -9,6 +9,7 @@ import argparse
 import os
 import boto3
 import requests
+from tinynetrc import Netrc
 
 parser = argparse.ArgumentParser(description="Generate COG from file and schema")
 parser.add_argument("-f", "--filename", help="HDF5 or NetCDF filename to convert")
@@ -48,11 +49,12 @@ def download_file(file_uri: str):
     print(file_uri)
     if 'http' in file_uri:
         # download file using username password
-        response = requests.get(
-            file_uri,
-            auth=requests.auth.HTTPBasicAuth(os.environ.get('USERNAME'), os.environ.get('PASSWORD')),
-            allow_redirects=True
-        )
+        open('/root/.netrc', 'w').close()
+        netrc = Netrc()
+        netrc['urs.earthdata.nasa.gov']['login'] = os.environ.get('EARTHDATA_USERNAME')
+        netrc['urs.earthdata.nasa.gov']['password'] = os.environ.get('EARTHDATA_PASSWORD')
+        netrc.save()
+        response = requests.get(file_uri)
         with open(filename, 'wb') as f:
             f.write(response.content)
     elif 's3://' in file_uri:
@@ -121,6 +123,3 @@ outfilename = to_cog(**f1)
 if os.environ.get('ENV') != 'test':
     upload_file(outfilename, collection)
 
-# python run.py \
-#   -c GPM_3IMERGDF \
-#   -f https://gpm1.gesdisc.eosdis.nasa.gov/data/GPM_L3/GPM_3IMERGDF.06/2000/06/3B-DAY.MS.MRG.3IMERG.20000601-S000000-E235959.V06.nc4
