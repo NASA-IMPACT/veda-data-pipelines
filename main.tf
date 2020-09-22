@@ -12,3 +12,10 @@ terraform {
 
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
+
+resource "null_resource" "put_ssm_parameters" {
+  provisioner "local-exec" {
+    command = "python ${path.module}/generate-ssm.py"
+  }
+  triggers = { env_file = filebase64("env.json") }
+}

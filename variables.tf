@@ -12,12 +12,8 @@ variable "lambda_processing_role" {
     type = string
     default = ""
 }
-variable "earthdata_username" {
-    type = string
-    default = ""
-}
 
-variable "earthdata_password" {
+variable "batch_image_id" {
     type = string
     default = ""
 }
