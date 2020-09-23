@@ -17,3 +17,8 @@ variable "batch_image_id" {
     type = string
     default = ""
 }
+
+variable "deployment_prefix" {
+    type = string
+    default = "cloud-optimized-dp"
+}

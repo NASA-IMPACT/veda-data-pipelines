@@ -52,8 +52,9 @@ def download_file(file_uri: str):
         # download file using username password
         open('/root/.netrc', 'w').close()
         netrc = Netrc()
-        username_parameter = ssm.get_parameter(Name=f"/cloud-optimized-dp/EARTHDATA_USERNAME", WithDecryption=True)
-        password_parameter = ssm.get_parameter(Name=f"/cloud-optimized-dp/EARTHDATA_PASSWORD", WithDecryption=True)
+        ssm_prefix = os.environ.get("SSM_PREFIX")
+        username_parameter = ssm.get_parameter(Name=f"/{ssm_prefix}/EARTHDATA_USERNAME", WithDecryption=True)
+        password_parameter = ssm.get_parameter(Name=f"/{ssm_prefix}/EARTHDATA_PASSWORD", WithDecryption=True)
         netrc['urs.earthdata.nasa.gov']['login'] = username_parameter['Parameter']['Value']
         netrc['urs.earthdata.nasa.gov']['password'] = password_parameter['Parameter']['Value']
         netrc.save()
