@@ -22,6 +22,8 @@ def submit_job(event, s3_link):
             "command": [
                 "python",
                 "run.py",
+                "-c",
+                event["collection_short_name"],
                 "-f",
                 s3_link
             ]
@@ -38,16 +40,17 @@ def lambda_handler(event, context):
     statuses = []
     for granule in granules:
         s3_link = get_link(granule, link_title)
-        response = submit_job(event, s3_link)
-        statuses.append(response["ResponseMetadata"]["HTTPStatusCode"])
+        print(s3_link)
+        #response = submit_job(event, s3_link)
+        #statuses.append(response["ResponseMetadata"]["HTTPStatusCode"])
     return statuses
 
 
-# event = {
-#     "collection_short_name": "GPM_3IMERGDF",
-#     "link_title": None,
-#     "job_name": "imerg-conversion-lambda",
-#     "job_queue": "default-job-queue",
-#     "job_def": "hdf5_to_cog_batch_job_def:3"
-# }
-# print(lambda_handler(event = event, context={}))
+event = {
+    "collection_short_name": "GPM_3IMERGDF",
+    "link_title": None,
+    "job_name": "imerg-conversion-lambda",
+    "job_queue": "default-job-queue",
+    "job_def": "hdf5_to_cog_batch_job_def:3"
+}
+print(lambda_handler(event = event, context={}))
