@@ -26,3 +26,4 @@ __pycache__
 lambdas/**/package
 terraform.tfvars
 env.json
+*.zip
