@@ -115,7 +115,7 @@ resource "aws_batch_compute_environment" "cloud_optimized_pipeline" {
     ]
 
     max_vcpus = 1440
-    desired_vcpus = 16
+    desired_vcpus = 0
     min_vcpus = 0
 
     security_group_ids = [ aws_security_group.batch_security_group.id ]
