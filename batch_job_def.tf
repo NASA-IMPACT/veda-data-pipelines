@@ -10,7 +10,7 @@ resource "aws_batch_job_definition" "hdf5_to_cog_batch_job_def" {
     "vcpus": 2,
     "environment": [{
       "name": "SSM_PREFIX",
-      "value": ${var.deployment_prefix}
+      "value": "${var.deployment_prefix}"
     }],
     "logConfiguration": {
       "logDriver": "awslogs",

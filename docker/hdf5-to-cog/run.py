@@ -16,7 +16,7 @@ parser.add_argument("-f", "--filename", help="HDF5 or NetCDF filename to convert
 parser.add_argument('-c', '--collection', help='Collection name')
 args = parser.parse_args()
 s3 = boto3.client('s3')
-ssm = boto3.client('ssm')
+ssm = boto3.client('ssm', region_name="us-east-1")
 
 output_bucket = 'cumulus-map-internal'
 output_dir = 'cloud-optimized'
