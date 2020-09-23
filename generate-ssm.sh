@@ -2,7 +2,6 @@
 
 if [ "$2" == "SecureString" ]; then
   value=".ARN"
-  value_str="valueFrom"
 else
   echo "String type must be String or SecureString."
   exit 1
