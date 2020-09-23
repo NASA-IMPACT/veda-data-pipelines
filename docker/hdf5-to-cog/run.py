@@ -16,6 +16,7 @@ parser.add_argument("-f", "--filename", help="HDF5 or NetCDF filename to convert
 parser.add_argument('-c', '--collection', help='Collection name')
 args = parser.parse_args()
 s3 = boto3.client('s3')
+ssm = boto3.client('ssm')
 
 output_bucket = 'cumulus-map-internal'
 output_dir = 'cloud-optimized'
@@ -51,8 +52,10 @@ def download_file(file_uri: str):
         # download file using username password
         open('/root/.netrc', 'w').close()
         netrc = Netrc()
-        netrc['urs.earthdata.nasa.gov']['login'] = os.environ.get('EARTHDATA_USERNAME')
-        netrc['urs.earthdata.nasa.gov']['password'] = os.environ.get('EARTHDATA_PASSWORD')
+        username_parameter = ssm.get_parameter(Name=f"/cloud-optimized-dp/EARTHDATA_USERNAME", WithDecryption=True)
+        password_parameter = ssm.get_parameter(Name=f"/cloud-optimized-dp/EARTHDATA_PASSWORD", WithDecryption=True)
+        netrc['urs.earthdata.nasa.gov']['login'] = username_parameter['Parameter']['Value']
+        netrc['urs.earthdata.nasa.gov']['password'] = password_parameter['Parameter']['Value']
         netrc.save()
         response = requests.get(file_uri)
         with open(filename, 'wb') as f:
