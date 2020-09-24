@@ -88,14 +88,14 @@ def to_cog(
     # Save output as COG
     output_profile = dict(
         driver="GTiff",
-        dtype=variable.dtype,
+        dtype=np.uint16,
         count=1,
         # TODO: Review - flipping IMERG
         height=ncols,
         width=nrows,
         crs=CRS.from_epsg(4326),
         transform=dst_transform,
-        nodata=nodata_value,
+        nodata=int(nodata_value),
         tiled=True,
         compress="deflate",
         blockxsize=256,

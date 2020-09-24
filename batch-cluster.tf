@@ -27,6 +27,11 @@ resource "aws_iam_role_policy_attachment" "ecs_s3_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
+resource "aws_iam_role_policy_attachment" "ecs_ssm_policy_attachment" {
+  role       = aws_iam_role.ecs_instance_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMFullAccess"
+}
+
 resource "aws_iam_instance_profile" "ecs_instance_role" {
   name = "ecs_instance_role"
   role = aws_iam_role.ecs_instance_role.name
@@ -115,7 +120,7 @@ resource "aws_batch_compute_environment" "cloud_optimized_pipeline" {
     ]
 
     max_vcpus = 1440
-    desired_vcpus = 0
+    desired_vcpus = 2
     min_vcpus = 0
 
     security_group_ids = [ aws_security_group.batch_security_group.id ]

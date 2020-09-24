@@ -9,7 +9,9 @@ docker build -t $DOCKER_TAG:latest .
 ```bash
 # Test it
 docker run -it \
-  --env EARTHDATA_USERNAME=$USERNAME --env EARTHDATA_PASSWORD=$PASSWORD \
+  --env SSM_PREFIX=cloud-optimized-dp \
+  --env AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+  --env AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
   hdf5-to-cog:latest \
   python run.py \
   -c GPM_3IMERGDF \

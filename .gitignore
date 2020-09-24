@@ -23,7 +23,8 @@ __pycache__
 *.nc*
 *.HDF5
 
-lambdas/**/package
+lambdas/*/*
+!lambdas/*/lambda_function.py
 terraform.tfvars
 env.json
 *.zip

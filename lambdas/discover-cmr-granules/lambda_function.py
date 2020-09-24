@@ -41,8 +41,8 @@ def lambda_handler(event, context):
     for granule in granules:
         s3_link = get_link(granule, link_title)
         print(s3_link)
-        #response = submit_job(event, s3_link)
-        #statuses.append(response["ResponseMetadata"]["HTTPStatusCode"])
+        response = submit_job(event, s3_link)
+        statuses.append(response["ResponseMetadata"]["HTTPStatusCode"])
     return statuses
 
 
@@ -51,6 +51,6 @@ event = {
     "link_title": None,
     "job_name": "imerg-conversion-lambda",
     "job_queue": "default-job-queue",
-    "job_def": "hdf5_to_cog_batch_job_def:3"
+    "job_def": "hdf5_to_cog_batch_job_def:5"
 }
 print(lambda_handler(event = event, context={}))

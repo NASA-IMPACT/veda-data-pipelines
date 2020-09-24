@@ -7,8 +7,8 @@ resource "null_resource" "discover_cmr_granules_build" {
 
 data "archive_file" "discover-cmr-granules" {
   type        = "zip"
-  source_dir  = "${path.module}/lambdas/discover-cmr-granules/package"
-  output_path = "${path.module}/lambdas/discover-cmr-granules/package/package.zip"
+  source_dir  = "${path.module}/lambdas/discover-cmr-granules/"
+  output_path = "${path.module}/lambdas/discover-cmr-granules/package.zip"
 }
 
 resource "aws_lambda_function" "discover-cmr-granules" {
