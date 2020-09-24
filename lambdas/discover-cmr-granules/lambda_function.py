@@ -13,7 +13,7 @@ def get_link(granule, link_title):
         href_index = 0
     return hrefs[href_index]
 
-def submit_job(event, s3_link):
+def submit_job(event, file_url):
     response = batch_client.submit_job(
         jobName=event["job_name"],
         jobQueue=event["job_queue"],
@@ -25,7 +25,7 @@ def submit_job(event, s3_link):
                 "-c",
                 event["collection_short_name"],
                 "-f",
-                s3_link
+                file_url
             ]
         }     
     )
@@ -34,14 +34,22 @@ def submit_job(event, s3_link):
 def lambda_handler(event, context):
     collection_short_name = event["collection_short_name"]
     link_title = event["link_title"]
-    cmr_host = event["cmr_host"] if "host" in event else "https://cmr.earthdata.nasa.gov/search/"
-    api = GranuleQuery(mode = cmr_host)
-    granules = api.short_name(collection_short_name).get(20)
+    cmr_host = event.get("cmr_host")
+    date_from = event.get("query").get("date_from")
+    date_to = event.get("query").get("date_to")
+    api = GranuleQuery()
+    apiQuery = api.short_name(collection_short_name)
+    if date_from and date_to:
+      apiQuery = apiQuery.temporal(
+          date_from=date_from,
+          date_to=date_to)
+
+    granules = apiQuery.get(20)
     statuses = []
     for granule in granules:
-        s3_link = get_link(granule, link_title)
-        print(s3_link)
-        response = submit_job(event, s3_link)
+        file_url = get_link(granule, link_title)
+        # statuses.append(file_url)
+        response = submit_job(event, file_url)
         statuses.append(response["ResponseMetadata"]["HTTPStatusCode"])
     return statuses
 
@@ -51,6 +59,10 @@ event = {
     "link_title": None,
     "job_name": "imerg-conversion-lambda",
     "job_queue": "default-job-queue",
-    "job_def": "hdf5_to_cog_batch_job_def:5"
+    "job_def": "hdf5_to_cog_batch_job_def:5",
+    "query": {
+        "date_from": "2000-06-21T00:00:00Z",
+        #"date_to": "2000-07-10T00:00:00Z"
+    }
 }
 print(lambda_handler(event = event, context={}))
