@@ -41,7 +41,8 @@ def rename(filename):
 
 def upload_file(outfilename, collection):
     return s3.upload_file(
-        outfilename, output_bucket, f"{output_dir}/{collection}/{outfilename}"
+        outfilename, output_bucket, f"{output_dir}/{collection}/{outfilename}",
+        ExtraArgs={'ACL': 'public-read'}
     )
 
 def download_file(file_uri: str):
