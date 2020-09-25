@@ -3,6 +3,7 @@ import json
 import boto3
 
 batch_client = boto3.client("batch")
+MAX_RESULTS = 20 # arbitrary limit
 
 def get_link(granule, link_title):
     hrefs = [link["href"] for link in granule["links"]]
@@ -34,21 +35,21 @@ def submit_job(event, file_url):
 def lambda_handler(event, context):
     collection_short_name = event["collection_short_name"]
     link_title = event["link_title"]
-    cmr_host = event.get("cmr_host")
+    # cmr_host = event.get("cmr_host")
     date_from = event.get("query").get("date_from")
     date_to = event.get("query").get("date_to")
+    max_results = event.get("query").get("max_results") or MAX_RESULTS
     api = GranuleQuery()
     apiQuery = api.short_name(collection_short_name)
-    if date_from and date_to:
+    if date_from:
       apiQuery = apiQuery.temporal(
           date_from=date_from,
           date_to=date_to)
 
-    granules = apiQuery.get(20)
+    granules = apiQuery.get(max_results)
     statuses = []
     for granule in granules:
         file_url = get_link(granule, link_title)
-        # statuses.append(file_url)
         response = submit_job(event, file_url)
         statuses.append(response["ResponseMetadata"]["HTTPStatusCode"])
     return statuses
@@ -63,6 +64,7 @@ event = {
     "query": {
         "date_from": "2000-06-21T00:00:00Z",
         #"date_to": "2000-07-10T00:00:00Z"
+        "max_results": 100
     }
 }
 print(lambda_handler(event = event, context={}))
