@@ -1,0 +1,50 @@
+{
+  "id": "imerg",
+  "name": "GPM IMERG Precipitation",
+  "type": "raster-timeseries",
+  "timeUnit": "day",
+  "domain": [
+    "2000-06-01",
+    "2013-05-01"
+  ],
+  "source": {
+    "type": "raster",
+    "tiles": [
+      "http://localhost:8000/v1/{z}/{x}/{y}@1x?url=s3://cumulus-map-internal/cloud-optimized/GPM_3IMERGDF/3B-DAY.MS.MRG.3IMERG.{date}-S000000-E235959.V06.tif&rescale=0%2C100&color_map=rdylbu_r&color_formula=gamma r {gamma}"
+    ]
+  },
+  "exclusiveWith": [
+    ""
+  ],
+  "enabled": false,
+  "compare": {
+    "enabled": true,
+    "help": "Compare with baseline",
+    "yearDiff": 0,
+    "source": {
+      "type": "raster",
+      "tiles": [
+        "http://localhost:8000/v1/{z}/{x}/{y}@1x?url=s3://cumulus-map-internal/cloud-optimized/GPM_3IMERGDF/3B-DAY.MS.MRG.3IMERG.{date}-S000000-E235959.V06.tif&rescale=0%2C100&color_map=rdylbu_r&color_formula=gamma r {gamma}"
+      ]
+    }
+  },
+  "swatch": {
+    "color": "#189C54",
+    "name": "Dark Green"
+  },
+  "legend": {
+    "type": "gradient-adjustable",
+    "min": "0 mm/hr",
+    "max": "100 mm/hr",
+    "stops": [
+      "#313695",
+      "#588cbf",
+      "#a3d2e5",
+      "#e8f6e8",
+      "#fee89c",
+      "#fba55c",
+      "#e24932"
+    ]
+  },
+  "info": "This layer shows the average background concentration of carbon dioxide (CO₂) in our atmosphere for 2020. Redder colors indicate more CO₂. Whiter colors indicate less CO₂."
+}
