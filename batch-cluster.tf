@@ -116,11 +116,11 @@ resource "aws_batch_compute_environment" "cloud_optimized_pipeline" {
       // This would also correspond to a job definition - the job definition
       // vCPU requirements will indicate how many instances should be launched
       // for AWS Batch to complete a given set of queued jobs.
-      "optimal",
+      "m5.large",
     ]
 
-    max_vcpus = 1440
-    desired_vcpus = 2
+    max_vcpus = 20
+    desired_vcpus = 0
     min_vcpus = 0
 
     security_group_ids = [ aws_security_group.batch_security_group.id ]
