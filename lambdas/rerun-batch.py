@@ -1,6 +1,7 @@
 import datetime
 import json
 import boto3
+import os
 
 batch_client = boto3.client("batch")
 
@@ -25,7 +26,7 @@ response = batch_client.list_jobs(
 
 # parameters for job query
 jobName = 'imerg-conversion-lambda'
-hours_ago = 2
+hours_ago = 22
 timenow = datetime.datetime.now()
 timeago = 1000*(timenow - datetime.timedelta(hours=hours_ago)).timestamp()
 
@@ -33,6 +34,10 @@ job_ids_to_rerun = []
 for job in response['jobSummaryList']:
     if job.get('jobName') == jobName and job.get('startedAt') > timeago:
         job_ids_to_rerun.append(job.get('jobId'))
+
+print(f"Rerunning {len(job_ids_to_rerun)} jobs")
+if os.environ.get("DRYRUN") == "true":
+    exit()
 
 response = batch_client.describe_jobs(jobs=job_ids_to_rerun)
 jobs_to_rerun = response['jobs']

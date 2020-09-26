@@ -62,9 +62,9 @@ event = {
     "job_queue": "default-job-queue",
     "job_def": "hdf5_to_cog_batch_job_def:5",
     "query": {
-        "date_from": "2000-09-27T00:00:00Z",
+        "date_from": "2014-03-11T00:00:00Z",
         #"date_to": "2000-07-10T00:00:00Z"
-        "max_results": 500
+        "max_results": 1000
     }
 }
 print(lambda_handler(event = event, context={}))
