@@ -2,7 +2,7 @@ name: build_push_to_ecr
 
 on:
   push:
-    branches: [ abarciauskas-bgse_wip-2 ]
+    branches: [ main ]
 
 jobs:
   build_push_to_ecr:
