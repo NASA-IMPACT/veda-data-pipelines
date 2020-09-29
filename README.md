@@ -17,6 +17,5 @@ https://github.com/NASA-IMPACT/covid-dashboard.
 * `docker/` includes docker images for
   running data conversion, such as NetCDF/HDF5 to COG. See individual directories
   for more information and run instructions.
-* `terraform/` (will) includes terraform file for deploying an AWS Batch Compute
-  Environment and corresponding AWS resources for running data conversions. See
-  the README in that directory for instructions on deploying AWS infrastructure.
+* Terraform (all `.tf` files) includes terraform file for deploying an AWS Batch Compute
+  Environment and corresponding AWS resources for running data conversions.
