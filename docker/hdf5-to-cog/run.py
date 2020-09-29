@@ -22,7 +22,13 @@ output_bucket = 'cumulus-map-internal'
 output_dir = 'cloud-optimized'
 
 # input file schema
-f1 = dict(variable_name="precipitationCal")
+# for daily netcdf data
+collection_configs = {
+    # Monthly HDF5
+    'GPM_3IMERGM': dict(group="Grid", variable_name="precipitation"),
+    # Daily NetCDF4
+    'GPM_3IMERGF': dict(variable_name="precipitationCal")
+}
 
 # Set COG inputs
 output_profile = cog_profiles.get(
@@ -71,11 +77,15 @@ def download_file(file_uri: str):
 
 def to_cog(
         filename: str,
+        group: str,
         variable_name: str):
     """HDF5 to COG."""
     # Open existing dataset
     src = Dataset(filename, "r")
-    variable = src[variable_name][:]
+    if group is None:
+        variable = src[variable_name][:]
+    else:
+        variable = src.groups[group][variable_name][:]
     xmin, ymin, xmax, ymax = [-180, -90, 180, 90]
     nrows, ncols = variable.shape[1], variable.shape[2]
     print("nrows, ncols: ", nrows, ncols)
@@ -116,14 +126,15 @@ def to_cog(
         )
         return outfilename
 
-file_uri = args.filename
+filename = args.filename
 collection = args.collection
 if os.environ.get('ENV') != 'test':
-    file_args = download_file(file_uri=file_uri)
+    file_args = download_file(file_uri=filename)
     filename = file_args['filename']
 
-f1['filename'] = filename
-outfilename = to_cog(**f1)
+config = collection_configs.get(collection)
+config['filename'] = filename
+outfilename = to_cog(**config)
 
 if os.environ.get('ENV') != 'test':
     upload_file(outfilename, collection)
