@@ -51,12 +51,12 @@ def lambda_handler(event, context):
     for granule in granules:
         file_url = get_link(granule, link_title)
         response = submit_job(event, file_url)
-        #statuses.append(response["ResponseMetadata"]["HTTPStatusCode"])
+        statuses.append(response["ResponseMetadata"]["HTTPStatusCode"])
     return statuses
 
 
 event = {
-    "collection_short_name": "GPM_3IMERGDM",
+    "collection_short_name": "GPM_3IMERGM",
     "link_title": None,
     "job_name": "imerg-conversion-lambda",
     "job_queue": "default-job-queue",
