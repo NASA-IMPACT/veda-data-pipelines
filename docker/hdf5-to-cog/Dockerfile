@@ -8,3 +8,4 @@ RUN apt-get install python3-pip wget -y
 RUN pip3 install rasterio netCDF4 rio-cogeo h5py boto3 requests tinynetrc
 
 COPY run.py run.py
+COPY helpers.py helpers.py

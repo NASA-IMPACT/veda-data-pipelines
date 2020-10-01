@@ -10,6 +10,7 @@ import os
 import boto3
 import requests
 from tinynetrc import Netrc
+from helpers import rename_imerg
 
 parser = argparse.ArgumentParser(description="Generate COG from file and schema")
 parser.add_argument("-f", "--filename", help="HDF5 or NetCDF filename to convert")
@@ -25,9 +26,15 @@ output_dir = 'cloud-optimized'
 # for daily netcdf data
 collection_configs = {
     # Monthly HDF5
-    'GPM_3IMERGM': dict(group="Grid", variable_name="precipitation", monthly=True),
+    'GPM_3IMERGM': dict(
+        group="Grid",
+        variable_name="precipitation",
+        monthly=True,
+        rename_file=rename_imerg),
     # Daily NetCDF4
-    'GPM_3IMERGF': dict(variable_name="precipitationCal")
+    'GPM_3IMERGF': dict(
+        variable_name="precipitationCal",
+        rename_file=rename_imerg)
 }
 
 # Set COG inputs
@@ -36,20 +43,6 @@ output_profile = cog_profiles.get(
 )  # if the files aren't uint8, this will need to be changed
 output_profile["blockxsize"] = 256
 output_profile["blockysize"] = 256
-
-def rename(filename, monthly = False):
-    """
-    This is specific to GPM IMERG product
-    """
-    imerg_date = filename.split(".")[4].split('-')[0]
-    replacement_date = f"{imerg_date[0:4]}_{imerg_date[4:6]}_{imerg_date[6:8]}"
-    if monthly:
-        replacement_date = f"{imerg_date[0:4]}{imerg_date[4:6]}"
-    else:
-        replacement_date = f"{imerg_date[0:4]}_{imerg_date[4:6]}_{imerg_date[6:8]}"
-    replaced_date_filename = filename.replace(imerg_date, replacement_date))
-    # Removing some trailing identifiers for IMERG monthly
-    return f"{os.splitext('.'.join(replaced_date_filename.split('.')[:-2]))}.tif"
 
 def upload_file(outfilename, collection):
     return s3.upload_file(
@@ -85,7 +78,8 @@ def to_cog(
         filename: str,
         group: str,
         monthly: bool,
-        variable_name: str):
+        variable_name: str,
+        rename_file: callable):
     """HDF5 to COG."""
     # Open existing dataset
     src = Dataset(filename, "r")
@@ -124,7 +118,7 @@ def to_cog(
         with memfile.open(**output_profile) as mem:
             # TODO: Review - flipping IMERG
             mem.write(np.rot90(variable[:][0].data), indexes=1)
-        outfilename = rename(filename, monthly)
+        outfilename = rename_file(filename, monthly)
         cog_translate(
             memfile,
             outfilename,
