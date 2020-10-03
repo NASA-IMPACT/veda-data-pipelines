@@ -1,7 +1,11 @@
 # TODOs
 
 ## Immediate
-* make ATL08 circles smaller, maybe smaller afrisar collection
+
+* Make ATL08 circles smaller
+* Smaller afrisar collection
+* Add uavsar data
+* Talking points on datasets (...titiler api, wmts, ogc features, geojson)
 
 ## Longer term
 * mosaic json for lvis (right now using wmts API from MAAP API, I can't even recall how I'm doing this...)
