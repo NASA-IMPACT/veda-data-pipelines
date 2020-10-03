@@ -1,0 +1,39 @@
+{
+  "id": "aflvis2",
+  "name": "AfriSAR LVIS L2 Geolocated Surface Elevation Product V001",
+  "type": "raster",
+  "timeUnit": null,
+  "domain": [
+    "2016-02-20T10:33:44.000Z",
+    "2016-03-08T13:50:18.000Z"
+  ],
+  "source": {
+    "type": "raster",
+    "tiles": [
+      "https://api.maap.xyz/api/wmts/GetTile/{z}/{x}/{y}.png?short_name=AFLVIS2&version=2.0.1&color_map=schwarzwald&rescale=0,70"
+    ]
+  },
+  "exclusiveWith": [
+    ""
+  ],
+  "enabled": false,
+  "swatch": {
+    "color": "#189C54",
+    "name": "Dark Green"
+  },
+  "legend": {
+    "type": "gradient-adjustable",
+    "min": "0",
+    "max": "70",
+    "stops": [
+      "#313695",
+      "#588cbf",
+      "#a3d2e5",
+      "#e8f6e8",
+      "#fee89c",
+      "#fba55c",
+      "#e24932"
+    ]
+  },
+  "info": "This data set contains surface elevation measurements from NASA's Land, Vegetation, and Ice Sensor (LVIS) over Gabon, Africa. The data were collected over seven flights as part of the AfriSAR mission, a NASA campaign conducted in collaboration with the European Space Agency (ESA). The AfriSAR campaign took place during February and March of 2016. The level 2 data files are in ASCII format and are derived from the level 1B waveform dataset."
+}

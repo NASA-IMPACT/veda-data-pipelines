@@ -1,0 +1,24 @@
+{
+  "id": "atl08-peru",
+  "name": "(Peru) ATLAS/ICESat-2 L3A Land and Vegetation Height V003",
+  "type": "inference-timeseries",
+  "domain": [
+    "2018-10-14",
+    "2020-08-12"
+  ],
+  "source": {
+    "type": "vector",
+    "vector": {
+      "type": "geojson",
+      "data": "https://obnrh8ozt0.execute-api.us-east-2.amazonaws.com/collections/Peru/items?f=json&limit=1000"      
+    }
+  },
+  "exclusiveWith": [],
+  "enabled": true,
+  "swatch": {
+    "color": "#189C54",
+    "name": "Dark Green"
+  },
+  "timeUnit": "day",
+  "info": "This data set (ATL08) contains along-track heights above the WGS84 ellipsoid (ITRF2014 reference frame) for the ground and canopy surfaces. The canopy and ground surfaces are processed in fixed 100 m data segments, which typically contain more than 100 signal photons. The data were acquired by the Advanced Topographic Laser Altimeter System (ATLAS) instrument on board the Ice, Cloud and land Elevation Satellite-2 (ICESat-2) observatory."
+}
