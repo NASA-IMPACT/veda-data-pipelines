@@ -1,0 +1,39 @@
+{
+  "id": "uavsar",
+  "name": "AfriSAR UAVSAR Coregistered SLCs Generated Using NISAR Tools",
+  "type": "raster",
+  "timeUnit": null,
+  "domain": [
+    "2016-02-25T00:00:00.000Z",
+    "2016-03-08T00:00:00.000Z"
+  ],
+  "source": {
+    "type": "raster",
+    "tiles": [
+      "https://api.maap.xyz/api/wmts/GetTile/z/{x}/{y}.png?short_name=AfriSAR_UAVSAR_Coreg_SLC&version=1&color_map=schwarzwald&rescale=-1,1"
+    ]
+  },
+  "exclusiveWith": [
+    ""
+  ],
+  "enabled": false,
+  "swatch": {
+    "color": "#189C54",
+    "name": "Dark Green"
+  },
+  "legend": {
+    "type": "gradient-adjustable",
+    "min": "0",
+    "max": "70",
+    "stops": [
+      "#313695",
+      "#588cbf",
+      "#a3d2e5",
+      "#e8f6e8",
+      "#fee89c",
+      "#fba55c",
+      "#e24932"
+    ]
+  },
+  "info": "This dataset contains multi-baseline Polarimetric Interferometric Synthetic Aperture Radar SLC (single-look-complex) data collected from multiple repeat-pass flights over Gabonese forests using the Uninhabited Aerial Vehicle Synthetic Aperture Radar (UAVSAR) instrument in February-March 2016. Supplementary data products based on various intermediate parameters of the UAVSAR data are provided and include viewing and terrain geometry."
+}
