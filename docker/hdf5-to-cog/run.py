@@ -4,24 +4,21 @@ from rasterio.crs import CRS
 from rasterio.io import MemoryFile
 from rio_cogeo.cogeo import cog_translate
 from rio_cogeo.profiles import cog_profiles
+from rasterio.warp import calculate_default_transform
 import numpy as np
 import argparse
 import os
+import requests
 import boto3
+import configparser
+config = configparser.ConfigParser()
+config.read('example.ini')
 
 parser = argparse.ArgumentParser(description="Generate COG from file and schema")
 parser.add_argument("-f", "--filename", help="HDF5 or NetCDF filename to convert")
+parser.add_argument('-c', '--collection', help='Collection config to use in conversion')
 args = parser.parse_args()
 s3 = boto3.client('s3')
-
-output_bucket = 'cumulus-map-internal'
-output_dir = 'cloud-optimized'
-
-# input file schema
-f1 = dict(
-    group="Grid",
-    variable_name="precipitationCal"
-)
 
 # Set COG inputs
 output_profile = cog_profiles.get(
@@ -29,57 +26,71 @@ output_profile = cog_profiles.get(
 )  # if the files aren't uint8, this will need to be changed
 output_profile["blockxsize"] = 256
 output_profile["blockysize"] = 256
-
-def rename(filename):
-    """
-    This is specific to GPM IMERG product
-    """
-    imerg_date = filename.split(".")[4].split('-')[0]
-    replacement_date = f"{imerg_date[0:4]}_{imerg_date[4:6]}_{imerg_date[6:8]}"
-    return f"{os.path.splitext(filename.replace(imerg_date, replacement_date))[0]}.tif"
+output_bucket = config['DEFAULT']['output_bucket']
+output_dir = config['DEFAULT']['output_dir']
 
 def upload_file(outfilename, collection):
     return s3.upload_file(
-        outfilename, output_bucket, f"{output_dir}/{collection}/{outfilename}"
+        outfilename, output_bucket, f"{output_dir}/{collection}/{outfilename}",
+        ExtraArgs={'ACL': 'public-read'}
     )
 
-def download_file(s3_path: str):
-    filename = os.path.basename(s3_path)
-    path_parts = s3_path.split('://')[1].split('/')
-    bucket = path_parts[0]
-    path = '/'.join(path_parts[1:])
-    collection = path_parts[-2]
-    s3.download_file(bucket, path, filename)
-    return dict(filename=filename, collection=collection)
+def download_file(file_uri: str):
+    filename = os.path.basename(file_uri)
+    print(filename)
+    print(f'Downloading {file_uri} to {filename}')
+    if os.environ.get('SKIP_DOWNLOAD') == 'True':
+        return filename
+    if 'http' in file_uri:
+        username = os.environ.get('USERNAME')
+        password = os.environ.get('PASSWORD')
+        session = requests.Session()
+        session.auth = (username, password)
+        response = session.get(file_uri)
+        with open(filename, 'wb') as f:
+            f.write(response.content)
+    elif 's3://' in file_uri:
+        path_parts = file_uri.split('://')[1].split('/')
+        bucket = path_parts[0]
+        path = '/'.join(path_parts[1:])
+        s3.download_file(bucket, path, filename)
+    return filename
 
 def to_cog(
-        src_filename: str,
+        filename: str,
         group: str,
         variable_name: str):
     """HDF5 to COG."""
     # Open existing dataset
-    src = Dataset(src_filename, "r")
-    variable = src.groups[group][variable_name][:]
+    src = Dataset(filename, "r")
+    if group is None:
+        variable = src[variable_name][:]
+    else:
+        variable = src.groups[group][variable_name]
+    nodata_value = variable._FillValue
+    # This may be just what we need for IMERG
+    variable = np.transpose(variable[0])
+    src_height, src_width = variable.shape[0], variable.shape[1]
+    # def affine_transformation
     xmin, ymin, xmax, ymax = [-180, -90, 180, 90]
-    nrows, ncols = variable.shape[0], variable.shape[1]
-    print("nrows, ncols: ", nrows, ncols)
-    # TODO: Review - flipping IMERG
-    xres = (xmax - xmin) / float(nrows)
-    yres = (ymax - ymin) / float(ncols)
-    geotransform = (xmin, xres, 0, ymax, 0, -yres)
-    dst_transform = Affine.from_gdal(*geotransform)
-    nodata_value = variable.fill_value
+    xres = (xmax - xmin) / float(src_height)
+    yres = (ymax - ymin) / float(src_width)
+    src_crs = CRS.from_epsg(4326)
+    dst_crs = CRS.from_epsg(4326)
 
+    # calculate dst transform
+    dst_transform, dst_width, dst_height = calculate_default_transform(
+        src_crs, dst_crs, src_width, src_height, xmin, ymin, xmax, ymax
+    )
     # Save output as COG
     output_profile = dict(
         driver="GTiff",
         dtype=variable.dtype,
         count=1,
-        # TODO: Review - flipping IMERG
-        height=ncols,
-        width=nrows,
-        crs=CRS.from_epsg(4326),
+        crs=src_crs,
         transform=dst_transform,
+        height=dst_height,
+        width=dst_width,
         nodata=nodata_value,
         tiled=True,
         compress="deflate",
@@ -87,28 +98,23 @@ def to_cog(
         blockysize=256,
     )
     print("profile h/w: ", output_profile["height"], output_profile["width"])
+    outfilename = f'{filename}.tif'
     with MemoryFile() as memfile:
         with memfile.open(**output_profile) as mem:
-            # TODO: Review - flipping IMERG
-            mem.write(np.rot90(variable[:]), indexes=1) 
-        outfilename = rename(src_filename)
+            data = variable.astype(np.float32)
+            mem.write(data, indexes=1)
         cog_translate(
             memfile,
-            rename(src_filename),
+            outfilename,
             output_profile,
             config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
         )
         return outfilename
 
-if os.environ.get('ENV') != 'test':
-    s3_path = args.filename
-    file_args = download_file(s3_path=s3_path)
-    collection, filename = file_args['collection'], file_args['filename']
-else:
-    filename = args.filename
-
-f1['src_filename'] = filename
-outfilename = to_cog(**f1)
-
-if os.environ.get('ENV') != 'test':
-    upload_file(outfilename, collection)
+filename = args.filename
+collection = args.collection
+downloaded_filename = download_file(file_uri=filename)
+to_cog_config = config._sections[collection]
+to_cog_config['filename'] = downloaded_filename
+outfilename = to_cog(**to_cog_config)
+print(outfilename)
