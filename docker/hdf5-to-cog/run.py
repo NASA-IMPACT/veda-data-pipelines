@@ -42,10 +42,11 @@ def download_file(file_uri: str):
     if os.environ.get('SKIP_DOWNLOAD') == 'True':
         return filename
     if 'http' in file_uri:
-        username = os.environ.get('USERNAME')
-        password = os.environ.get('PASSWORD')
-        session = requests.Session()
-        session.auth = (username, password)
+        # This isn't working
+        # username = os.environ.get('USERNAME')
+        # password = os.environ.get('PASSWORD')
+        # session = requests.Session()
+        # session.auth = (username, password)
         response = session.get(file_uri)
         with open(filename, 'wb') as f:
             f.write(response.content)
