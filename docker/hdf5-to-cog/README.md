@@ -27,7 +27,7 @@ python3 run.py \
   -f https://gpm1.gesdisc.eosdis.nasa.gov/data/GPM_L3/GPM_3IMERGM.06/2020/3B-MO.MS.MRG.3IMERG.20200501-S000000-E235959.05.V06B.HDF5
 ```
 
-### ERA5 Cloud Base Height Example
+## ERA5 Cloud Base Height Example
 
 ERA5 data is fetched using `cdsapi` library which first requires registration and API configuration, see https://cds.climate.copernicus.eu/api-how-to for instructions. 
 
