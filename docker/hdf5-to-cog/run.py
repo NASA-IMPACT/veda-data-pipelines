@@ -10,6 +10,7 @@ import argparse
 import os
 import requests
 import boto3
+from typing import Optional
 import configparser
 config = configparser.ConfigParser()
 config.read('example.ini')
@@ -38,15 +39,12 @@ def upload_file(outfilename, collection):
 def download_file(file_uri: str):
     filename = os.path.basename(file_uri)
     print(filename)
-    print(f'Downloading {file_uri} to {filename}')
-    if os.environ.get('SKIP_DOWNLOAD') == 'True':
-        return filename
     if 'http' in file_uri:
-        # This isn't working
-        # username = os.environ.get('USERNAME')
-        # password = os.environ.get('PASSWORD')
-        # session = requests.Session()
-        # session.auth = (username, password)
+        # This isn't working for GPMIMERG, need to use .netrc
+        username = os.environ.get('USERNAME')
+        password = os.environ.get('PASSWORD')
+        session = requests.Session()
+        session.auth = (username, password)
         response = session.get(file_uri)
         with open(filename, 'wb') as f:
             f.write(response.content)
@@ -54,25 +52,32 @@ def download_file(file_uri: str):
         path_parts = file_uri.split('://')[1].split('/')
         bucket = path_parts[0]
         path = '/'.join(path_parts[1:])
-        s3.download_file(bucket, path, filename)
+        s3.download_file(bucket, path, filename) 
+    else:
+        print(f"{filename} file already downloaded")
     return filename
 
 def to_cog(
         filename: str,
-        group: str,
-        variable_name: str):
+        variable_name: str,
+        group: Optional[str] = None):
     """HDF5 to COG."""
     # Open existing dataset
     src = Dataset(filename, "r")
     if group is None:
+        # netcdf4
         variable = src[variable_name][:]
+        nodata_value = variable.fill_value
     else:
+        # hdf5
         variable = src.groups[group][variable_name]
-    nodata_value = variable._FillValue
-    # This may be just what we need for IMERG
-    variable = np.transpose(variable[0])
+        nodata_value = variable._FillValue
+    # np.transpose required for GPMIMERG data
+    # TODO: Send variable to collection-specifc "process" function
+    # Import collection-specific modules for variable "process" (and in the future for "fetch")
+    # import GPMIMERG
+    # variable = GPMIMERG.process(variable) --> variable = np.transpose(variable[0])
     src_height, src_width = variable.shape[0], variable.shape[1]
-    # def affine_transformation
     xmin, ymin, xmax, ymax = [-180, -90, 180, 90]
     xres = (xmax - xmin) / float(src_height)
     yres = (ymax - ymin) / float(src_width)
@@ -103,7 +108,7 @@ def to_cog(
     with MemoryFile() as memfile:
         with memfile.open(**output_profile) as mem:
             data = variable.astype(np.float32)
-            mem.write(data, indexes=1)
+            mem.write(data)
         cog_translate(
             memfile,
             outfilename,
