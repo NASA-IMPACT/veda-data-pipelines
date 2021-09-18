@@ -63,6 +63,8 @@ def to_cog(
         group: Optional[str] = None):
     """HDF5 to COG."""
     # Open existing dataset
+    # filename = 'L2GCOV_NASADEM_UTM-lopenp_14043_16008_009_160225_L090_CX_02.h5'
+    # f = h5py.File(filename, 'r')
     src = Dataset(filename, "r")
     if group is None:
         # netcdf4
@@ -70,6 +72,9 @@ def to_cog(
         nodata_value = variable.fill_value
     else:
         # hdf5
+        # NISAR HDF5 
+        # variable = src.groups['science'].groups['LSAR'].groups['GCOV'].groups['grids'].groups['frequencyA']['HVHV']
+        # gdalinfo HDF5:"L2GCOV_NASADEM_UTM-lopenp_14043_16008_009_160225_L090_CX_02.h5"://science/LSAR/GCOV/grids/frequencyA/HHHH -stats
         variable = src.groups[group][variable_name]
         nodata_value = variable._FillValue
     # np.transpose required for GPMIMERG data
@@ -85,36 +90,36 @@ def to_cog(
     dst_crs = CRS.from_epsg(4326)
 
     # calculate dst transform
-    dst_transform, dst_width, dst_height = calculate_default_transform(
-        src_crs, dst_crs, src_width, src_height, xmin, ymin, xmax, ymax
-    )
+dst_transform, dst_width, dst_height = calculate_default_transform(
+    src_crs, dst_crs, src_width, src_height, xmin, ymin, xmax, ymax
+)
     # Save output as COG
-    output_profile = dict(
-        driver="GTiff",
-        dtype=variable.dtype,
-        count=1,
-        crs=src_crs,
-        transform=dst_transform,
-        height=dst_height,
-        width=dst_width,
-        nodata=nodata_value,
-        tiled=True,
-        compress="deflate",
-        blockxsize=256,
-        blockysize=256,
-    )
+output_profile = dict(
+    driver="GTiff",
+    dtype=variable.dtype,
+    count=1,
+    crs=src_crs,
+    transform=dst_transform,
+    height=dst_height,
+    width=dst_width,
+    #nodata=nodata_value,
+    tiled=True,
+    compress="deflate",
+    blockxsize=256,
+    blockysize=256,
+)
     print("profile h/w: ", output_profile["height"], output_profile["width"])
-    outfilename = f'{filename}.tif'
-    with MemoryFile() as memfile:
-        with memfile.open(**output_profile) as mem:
-            data = variable.astype(np.float32)
-            mem.write(data)
-        cog_translate(
-            memfile,
-            outfilename,
-            output_profile,
-            config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
-        )
+outfilename = f'{filename}.tif'
+with MemoryFile() as memfile:
+    with memfile.open(**output_profile) as mem:
+        data = variable.astype(np.float32)
+        mem.write(data)
+    cog_translate(
+        memfile,
+        outfilename,
+        output_profile,
+        config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
+    )
         return outfilename
 
 filename = args.filename
