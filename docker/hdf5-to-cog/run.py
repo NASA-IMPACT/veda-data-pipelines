@@ -57,75 +57,80 @@ def download_file(file_uri: str):
         print(f"{filename} file already downloaded")
     return filename
 
-def to_cog(
-        filename: str,
-        variable_name: str,
-        group: Optional[str] = None):
+def to_cog(**config):
     """HDF5 to COG."""
     # Open existing dataset
-    # filename = 'L2GCOV_NASADEM_UTM-lopenp_14043_16008_009_160225_L090_CX_02.h5'
-    # f = h5py.File(filename, 'r')
+    filename = config['filename']
+    variable_name = config['variable_name']
+    x_variable, y_variable = config.get('x_variable'), config.get('y_variable')
+    group = config.get('group')
     src = Dataset(filename, "r")
     if group is None:
-        # netcdf4
         variable = src[variable_name][:]
         nodata_value = variable.fill_value
     else:
-        # hdf5
-        # NISAR HDF5 
-        # variable = src.groups['science'].groups['LSAR'].groups['GCOV'].groups['grids'].groups['frequencyA']['HVHV']
-        # gdalinfo HDF5:"L2GCOV_NASADEM_UTM-lopenp_14043_16008_009_160225_L090_CX_02.h5"://science/LSAR/GCOV/grids/frequencyA/HHHH -stats
         variable = src.groups[group][variable_name]
         nodata_value = variable._FillValue
-    # np.transpose required for GPMIMERG data
-    # TODO: Send variable to collection-specifc "process" function
-    # Import collection-specific modules for variable "process" (and in the future for "fetch")
-    # import GPMIMERG
-    # variable = GPMIMERG.process(variable) --> variable = np.transpose(variable[0])
+    # This implies a global spatial extent, which is not always the case
     src_height, src_width = variable.shape[0], variable.shape[1]
-    xmin, ymin, xmax, ymax = [-180, -90, 180, 90]
-    xres = (xmax - xmin) / float(src_height)
-    yres = (ymax - ymin) / float(src_width)
-    src_crs = CRS.from_epsg(4326)
-    dst_crs = CRS.from_epsg(4326)
+    if x_variable and y_variable:
+        xmin = src[x_variable][:].min()
+        xmax = src[x_variable][:].max()
+        ymin = src[y_variable][:].min()
+        ymax = src[y_variable][:].max()
+    else:
+        xmin, ymin, xmax, ymax = [-180, -90, 180, 90]
+
+    src_crs = config.get('src_crs')
+    if src_crs:
+        src_crs = CRS.from_proj4(src_crs)
+    else:
+        src_crs = CRS.from_epsg(4326)
+
+    dst_crs = CRS.from_epsg(3857)
 
     # calculate dst transform
-dst_transform, dst_width, dst_height = calculate_default_transform(
-    src_crs, dst_crs, src_width, src_height, xmin, ymin, xmax, ymax
-)
-    # Save output as COG
-output_profile = dict(
-    driver="GTiff",
-    dtype=variable.dtype,
-    count=1,
-    crs=src_crs,
-    transform=dst_transform,
-    height=dst_height,
-    width=dst_width,
-    #nodata=nodata_value,
-    tiled=True,
-    compress="deflate",
-    blockxsize=256,
-    blockysize=256,
-)
-    print("profile h/w: ", output_profile["height"], output_profile["width"])
-outfilename = f'{filename}.tif'
-with MemoryFile() as memfile:
-    with memfile.open(**output_profile) as mem:
-        data = variable.astype(np.float32)
-        mem.write(data)
-    cog_translate(
-        memfile,
-        outfilename,
-        output_profile,
-        config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
+    dst_transform, dst_width, dst_height = calculate_default_transform(
+        src_crs, dst_crs, src_width, src_height, xmin, ymin, xmax, ymax
     )
+    # Save output as COG
+    output_profile = dict(
+        driver="GTiff",
+        dtype=variable.dtype,
+        count=1,
+        crs=src_crs,
+        transform=dst_transform,
+        height=dst_height,
+        width=dst_width,
+        nodata=-9999,
+        tiled=True,
+        compress="deflate",
+        blockxsize=256,
+        blockysize=256,
+    )
+    print("profile h/w: ", output_profile["height"], output_profile["width"])
+    outfilename = f'{filename}.tif'
+    with MemoryFile() as memfile:
+        with memfile.open(**output_profile) as mem:
+            data = variable.astype(np.float32)
+            mem.write(data, indexes=1)
+        cog_translate(
+            memfile,
+            outfilename,
+            output_profile,
+            config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
+        )
         return outfilename
 
 filename = args.filename
 collection = args.collection
-downloaded_filename = download_file(file_uri=filename)
 to_cog_config = config._sections[collection]
-to_cog_config['filename'] = downloaded_filename
+
+if os.environ.get('DOWNLOAD') == 'true':
+    downloaded_filename = download_file(file_uri=filename)
+    to_cog_config['filename'] = downloaded_filename
+else:
+    to_cog_config['filename'] = filename
+
 outfilename = to_cog(**to_cog_config)
 print(outfilename)
