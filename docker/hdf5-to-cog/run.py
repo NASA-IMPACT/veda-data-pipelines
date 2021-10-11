@@ -72,7 +72,7 @@ def to_cog(**config):
         variable = src.groups[group][variable_name]
         nodata_value = variable._FillValue
     # This implies a global spatial extent, which is not always the case
-    src_height, src_width = variable.shape[0], variable.shape[1]
+    src_height, src_width = variable.shape[0], variable.shape[1]    
     if x_variable and y_variable:
         xmin = src[x_variable][:].min()
         xmax = src[x_variable][:].max()
@@ -80,6 +80,12 @@ def to_cog(**config):
         ymax = src[y_variable][:].max()
     else:
         xmin, ymin, xmax, ymax = [-180, -90, 180, 90]
+    # https://github.com/NASA-IMPACT/cloud-optimized-data-pipelines/blob/rwegener2-envi-to-cog/docker/omno2-to-cog/OMNO2d.003/handler.py
+    # nrows, ncols = variable.shape[0], variable.shape[1]
+    # xres = (xmax - xmin) / float(ncols)
+    # yres = (ymax - ymin) / float(nrows)
+    # geotransform = (xmin, xres, 0, ymax, 0, -yres)
+    # dst_transform = Affine.from_gdal(*geotransform)
 
     src_crs = config.get('src_crs')
     if src_crs:
@@ -102,7 +108,7 @@ def to_cog(**config):
         transform=dst_transform,
         height=dst_height,
         width=dst_width,
-        nodata=-9999,
+        nodata=nodata_value,
         tiled=True,
         compress="deflate",
         blockxsize=256,
@@ -120,7 +126,7 @@ def to_cog(**config):
             output_profile,
             config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
         )
-        return outfilename
+    return outfilename
 
 filename = args.filename
 collection = args.collection
