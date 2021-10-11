@@ -108,7 +108,7 @@ def to_cog(
     with MemoryFile() as memfile:
         with memfile.open(**output_profile) as mem:
             data = variable.astype(np.float32)
-            mem.write(data)
+            mem.write(data, indexes=1)
         cog_translate(
             memfile,
             outfilename,
