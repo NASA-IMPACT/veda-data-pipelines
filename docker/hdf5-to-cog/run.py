@@ -80,12 +80,6 @@ def to_cog(**config):
         ymax = src[y_variable][:].max()
     else:
         xmin, ymin, xmax, ymax = [-180, -90, 180, 90]
-    # https://github.com/NASA-IMPACT/cloud-optimized-data-pipelines/blob/rwegener2-envi-to-cog/docker/omno2-to-cog/OMNO2d.003/handler.py
-    # nrows, ncols = variable.shape[0], variable.shape[1]
-    # xres = (xmax - xmin) / float(ncols)
-    # yres = (ymax - ymin) / float(nrows)
-    # geotransform = (xmin, xres, 0, ymax, 0, -yres)
-    # dst_transform = Affine.from_gdal(*geotransform)
 
     src_crs = config.get('src_crs')
     if src_crs:
@@ -97,8 +91,17 @@ def to_cog(**config):
 
     # calculate dst transform
     dst_transform, dst_width, dst_height = calculate_default_transform(
-        src_crs, dst_crs, src_width, src_height, xmin, ymin, xmax, ymax
+        src_crs, dst_crs, src_width, src_height, left=xmin, bottom=ymin, right=xmax, top=ymax
     )
+
+    # https://github.com/NASA-IMPACT/cloud-optimized-data-pipelines/blob/rwegener2-envi-to-cog/docker/omno2-to-cog/OMNO2d.003/handler.py
+    affine_transformation = config.get('affine_transformation')
+    if affine_transformation:
+        xres = (xmax - xmin) / float(src_width)
+        yres = (ymax - ymin) / float(src_height)
+        geotransform = eval(affine_transformation)
+        dst_transform = Affine.from_gdal(*geotransform)
+    
     # Save output as COG
     output_profile = dict(
         driver="GTiff",

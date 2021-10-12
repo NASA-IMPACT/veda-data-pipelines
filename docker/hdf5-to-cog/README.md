@@ -39,3 +39,12 @@ python3 ERA5/fetch.py
 # Generate the cog
 python3 run.py -f download.nc -c ERA5
 ```
+
+## OMI NO2 Example
+
+```bash
+# Test it
+python3 run.py \
+  -c OMINO2 \
+  -f ../../sample-files/OMI-Aura_L3-OMNO2d_2004m1001_v003-2019m1121t082956.he5
+```
