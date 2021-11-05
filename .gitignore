@@ -24,3 +24,6 @@ __pycache__
 *.tif
 *.nc
 *.HDF5
+*.h5
+*.he5
+sample-files/
