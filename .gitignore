@@ -26,3 +26,7 @@ __pycache__
 *.HDF5
 *.h5
 *.he5
+<<<<<<< HEAD
+=======
+sample-files/
+>>>>>>> ab/working-on-omi
