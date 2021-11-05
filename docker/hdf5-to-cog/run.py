@@ -71,6 +71,9 @@ def to_cog(**config):
     else:
         variable = src.groups[group][variable_name]
         nodata_value = variable._FillValue
+    # This may be just what we need for IMERG
+    if collection == 'GPM_3IMERGM':
+        variable = np.transpose(variable[0])
     # This implies a global spatial extent, which is not always the case
     src_height, src_width = variable.shape[0], variable.shape[1]    
     if x_variable and y_variable:

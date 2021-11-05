@@ -23,7 +23,7 @@ Run the transofrm
 ```bash
 # Test it
 export USERNAME=aimeeb
-export PASSWORD=xxx
+export PASSWORD=XXX
 unset GDAL_DATA
 pyenv exec python run.py \
   -c GPM_3IMERGM \
