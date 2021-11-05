@@ -10,6 +10,7 @@ import argparse
 import os
 import requests
 import boto3
+from typing import Optional
 import configparser
 config = configparser.ConfigParser()
 config.read('example.ini')
@@ -38,10 +39,8 @@ def upload_file(outfilename, collection):
 def download_file(file_uri: str):
     filename = os.path.basename(file_uri)
     print(filename)
-    print(f'Downloading {file_uri} to {filename}')
-    if os.environ.get('SKIP_DOWNLOAD') == 'True':
-        return filename
     if 'http' in file_uri:
+        # This isn't working for GPMIMERG, need to use .netrc
         username = os.environ.get('USERNAME')
         password = os.environ.get('PASSWORD')
         session = requests.Session()
@@ -53,35 +52,56 @@ def download_file(file_uri: str):
         path_parts = file_uri.split('://')[1].split('/')
         bucket = path_parts[0]
         path = '/'.join(path_parts[1:])
-        s3.download_file(bucket, path, filename)
+        s3.download_file(bucket, path, filename) 
+    else:
+        print(f"{filename} file already downloaded")
     return filename
 
-def to_cog(
-        filename: str,
-        group: str,
-        variable_name: str):
+def to_cog(**config):
     """HDF5 to COG."""
     # Open existing dataset
+    filename = config['filename']
+    variable_name = config['variable_name']
+    x_variable, y_variable = config.get('x_variable'), config.get('y_variable')
+    group = config.get('group')
     src = Dataset(filename, "r")
     if group is None:
         variable = src[variable_name][:]
+        nodata_value = variable.fill_value
     else:
         variable = src.groups[group][variable_name]
-    nodata_value = variable._FillValue
-    # This may be just what we need for IMERG
-    variable = np.transpose(variable[0])
-    src_height, src_width = variable.shape[0], variable.shape[1]
-    # def affine_transformation
-    xmin, ymin, xmax, ymax = [-180, -90, 180, 90]
-    xres = (xmax - xmin) / float(src_height)
-    yres = (ymax - ymin) / float(src_width)
-    src_crs = CRS.from_epsg(4326)
-    dst_crs = CRS.from_epsg(4326)
+        nodata_value = variable._FillValue
+    # This implies a global spatial extent, which is not always the case
+    src_height, src_width = variable.shape[0], variable.shape[1]    
+    if x_variable and y_variable:
+        xmin = src[x_variable][:].min()
+        xmax = src[x_variable][:].max()
+        ymin = src[y_variable][:].min()
+        ymax = src[y_variable][:].max()
+    else:
+        xmin, ymin, xmax, ymax = [-180, -90, 180, 90]
+
+    src_crs = config.get('src_crs')
+    if src_crs:
+        src_crs = CRS.from_proj4(src_crs)
+    else:
+        src_crs = CRS.from_epsg(4326)
+
+    dst_crs = CRS.from_epsg(3857)
 
     # calculate dst transform
     dst_transform, dst_width, dst_height = calculate_default_transform(
-        src_crs, dst_crs, src_width, src_height, xmin, ymin, xmax, ymax
+        src_crs, dst_crs, src_width, src_height, left=xmin, bottom=ymin, right=xmax, top=ymax
     )
+
+    # https://github.com/NASA-IMPACT/cloud-optimized-data-pipelines/blob/rwegener2-envi-to-cog/docker/omno2-to-cog/OMNO2d.003/handler.py
+    affine_transformation = config.get('affine_transformation')
+    if affine_transformation:
+        xres = (xmax - xmin) / float(src_width)
+        yres = (ymax - ymin) / float(src_height)
+        geotransform = eval(affine_transformation)
+        dst_transform = Affine.from_gdal(*geotransform)
+    
     # Save output as COG
     output_profile = dict(
         driver="GTiff",
@@ -109,12 +129,17 @@ def to_cog(
             output_profile,
             config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
         )
-        return outfilename
+    return outfilename
 
 filename = args.filename
 collection = args.collection
-downloaded_filename = download_file(file_uri=filename)
 to_cog_config = config._sections[collection]
-to_cog_config['filename'] = downloaded_filename
+
+if os.environ.get('DOWNLOAD') == 'true':
+    downloaded_filename = download_file(file_uri=filename)
+    to_cog_config['filename'] = downloaded_filename
+else:
+    to_cog_config['filename'] = filename
+
 outfilename = to_cog(**to_cog_config)
 print(outfilename)
