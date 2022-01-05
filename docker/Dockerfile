@@ -7,7 +7,9 @@ RUN apt update && apt upgrade -y
 
 # Install Python & spatial libraries
 RUN apt-get install python3-pip wget -y
-RUN pip3 install -r requirements.txt
 RUN echo machine urs.earthdata.nasa.gov login $EARTHDATA_USERNAME password $EARTHDATA_PASSWORD > ~/.netrc
-
 COPY . code/
+
+WORKDIR code
+RUN pip3 install -r requirements.txt
+

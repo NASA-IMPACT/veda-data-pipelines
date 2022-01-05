@@ -9,8 +9,10 @@ Before running the commands below, make sure you `cd docker/`.
 ## With docker
 
 ```bash
-export EARTHDATA_USERNAME=aimeeb
-export EARTHDATA_PASSWORD=
+export EARTHDATA_USERNAME=xxx
+export EARTHDATA_PASSWORD=XXX
+
+docker build --build-arg EARTHDATA_USERNAME --build-arg EARTHDATA_PASSWORD -t cogify .
 ```
 
 ## GPM IMERG Example
@@ -56,5 +58,9 @@ python3 run.py -f download.nc -c ERA5
 DOWNLOAD=true
 pyenv exec python run.py \
   -c OMINO2 \
+  -f https://acdisc.gesdisc.eosdis.nasa.gov/data/Aura_OMI_Level3/OMNO2d.003/2011/OMI-Aura_L3-OMNO2d_2011m0101_v003-2019m1122t025307.he5
+
+# or 
+docker run --env DOWNLOAD=true cogify python run.py -c OMINO2 \
   -f https://acdisc.gesdisc.eosdis.nasa.gov/data/Aura_OMI_Level3/OMNO2d.003/2011/OMI-Aura_L3-OMNO2d_2011m0101_v003-2019m1122t025307.he5
 ```
