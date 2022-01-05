@@ -4,7 +4,14 @@
 
 At this time, just 2 configurations have been made in `example.ini`.
 
-Before running the commands below, make sure you `cd docker/hdf5-to-cog`.
+Before running the commands below, make sure you `cd docker/`.
+
+## With docker
+
+```bash
+export EARTHDATA_USERNAME=aimeeb
+export EARTHDATA_PASSWORD=
+```
 
 ## GPM IMERG Example
 
@@ -23,6 +30,7 @@ Run the transofrm
 ```bash
 # Test it
 unset GDAL_DATA
+DOWNLOAD=true
 pyenv exec python run.py \
   -c GPM_3IMERGM \
   -f https://gpm1.gesdisc.eosdis.nasa.gov/data/GPM_L3/GPM_3IMERGM.06/2020/3B-MO.MS.MRG.3IMERG.20200501-S000000-E235959.05.V06B.HDF5
@@ -45,7 +53,8 @@ python3 run.py -f download.nc -c ERA5
 
 ```bash
 # Test it
-python3 run.py \
+DOWNLOAD=true
+pyenv exec python run.py \
   -c OMINO2 \
-  -f ../../sample-files/OMI-Aura_L3-OMNO2d_2004m1001_v003-2019m1121t082956.he5
+  -f https://acdisc.gesdisc.eosdis.nasa.gov/data/Aura_OMI_Level3/OMNO2d.003/2011/OMI-Aura_L3-OMNO2d_2011m0101_v003-2019m1122t025307.he5
 ```

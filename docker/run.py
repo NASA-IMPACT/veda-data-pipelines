@@ -46,6 +46,8 @@ def download_file(file_uri: str):
         session = requests.Session()
         session.auth = (username, password)
         response = session.get(file_uri)
+        print("RESPONSE IS")
+        print(response)
         with open(filename, 'wb') as f:
             f.write(response.content)
     elif 's3://' in file_uri:
@@ -139,6 +141,7 @@ collection = args.collection
 to_cog_config = config._sections[collection]
 
 if os.environ.get('DOWNLOAD') == 'true':
+    print 
     downloaded_filename = download_file(file_uri=filename)
     to_cog_config['filename'] = downloaded_filename
 else:
