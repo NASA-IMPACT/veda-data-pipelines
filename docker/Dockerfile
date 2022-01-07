@@ -1,15 +1,24 @@
-FROM osgeo/gdal:ubuntu-small-3.1.0
+FROM thinkwhere/gdal-python:3.7-shippable
 
 ARG EARTHDATA_USERNAME
 ARG EARTHDATA_PASSWORD
 
-RUN apt update && apt upgrade -y
-
-# Install Python & spatial libraries
-RUN apt-get install python3-pip wget -y
 RUN echo machine urs.earthdata.nasa.gov login $EARTHDATA_USERNAME password $EARTHDATA_PASSWORD > ~/.netrc
 COPY . code/
-
 WORKDIR code
-RUN pip3 install -r requirements.txt
+
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+
+RUN find . -type f -name '*.pyc' | while read f; do n=$(echo $f | sed 's/__pycache__\///' | sed 's/.cpython-[2-3][0-9]//'); cp $f $n; done;
+RUN find . -type d -a -name '__pycache__' -print0 | xargs -0 rm -rf
+RUN find . -type f -a -name '*.py' -print0 | xargs -0 rm -f
+RUN find . -type d -a -name 'tests' -print0 | xargs -0 rm -rf
+RUN echo "Remove lambda python packages"
+RUN rm -rdf ./numpy/doc/
+RUN rm -rdf ./stack
+RUN rm -rdf ./docutils*
+
+COPY handler.py handler.py
+
 

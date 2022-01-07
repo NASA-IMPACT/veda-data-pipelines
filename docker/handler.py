@@ -6,7 +6,6 @@ from rio_cogeo.cogeo import cog_translate
 from rio_cogeo.profiles import cog_profiles
 from rasterio.warp import calculate_default_transform
 import numpy as np
-import argparse
 import os
 import requests
 import boto3
@@ -14,11 +13,6 @@ from typing import Optional
 import configparser
 config = configparser.ConfigParser()
 config.read('example.ini')
-
-parser = argparse.ArgumentParser(description="Generate COG from file and schema")
-parser.add_argument("-f", "--filename", help="HDF5 or NetCDF filename to convert")
-parser.add_argument('-c', '--collection', help='Collection config to use in conversion')
-args = parser.parse_args()
 s3 = boto3.client('s3')
 
 # Set COG inputs
@@ -33,7 +27,7 @@ output_dir = config['DEFAULT']['output_dir']
 def upload_file(outfilename, collection):
     return s3.upload_file(
         outfilename, output_bucket, f"{output_dir}/{collection}/{outfilename}",
-        ExtraArgs={'ACL': 'public-read'}
+        Extraevent={'ACL': 'public-read'}
     )
 
 def download_file(file_uri: str):
@@ -74,7 +68,7 @@ def to_cog(**config):
         variable = src.groups[group][variable_name]
         nodata_value = variable._FillValue
     # This may be just what we need for IMERG
-    if collection == 'GPM_3IMERGM':
+    if config['collection'] == 'GPM_3IMERGM':
         variable = np.transpose(variable[0])
     # This implies a global spatial extent, which is not always the case
     src_height, src_width = variable.shape[0], variable.shape[1]    
@@ -136,16 +130,19 @@ def to_cog(**config):
         )
     return outfilename
 
-filename = args.filename
-collection = args.collection
-to_cog_config = config._sections[collection]
-
-if os.environ.get('DOWNLOAD') == 'true':
-    print 
+def handler(event, context):
+    filename = event['filename']
+    collection = event['collection']
+    to_cog_config = config._sections[collection]
     downloaded_filename = download_file(file_uri=filename)
     to_cog_config['filename'] = downloaded_filename
-else:
-    to_cog_config['filename'] = filename
+    to_cog_config['collection'] = collection
+    outfilename = to_cog(**to_cog_config)
+    print(outfilename)
 
-outfilename = to_cog(**to_cog_config)
-print(outfilename)
+if __name__ == '__main__':
+    sample_event = {
+        "collection": "OMNO2d",
+        "filename": "https://acdisc.gesdisc.eosdis.nasa.gov/data//Aura_OMI_Level3/OMNO2d.003/2021/OMI-Aura_L3-OMNO2d_2021m1231_v003-2022m0103t001350.he5"
+    }    
+    handler(sample_event, {})

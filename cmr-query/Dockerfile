@@ -15,4 +15,4 @@ RUN rm -rdf ./numpy/doc/
 RUN rm -rdf ./stack
 RUN rm -rdf ./docutils*
 
-COPY run.py handler.py
+COPY handler.py handler.py

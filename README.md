@@ -6,17 +6,19 @@ https://github.com/NASA-IMPACT/covid-dashboard.
 
 ## Requirements
 
-* docker, terraform
-* If running python handler code without the docker image, you will need python and python packages:
-  * numpy
-  * rio-viz
-  * netCDF4
+* docker, cdk
+
+```bash
+nvm use 14
+npm install cdk
+pip install aws-cdk.aws-stepfunctions-tasks
+```
 
 ## What's here?
 
 * `docker/` includes docker images for
   running data conversion, such as NetCDF/HDF5 to COG. See individual directories
   for more information and run instructions.
-* `terraform/` (will) includes terraform file for deploying an AWS Batch Compute
-  Environment and corresponding AWS resources for running data conversions. See
-  the README in that directory for instructions on deploying AWS infrastructure.
+* `cdk/` includes cdk for deploying pipelines for automating generation of cloud-optimized geotiffs.
+
+
