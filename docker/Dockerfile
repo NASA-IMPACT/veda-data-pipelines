@@ -3,12 +3,12 @@ FROM thinkwhere/gdal-python:3.7-shippable
 ARG EARTHDATA_USERNAME
 ARG EARTHDATA_PASSWORD
 
-RUN echo machine urs.earthdata.nasa.gov login $EARTHDATA_USERNAME password $EARTHDATA_PASSWORD > ~/.netrc
 COPY . code/
 WORKDIR code
 
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
+RUN echo "machine urs.earthdata.nasa.gov\n    login $EARTHDATA_USERNAME\n    password $EARTHDATA_PASSWORD" > ~/.netrc
 
 RUN find . -type f -name '*.pyc' | while read f; do n=$(echo $f | sed 's/__pycache__\///' | sed 's/.cpython-[2-3][0-9]//'); cp $f $n; done;
 RUN find . -type d -a -name '__pycache__' -print0 | xargs -0 rm -rf

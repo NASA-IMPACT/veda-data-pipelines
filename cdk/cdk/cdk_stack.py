@@ -34,16 +34,16 @@ class CdkStack(core.Stack):
                 directory="docker",
                 file="Dockerfile",
                 entrypoint=["/usr/local/bin/python", "-m", "awslambdaric"],
-                cmd=["handler.handler"]
+                cmd=["handler.handler"],
+                build_args={
+                    "EARTHDATA_USERNAME": os.environ['EARTHDATA_USERNAME'],
+                    "EARTHDATA_PASSWORD": os.environ['EARTHDATA_PASSWORD']
+                }
             ),
             handler=aws_lambda.Handler.FROM_IMAGE,
             runtime=aws_lambda.Runtime.FROM_IMAGE,
             memory_size=4096,
-            timeout=core.Duration.seconds(60),
-            build_args= {
-                "EARTHDATA_USERNAME": os.environ['EARTHDATA_USERNAME'],
-                "EARTHDATA_PASSWORD": os.environ['EARTHDATA_PASSWORD']
-            }
+            timeout=core.Duration.seconds(60)
         )
       
 
@@ -64,7 +64,7 @@ class CdkStack(core.Stack):
 
         # Rule to run it
         rule = events.Rule(self, "Schedule Rule",
-            schedule=events.Schedule.cron(minute="1")
+            schedule=events.Schedule.cron(minute="60")
         )
         rule.add_target(
             targets.SfnStateMachine(simple_state_machine,
