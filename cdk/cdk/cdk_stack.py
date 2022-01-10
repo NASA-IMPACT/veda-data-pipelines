@@ -12,7 +12,7 @@ class CdkStack(core.Stack):
         super().__init__(scope, construct_id, **kwargs)
         collection = "OMNO2d"
         # Discover function
-        discover_function = aws_lambda.Function(
+        discover_lambda = aws_lambda.Function(
             self,
             f"{id}-{collection}-discover-fn",
             code=aws_lambda.Code.from_asset_image(
@@ -27,11 +27,11 @@ class CdkStack(core.Stack):
             timeout=core.Duration.seconds(30)
         )
 
-        generate_cog_function = aws_lambda.Function(
+        generate_cog_lambda = aws_lambda.Function(
             self,
             f"{id}-{collection}-generate-cog-fn",
             code=aws_lambda.Code.from_asset_image(
-                directory="docker",
+                directory="cogify",
                 file="Dockerfile",
                 entrypoint=["/usr/local/bin/python", "-m", "awslambdaric"],
                 cmd=["handler.handler"],
@@ -49,14 +49,21 @@ class CdkStack(core.Stack):
 
         ## State Machine Steps
         start_state = stepfunctions.Pass(self, "StartState")
-        discover_function = tasks.LambdaInvoke(
+        discover_task = tasks.LambdaInvoke(
             self, "Discover Granules Task",
-            lambda_function=discover_function,
-            output_path="$.payload",
+            lambda_function=discover_lambda
         )
-        # generate_cog_function = tasks.LambdaInvoke
+        generate_cog_task = tasks.LambdaInvoke(
+            self, "Generate COG Task",
+            lambda_function=generate_cog_lambda
+        )
+        # map_cogs = sfn.Map(self, "Map State",
+        #     max_concurrency=10,
+        #     items_path=sfn.JsonPath.string_at("$.input")
+        # )
+        # map_cogs.iterator(generate_cog_task)        
 
-        definition = start_state.next(discover_function)# .next(generate_cog_function)
+        definition = start_state.next(discover_task).next(generate_cog_task)
 
         simple_state_machine = stepfunctions.StateMachine(self, f"{collection}-COG-StateMachine",
             definition=definition
@@ -64,7 +71,7 @@ class CdkStack(core.Stack):
 
         # Rule to run it
         rule = events.Rule(self, "Schedule Rule",
-            schedule=events.Schedule.cron(minute="60")
+            schedule=events.Schedule.cron(hour="1")
         )
         rule.add_target(
             targets.SfnStateMachine(simple_state_machine,

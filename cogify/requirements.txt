@@ -1,3 +1,4 @@
+awslambdaric
 rasterio
 netCDF4
 rio-cogeo
