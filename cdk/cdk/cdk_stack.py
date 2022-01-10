@@ -34,16 +34,16 @@ class CdkStack(core.Stack):
                 directory="cogify",
                 file="Dockerfile",
                 entrypoint=["/usr/local/bin/python", "-m", "awslambdaric"],
-                cmd=["handler.handler"],
-                build_args={
-                    "EARTHDATA_USERNAME": os.environ['EARTHDATA_USERNAME'],
-                    "EARTHDATA_PASSWORD": os.environ['EARTHDATA_PASSWORD']
-                }
+                cmd=["handler.handler"]
             ),
             handler=aws_lambda.Handler.FROM_IMAGE,
             runtime=aws_lambda.Runtime.FROM_IMAGE,
             memory_size=4096,
-            timeout=core.Duration.seconds(60)
+            timeout=core.Duration.seconds(60),
+            environment=dict(
+                EARTHDATA_USERNAME=os.environ['EARTHDATA_USERNAME'],
+                EARTHDATA_PASSWORD=os.environ['EARTHDATA_PASSWORD']
+            )
         )
       
 

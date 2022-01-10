@@ -31,19 +31,20 @@ def upload_file(outfilename, collection):
     )
 
 def download_file(file_uri: str):
-    filename = os.path.basename(file_uri)
+    filename = f"/tmp/{os.path.basename(file_uri)}"
     print(filename)
     if 'http' in file_uri:
         # This isn't working for GPMIMERG, need to use .netrc
-        username = os.environ.get('USERNAME')
-        password = os.environ.get('PASSWORD')
-        session = requests.Session()
-        session.auth = (username, password)
-        response = session.get(file_uri)
-        print("RESPONSE IS")
-        print(response)
-        with open(filename, 'wb') as f:
-            f.write(response.content)
+        username = os.environ.get('EARTHDATA_USERNAME')
+        password = os.environ.get('EARTHDATA_PASSWORD')
+        with requests.Session() as session:
+            session.auth = (username, password)
+            request = session.request('get', file_uri)
+            response = session.get(request.url, auth=(username, password))
+            print("RESPONSE IS")
+            print(response.status_code)
+            with open(filename, 'wb') as f:
+                f.write(response.content)
     elif 's3://' in file_uri:
         path_parts = file_uri.split('://')[1].split('/')
         bucket = path_parts[0]

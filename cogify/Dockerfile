@@ -15,7 +15,4 @@ RUN rm -rdf ./numpy/doc/
 RUN rm -rdf ./stack
 RUN rm -rdf ./docutils*
 
-ARG EARTHDATA_PASSWORD
-ARG EARTHDATA_USERNAME
-RUN echo "machine urs.earthdata.nasa.gov\n    login $EARTHDATA_USERNAME\n    password $EARTHDATA_PASSWORD" > ~/.netrc
 COPY . .
