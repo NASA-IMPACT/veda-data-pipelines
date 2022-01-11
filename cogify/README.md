@@ -54,13 +54,9 @@ python3 run.py -f download.nc -c ERA5
 ## OMI NO2 Example
 
 ```bash
-# Test it
-DOWNLOAD=true
-pyenv exec python run.py \
-  -c OMINO2 \
-  -f https://acdisc.gesdisc.eosdis.nasa.gov/data/Aura_OMI_Level3/OMNO2d.003/2011/OMI-Aura_L3-OMNO2d_2011m0101_v003-2019m1122t025307.he5
-
-# or 
-docker run --env DOWNLOAD=true cogify python run.py -c OMINO2 \
-  -f https://acdisc.gesdisc.eosdis.nasa.gov/data/Aura_OMI_Level3/OMNO2d.003/2011/OMI-Aura_L3-OMNO2d_2011m0101_v003-2019m1122t025307.he5
+# needs environment variables
+docker build -t cogify .
+export EARTHDATA_USERNAME=xxx
+export EARTHDATA_PASSWORD=xxx
+docker run --env EARTHDATA_USERNAME --env EARTHDATA_PASSWORD cogify python -m handler
 ```
