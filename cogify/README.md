@@ -58,5 +58,5 @@ python3 run.py -f download.nc -c ERA5
 docker build -t cogify .
 export EARTHDATA_USERNAME=xxx
 export EARTHDATA_PASSWORD=xxx
-docker run --env EARTHDATA_USERNAME --env EARTHDATA_PASSWORD cogify python -m handler
+docker run --env EARTHDATA_USERNAME --env EARTHDATA_PASSWORD cogify python -m handler --collection xxx --filename xxx
 ```
