@@ -58,13 +58,13 @@ class CdkStack(core.Stack):
             self, "Generate COG Task",
             lambda_function=generate_cog_lambda
         )
-        # map_cogs = sfn.Map(self, "Map State",
-        #     max_concurrency=10,
-        #     items_path=sfn.JsonPath.string_at("$.input")
-        # )
-        # map_cogs.iterator(generate_cog_task)        
+        map_cogs = stepfunctions.Map(self, "Map State",
+            max_concurrency=10,
+            items_path=stepfunctions.JsonPath.string_at("$.Payload")
+        )
+        map_cogs.iterator(generate_cog_task)
 
-        definition = start_state.next(discover_task).next(generate_cog_task)
+        definition = start_state.next(discover_task).next(map_cogs)
 
         simple_state_machine = stepfunctions.StateMachine(self, f"{collection}-COG-StateMachine",
             definition=definition
@@ -78,7 +78,7 @@ class CdkStack(core.Stack):
             targets.SfnStateMachine(simple_state_machine,
             input=events.RuleTargetInput.from_object({
                 "collection": collection,
-                "hours": 48,
+                "hours": 96,
                 "version": version,
                 "include": "^.+he5$"
             }))

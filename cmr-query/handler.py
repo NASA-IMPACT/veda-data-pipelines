@@ -21,13 +21,17 @@ def handler(event, context):
         for link in granule['links']:
             if link['rel'] == 'http://esipfed.org/ns/fedsearch/1.1/data#':
                 href = link['href']
+                file_obj = {
+                    "collection": collection,
+                    "href": href
+                }
                 if event['include']:
                     pattern = re.compile(event['include'])
                     matched = pattern.match(href)
                     if matched:
-                        urls.append(href)
+                        urls.append(file_obj)
                 else:
-                    urls.append(href)
+                    urls.append(file_obj)
     print(f"Returning urls {urls}")
     return urls
 

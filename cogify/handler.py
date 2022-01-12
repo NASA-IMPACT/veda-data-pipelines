@@ -132,7 +132,7 @@ def to_cog(**config):
     return outfilename
 
 def handler(event, context):
-    filename = event['filename']
+    filename = event['href']
     collection = event['collection']
     to_cog_config = config._sections[collection]
     downloaded_filename = download_file(file_uri=filename)
@@ -144,6 +144,6 @@ def handler(event, context):
 if __name__ == '__main__':
     sample_event = {
         "collection": "OMNO2d",
-        "filename": "https://acdisc.gesdisc.eosdis.nasa.gov/data//Aura_OMI_Level3/OMNO2d.003/2021/OMI-Aura_L3-OMNO2d_2021m1231_v003-2022m0103t001350.he5"
+        "href": "https://acdisc.gesdisc.eosdis.nasa.gov/data//Aura_OMI_Level3/OMNO2d.003/2021/OMI-Aura_L3-OMNO2d_2021m1231_v003-2022m0103t001350.he5"
     }    
     handler(sample_event, {})
