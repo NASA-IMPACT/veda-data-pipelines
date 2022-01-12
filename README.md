@@ -16,9 +16,9 @@ pip install aws-cdk.aws-stepfunctions-tasks
 
 ## What's here?
 
-* `docker/` includes docker images for
-  running data conversion, such as NetCDF/HDF5 to COG. See individual directories
+* `cogify/` includes code and Dockerfiles for
+  running data conversion to COG, such as NetCDF/HDF5 to COG. See individual directories
   for more information and run instructions.
-* `cdk/` includes cdk for deploying pipelines for automating generation of cloud-optimized geotiffs.
+* `cdk/` includes cdk for deploying pipelines for automating generation of cloud-optimized geotiffs in AWS.
 
 

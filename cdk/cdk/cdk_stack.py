@@ -10,7 +10,8 @@ class CdkStack(core.Stack):
 
     def __init__(self, scope: core.Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
-        collection = "OMNO2d"
+        collection = "OMDOAO3e"
+        version = "003"
         # Discover function
         discover_lambda = aws_lambda.Function(
             self,
