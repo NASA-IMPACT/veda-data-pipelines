@@ -15,7 +15,12 @@ import argparse
 
 config = configparser.ConfigParser()
 config.read("example.ini")
-s3 = boto3.client("s3")
+s3 = boto3.client(
+    "s3",
+    aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID',
+    aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY'),
+    region_name=REGION_NAME,
+)
 
 # Set COG inputs
 output_profile = cog_profiles.get(
@@ -32,41 +37,30 @@ parser.add_argument(
     "--collection",
     type=str,
     required=True,
-    help='The name of the collection for the he5 data'
+    help="The name of the collection for the he5 data",
 )
 
 parser.add_argument(
-    "--href",
-    type=str,
-    required=True,
-    help='The href of he5 file to download'
+    "--href", type=str, required=True, help="The href of he5 file to download"
 )
 
 parser.add_argument(
-    "--upload",
-    default=False,
-    action='store_true',
-    help='Upload cog to s3 bucket'
+    "--upload", default=False, action="store_true", help="Upload cog to s3 bucket"
 )
-args = parser.parse_args();
+args = parser.parse_args()
 
 
 def upload_file(outfilename, collection):
     try:
         s3.upload_file(
-        outfilename,
-        output_bucket,
-        f"{output_dir}/{collection}/{outfilename}",
-        Extraevent={"ACL": "public-read"},
-    )
-    except S3UploadFailedError as e:
-         raise Exception(msg ='S3 Upload Failed', Code = 0)
-    except ClientError as e:  # handle aws s3 exceptions
-         msg = e.response.get('Error', {}).get('Message', 'Unknown')
-         code = e.response.get('Error', {}).get('Code', 'Unknown')
-         raise Exception(msg = msg, Code = code)
-    except:
-         print('Failed to copy to S3 bucket: {msg} ({code})'.format(msg=msg, code=code))
+            outfilename,
+            output_bucket,
+            f"{output_dir}/{collection}/{outfilename}",
+            ExtraArgs={"ACL": "public-read"},
+        )
+    except Exception as e:
+        print("Failed to copy to S3 bucket")
+        print(e)
 
 
 def download_file(file_uri: str):
@@ -101,6 +95,7 @@ def to_cog(**config):
     x_variable, y_variable = config.get("x_variable"), config.get("y_variable")
     group = config.get("group")
     src = Dataset(filename, "r")
+    print(src.groups)
     if group is None:
         variable = src[variable_name][:]
         nodata_value = variable.fill_value
@@ -179,8 +174,8 @@ def to_cog(**config):
 
 
 def handler(event, context):
-    filename = event['href']
-    collection = event['collection']
+    filename = event["href"]
+    collection = event["collection"]
     to_cog_config = config._sections[collection]
     downloaded_filename = download_file(file_uri=filename)
     to_cog_config["filename"] = downloaded_filename
@@ -189,11 +184,9 @@ def handler(event, context):
 
     if args.upload:
         upload_file(outfilename, collection)
-        print('File uploaded to s3')
+        print("File uploaded to s3")
+
 
 if __name__ == "__main__":
-    sample_event = {
-        "collection": args.collection,
-        "href": args.href
-    }
+    sample_event = {"collection": args.collection, "href": args.href}
     handler(sample_event, {})
