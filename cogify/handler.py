@@ -17,9 +17,8 @@ config = configparser.ConfigParser()
 config.read("example.ini")
 s3 = boto3.client(
     "s3",
-    aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID',
+    aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'),
     aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY'),
-    region_name=REGION_NAME,
 )
 
 # Set COG inputs
@@ -51,11 +50,12 @@ args = parser.parse_args()
 
 
 def upload_file(outfilename, collection):
+    filename = outfilename.split('/tmp/')[1]
     try:
         s3.upload_file(
             outfilename,
             output_bucket,
-            f"{output_dir}/{collection}/{outfilename}",
+            f"{collection}/{filename}",
             ExtraArgs={"ACL": "public-read"},
         )
     except Exception as e:
@@ -95,7 +95,7 @@ def to_cog(**config):
     x_variable, y_variable = config.get("x_variable"), config.get("y_variable")
     group = config.get("group")
     src = Dataset(filename, "r")
-    print(src.groups)
+
     if group is None:
         variable = src[variable_name][:]
         nodata_value = variable.fill_value
