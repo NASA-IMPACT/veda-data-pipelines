@@ -36,10 +36,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--filename",
+    "--href",
     type=str,
     required=True,
-    help='The name of he5 file to download'
+    help='The href of he5 file to download'
 )
 
 def upload_file(outfilename, collection):
@@ -162,8 +162,8 @@ def to_cog(**config):
 
 
 def handler(event, context):
-    filename = event["filename"]
-    collection = event["collection"]
+    filename = event['href']
+    collection = event['collection']
     to_cog_config = config._sections[collection]
     downloaded_filename = download_file(file_uri=filename)
     to_cog_config["filename"] = downloaded_filename
@@ -175,6 +175,6 @@ def handler(event, context):
 if __name__ == "__main__":
     sample_event = {
         "collection": args.collection,
-        "filename": args.filename
+        "href": args.href
     }
     handler(sample_event, {})
