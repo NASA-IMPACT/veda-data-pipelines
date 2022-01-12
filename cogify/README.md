@@ -16,7 +16,7 @@ export EARTHDATA_PASSWORD=XXX
 
 docker build -t cogify .
 # Runs an example in handler.py
-docker run --env EARTHDATA_USERNAME --env EARTHDATA_PASSWORD cogify handler
+docker run --env EARTHDATA_USERNAME --env EARTHDATA_PASSWORD cogify python -m handler
 ```
 
 ## Other supported collections

@@ -10,7 +10,7 @@ class CdkStack(core.Stack):
 
     def __init__(self, scope: core.Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
-        collection = "OMDOAO3e"
+        collection = "OMNO2d"
         version = "003"
         # Discover function
         discover_lambda = aws_lambda.Function(
@@ -78,7 +78,8 @@ class CdkStack(core.Stack):
             targets.SfnStateMachine(simple_state_machine,
             input=events.RuleTargetInput.from_object({
                 "collection": collection,
-                "days": 7,
+                "hours": 48,
+                "version": version,
                 "include": "^.+he5$"
             }))
         )

@@ -33,8 +33,8 @@ def handler(event, context):
 
 if __name__ == '__main__':
     sample_event = {
-        "hours": 6,
-        "collection": "OMDOAO3",
+        "hours": 48,
+        "collection": "OMNO2d",
         "version": "003",
         "include": "^.+he5$"
     }    
