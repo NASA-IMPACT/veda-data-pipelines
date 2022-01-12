@@ -42,18 +42,35 @@ parser.add_argument(
     help='The href of he5 file to download'
 )
 
+parser.add_argument(
+    "--upload",
+    default=False,
+    action='store_true',
+    help='Upload cog to s3 bucket'
+)
+args = parser.parse_args();
+
+
 def upload_file(outfilename, collection):
-    return s3.upload_file(
+    try:
+        s3.upload_file(
         outfilename,
         output_bucket,
         f"{output_dir}/{collection}/{outfilename}",
         Extraevent={"ACL": "public-read"},
     )
+    except S3UploadFailedError as e:
+         raise Exception(msg ='S3 Upload Failed', Code = 0)
+    except ClientError as e:  # handle aws s3 exceptions
+         msg = e.response.get('Error', {}).get('Message', 'Unknown')
+         code = e.response.get('Error', {}).get('Code', 'Unknown')
+         raise Exception(msg = msg, Code = code)
+    except:
+         print('Failed to copy to S3 bucket: {msg} ({code})'.format(msg=msg, code=code))
 
 
 def download_file(file_uri: str):
     filename = f"/tmp/{os.path.basename(file_uri)}"
-    print(filename)
     if "http" in file_uri:
         # This isn't working for GPMIMERG, need to use .netrc
         username = os.environ.get("EARTHDATA_USERNAME")
@@ -169,8 +186,10 @@ def handler(event, context):
     to_cog_config["filename"] = downloaded_filename
     to_cog_config["collection"] = collection
     outfilename = to_cog(**to_cog_config)
-    print(outfilename)
 
+    if args.upload:
+        upload_file(outfilename, collection)
+        print('File uploaded to s3')
 
 if __name__ == "__main__":
     sample_event = {
