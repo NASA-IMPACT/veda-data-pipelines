@@ -12,6 +12,7 @@ import boto3
 from typing import Optional
 import configparser
 import argparse
+import sys
 
 config = configparser.ConfigParser()
 config.read("example.ini")
@@ -56,8 +57,8 @@ def upload_file(outfilename, collection):
             outfilename,
             output_bucket,
             f"{collection}/{filename}",
-            ExtraArgs={"ACL": "public-read"},
         )
+        print('File uploaded to s3')
     except Exception as e:
         print("Failed to copy to S3 bucket")
         print(e)
@@ -181,11 +182,6 @@ def handler(event, context):
     to_cog_config["filename"] = downloaded_filename
     to_cog_config["collection"] = collection
     outfilename = to_cog(**to_cog_config)
-
-    if args.upload:
-        upload_file(outfilename, collection)
-        print("File uploaded to s3")
-
 
 if __name__ == "__main__":
     sample_event = {"collection": args.collection, "href": args.href}
