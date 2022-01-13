@@ -13,10 +13,14 @@ Before running the commands below, make sure you `cd cogify/`.
 ```bash
 export EARTHDATA_USERNAME=xxx
 export EARTHDATA_PASSWORD=XXX
+export AWS_ACCESS_KEY_ID=XXX
+export AWS_SECRET_ACCESS_KEY=XXX
+
 
 docker build -t cogify .
 # Runs an example in handler.py
-docker run --env EARTHDATA_USERNAME --env EARTHDATA_PASSWORD cogify python -m handler
+docker run --env EARTHDATA_USERNAME --env EARTHDATA_PASSWORD --build-arg AWS_ACCESS_KEY_ID --build-arg AWS_SECRET_ACCESS_KEY cogify python -m handler  --collection xxx --href xxx
+
 ```
 
 ## Other supported collections
