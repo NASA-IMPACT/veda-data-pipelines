@@ -46,7 +46,25 @@ class CdkStack(core.Stack):
                 EARTHDATA_PASSWORD=os.environ['EARTHDATA_PASSWORD']
             )
         )
-      
+
+        generate_cog_lambda = aws_lambda.Function(
+            self,
+            f"{id}-{collection}-generate-stac-item-fn",
+            code=aws_lambda.Code.from_asset_image(
+                directory="stac-gen",
+                file="Dockerfile",
+                entrypoint=["/usr/local/bin/python", "-m", "awslambdaric"],
+                cmd=["handler.handler"]
+            ),
+            handler=aws_lambda.Handler.FROM_IMAGE,
+            runtime=aws_lambda.Runtime.FROM_IMAGE,
+            memory_size=4096,
+            timeout=core.Duration.seconds(60),
+            environment=dict(
+                EARTHDATA_USERNAME=os.environ['EARTHDATA_USERNAME'],
+                EARTHDATA_PASSWORD=os.environ['EARTHDATA_PASSWORD']
+            )
+        )
 
         ## State Machine Steps
         start_state = stepfunctions.Pass(self, "StartState")
@@ -58,13 +76,18 @@ class CdkStack(core.Stack):
             self, "Generate COG Task",
             lambda_function=generate_cog_lambda
         )
+        generate_stac_item_task = tasks.LambdaInvoke(
+            self, "Generate STAC Item Task",
+            lambda_function=generate_stac_item
+        )
+
         map_cogs = stepfunctions.Map(self, "Map State",
             max_concurrency=10,
             items_path=stepfunctions.JsonPath.string_at("$.Payload")
         )
         map_cogs.iterator(generate_cog_task)
 
-        definition = start_state.next(discover_task).next(map_cogs)
+        definition = start_state.next(discover_task).next(map_cogs).next(generate_stac_item_task)
 
         simple_state_machine = stepfunctions.StateMachine(self, f"{collection}-COG-StateMachine",
             definition=definition
