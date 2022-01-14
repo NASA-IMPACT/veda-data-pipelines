@@ -93,7 +93,9 @@ class CdkStack(core.Stack):
         )
         map_stac_items.iterator(generate_stac_item_task)
 
-        definition = start_state.next(discover_task).next(map_cogs).next(map_stac_items)
+        processing_tasks = stepFunctions.Parallel(self, 'All jobs').branch(map_cogs).branch(map_stac_items)
+
+        definition = start_state.next(discover_task).next(processing_tasks)
 
         simple_state_machine = stepfunctions.StateMachine(self, f"{collection}-COG-StateMachine",
             definition=definition
