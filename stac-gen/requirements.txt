@@ -1,2 +1,4 @@
 python-cmr
 awslambdaric
+pystac
+shapely
