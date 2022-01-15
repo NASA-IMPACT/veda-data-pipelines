@@ -73,7 +73,7 @@ class CdkStack(core.Stack):
         # Rule to run it
         rule = events.Rule(self, "Schedule Rule",
             schedule=events.Schedule.cron(hour="1"),
-            enables=False
+            enabled=False
         )
         rule.add_target(
             targets.SfnStateMachine(simple_state_machine,
