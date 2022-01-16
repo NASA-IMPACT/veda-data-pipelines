@@ -152,8 +152,9 @@ def to_cog(**config):
         count=1,
         crs=src_crs,
         transform=dst_transform,
-        height=dst_height,
-        width=dst_width,
+        # did this for OMI Ozone, but should this be dst_height and dst_width?
+        height=src_height,
+        width=src_width,
         nodata=nodata_value,
         tiled=True,
         compress="deflate",
