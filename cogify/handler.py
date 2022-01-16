@@ -106,6 +106,8 @@ def to_cog(**config):
     # This may be just what we need for IMERG
     if config["collection"] == "GPM_3IMERGM":
         variable = np.transpose(variable[0])
+    if config["collection"] == "OMDOAO3e":
+        variable = np.flipud(variable)
 
     # This implies a global spatial extent, which is not always the case
     src_height, src_width = variable.shape[0], variable.shape[1]
@@ -150,11 +152,11 @@ def to_cog(**config):
         driver="GTiff",
         dtype=variable.dtype,
         count=1,
-        crs=src_crs,
+        crs=dst_crs,
         transform=dst_transform,
         # did this for OMI Ozone, but should this be dst_height and dst_width?
-        height=src_height,
-        width=src_width,
+        height=dst_height,
+        width=dst_width,
         nodata=nodata_value,
         tiled=True,
         compress="deflate",
