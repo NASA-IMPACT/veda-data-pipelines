@@ -192,10 +192,16 @@ def handler(event, context):
         upload = False
     outfilename = to_cog(**to_cog_config)
 
+    return {
+        "granule_id": event['granule_id'],
+        "cog_filename": outfilename
+    }
+
 if __name__ == "__main__":
     sample_event = {
         "collection": args.collection,
         "href": args.href,
-        "upload": args.upload
+        "upload": args.upload,
+        "granule_id": "G2199243759-GES_DISC"
     }
     handler(sample_event, {})

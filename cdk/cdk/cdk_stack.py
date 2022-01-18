@@ -85,17 +85,11 @@ class CdkStack(core.Stack):
             max_concurrency=10,
             items_path=stepfunctions.JsonPath.string_at("$.Payload")
         )
-        map_cogs.iterator(generate_cog_task)
 
-        map_stac_items = stepfunctions.Map(self, "Map Stac Items",
-            max_concurrency=10,
-            items_path=stepfunctions.JsonPath.string_at("$.Payload")
-        )
-        map_stac_items.iterator(generate_stac_item_task)
+        # Generate a cog and create stac item for each element
+        map_cogs.iterator(generate_cog_task.next(generate_stac_item_task))
 
-        processing_tasks = stepfunctions.Parallel(self, 'All jobs').branch(map_cogs).branch(map_stac_items)
-
-        definition = start_state.next(discover_task).next(processing_tasks)
+        definition = start_state.next(discover_task).next(map_cogs)
 
         simple_state_machine = stepfunctions.StateMachine(self, f"{collection}-COG-StateMachine",
             definition=definition
