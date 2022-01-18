@@ -28,7 +28,12 @@ def handler(event, context):
         for link in granule["links"]:
             if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/data#":
                 href = link["href"]
-                file_obj = {"collection": collection, "href": href, "granule_id": granule['id']}
+                file_obj = {
+                    "collection": collection,
+                    "href": href,
+                    "granule_id": granule["id"],
+                    "upload": True,
+                }
                 if event["include"]:
                     pattern = re.compile(event["include"])
                     matched = pattern.match(href)

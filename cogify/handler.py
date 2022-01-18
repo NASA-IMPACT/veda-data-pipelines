@@ -186,8 +186,16 @@ def handler(event, context):
     downloaded_filename = download_file(file_uri=filename)
     to_cog_config["filename"] = downloaded_filename
     to_cog_config["collection"] = collection
+    if event['upload']:
+        upload = True
+    else:
+        upload = False
     outfilename = to_cog(**to_cog_config)
 
 if __name__ == "__main__":
-    sample_event = {"collection": args.collection, "href": args.href}
+    sample_event = {
+        "collection": args.collection,
+        "href": args.href,
+        "upload": args.upload
+    }
     handler(sample_event, {})
