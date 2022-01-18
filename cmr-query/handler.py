@@ -42,8 +42,8 @@ def handler(event, context):
 
 if __name__ == "__main__":
     sample_event = {
-        "hours": 48,
-        "collection": "OMNO2d",
+        "hours": 240,
+        "collection": "OMDOAO3e",
         "version": "003",
         "include": "^.+he5$",
     }
