@@ -174,6 +174,8 @@ def to_cog(**config):
             output_profile,
             config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
         )
+    if args.upload:
+        upload_file(outfilename, config["collection"])
     return outfilename
 
 
