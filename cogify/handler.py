@@ -59,6 +59,7 @@ def upload_file(outfilename, collection):
             f"{collection}/{filename}",
         )
         print('File uploaded to s3')
+        return f"s3://{output_bucket}/{collection}/{filename}"
     except Exception as e:
         print("Failed to copy to S3 bucket")
         print(e)
@@ -174,9 +175,13 @@ def to_cog(**config):
             output_profile,
             config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
         )
+    return_obj = {
+        "filename":  outfilename,
+    }
     if args.upload:
-        upload_file(outfilename, config["collection"])
-    return outfilename
+        s3location = upload_file(outfilename, config["collection"])
+        return_obj['s3_filename'] = s3location
+    return return_obj
 
 
 def handler(event, context):
@@ -186,16 +191,25 @@ def handler(event, context):
     downloaded_filename = download_file(file_uri=filename)
     to_cog_config["filename"] = downloaded_filename
     to_cog_config["collection"] = collection
+
+
+    return_obj = {
+        "granule_id": event["granule_id"]
+    }
+
     if event['upload']:
         upload = True
     else:
         upload = False
-    outfilename = to_cog(**to_cog_config)
 
-    return {
-        "granule_id": event['granule_id'],
-        "cog_filename": outfilename
-    }
+    output_locations = to_cog(**to_cog_config)
+
+    return_obj["s3_filename"] = output_locations["s3_filename"]
+    return_obj["filename"] = output_locations["filename"]
+
+    print(return_obj)
+    return return_obj
+
 
 if __name__ == "__main__":
     sample_event = {
