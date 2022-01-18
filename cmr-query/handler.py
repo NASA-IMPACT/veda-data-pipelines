@@ -23,7 +23,8 @@ def handler(event, context):
                 href = link['href']
                 file_obj = {
                     "collection": collection,
-                    "href": href
+                    "href": href,
+                    "upload": True
                 }
                 if event['include']:
                     pattern = re.compile(event['include'])
