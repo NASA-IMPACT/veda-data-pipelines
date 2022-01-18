@@ -47,7 +47,7 @@ class CdkStack(core.Stack):
             )
         )
 
-        generate_cog_lambda = aws_lambda.Function(
+        generate_stac_item_lambda = aws_lambda.Function(
             self,
             f"{id}-{collection}-generate-stac-item-fn",
             code=aws_lambda.Code.from_asset_image(
@@ -78,7 +78,7 @@ class CdkStack(core.Stack):
         )
         generate_stac_item_task = tasks.LambdaInvoke(
             self, "Generate STAC Item Task",
-            lambda_function=generate_stac_item
+            lambda_function=generate_stac_item_lambda
         )
 
         map_cogs = stepfunctions.Map(self, "Map State",
@@ -87,13 +87,13 @@ class CdkStack(core.Stack):
         )
         map_cogs.iterator(generate_cog_task)
 
-        map_stac_items = stepfunctions.Map(self, "Map State",
+        map_stac_items = stepfunctions.Map(self, "Map Stac Items",
             max_concurrency=10,
             items_path=stepfunctions.JsonPath.string_at("$.Payload")
         )
         map_stac_items.iterator(generate_stac_item_task)
 
-        processing_tasks = stepFunctions.Parallel(self, 'All jobs').branch(map_cogs).branch(map_stac_items)
+        processing_tasks = stepfunctions.Parallel(self, 'All jobs').branch(map_cogs).branch(map_stac_items)
 
         definition = start_state.next(discover_task).next(processing_tasks)
 
