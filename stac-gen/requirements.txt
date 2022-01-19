@@ -2,3 +2,4 @@ python-cmr
 awslambdaric
 pystac
 shapely
+rio-stac

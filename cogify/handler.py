@@ -36,17 +36,27 @@ parser = argparse.ArgumentParser(description="Cogify handler workflow")
 parser.add_argument(
     "--collection",
     type=str,
-    required=True,
+    default="OMNO2d",
     help="The name of the collection for the he5 data",
 )
 
 parser.add_argument(
-    "--href", type=str, required=True, help="The href of he5 file to download"
+    "--href", type=str,
+    default="https://acdisc.gesdisc.eosdis.nasa.gov/data//Aura_OMI_Level3/OMNO2d.003/2022/OMI-Aura_L3-OMNO2d_2022m0111_v003-2022m0112t181633.he5",
+    help="The href of he5 file to download"
 )
+
+parser.add_argument(
+    "--granule_id", type=str,
+    default="G2199243759-GES_DISC",
+    help="The href of he5 file to download"
+)
+
 
 parser.add_argument(
     "--upload", default=False, action="store_true", help="Upload cog to s3 bucket"
 )
+
 args = parser.parse_args()
 
 
@@ -89,7 +99,7 @@ def download_file(file_uri: str):
     return filename
 
 
-def to_cog(**config):
+def to_cog(upload, **config):
     """HDF5 to COG."""
     # Open existing dataset
     filename = config["filename"]
@@ -178,7 +188,7 @@ def to_cog(**config):
     return_obj = {
         "filename":  outfilename,
     }
-    if args.upload:
+    if upload:
         s3location = upload_file(outfilename, config["collection"])
         return_obj['s3_filename'] = s3location
     return return_obj
@@ -202,7 +212,7 @@ def handler(event, context):
     else:
         upload = False
 
-    output_locations = to_cog(**to_cog_config)
+    output_locations = to_cog(upload=upload, **to_cog_config)
 
     return_obj["s3_filename"] = output_locations["s3_filename"]
     return_obj["filename"] = output_locations["filename"]

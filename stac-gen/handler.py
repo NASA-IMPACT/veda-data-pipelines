@@ -3,6 +3,7 @@ import json
 import pystac
 from pystac.utils import str_to_datetime
 from shapely.geometry import shape
+from rio_stac.stac import bbox_to_geom
 
 
 def try_int(x):
@@ -14,11 +15,15 @@ def try_int(x):
 
 def create_item(entry):
     bbox = [try_int(x) for x in entry["boxes"][0].split(" ")]
+
     dt = str_to_datetime(entry["updated"])
 
     minX, minY, maxX, maxY = bbox
     coordinates = [(minX, minY), (minX, maxY), (maxX, maxY), (maxX, minY), (minX, minY)]
     geom = {"type": "Polygon", "coordinates": [coordinates]}
+
+    geometry = bbox_to_geom(bbox)
+    print(geometry)
 
     granule_id = entry["id"]
 
