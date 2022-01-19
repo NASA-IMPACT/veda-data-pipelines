@@ -19,7 +19,7 @@ export AWS_SECRET_ACCESS_KEY=XXX
 
 docker build -t cogify .
 # Runs an example in handler.py
-docker run --env EARTHDATA_USERNAME --env EARTHDATA_PASSWORD --build-arg AWS_ACCESS_KEY_ID --build-arg AWS_SECRET_ACCESS_KEY cogify python -m handler  --collection xxx --href xxx
+docker run --env EARTHDATA_USERNAME --env EARTHDATA_PASSWORD --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY cogify python -m handler 
 
 ```
 
