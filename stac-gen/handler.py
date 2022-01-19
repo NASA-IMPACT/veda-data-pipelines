@@ -18,12 +18,7 @@ def create_item(entry):
 
     dt = str_to_datetime(entry["updated"])
 
-    minX, minY, maxX, maxY = bbox
-    coordinates = [(minX, minY), (minX, maxY), (maxX, maxY), (maxX, minY), (minX, minY)]
-    geom = {"type": "Polygon", "coordinates": [coordinates]}
-
     geometry = bbox_to_geom(bbox)
-    print(geometry)
 
     granule_id = entry["id"]
 
@@ -33,7 +28,7 @@ def create_item(entry):
     }
 
     item = pystac.Item(
-        id=granule_id, geometry=geom, bbox=bbox, datetime=dt, properties=props
+        id=granule_id, geometry=geometry, bbox=bbox, datetime=dt, properties=props
     )
 
     for link in entry["links"]:
@@ -66,8 +61,6 @@ def handler(event, context):
 
     stac_item = create_item(cmr_json[0])
     print("Created item...")
-
-    return stac_item
 
 
 if __name__ == "__main__":

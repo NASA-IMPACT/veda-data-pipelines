@@ -11,15 +11,14 @@ import requests
 import boto3
 from typing import Optional
 import configparser
-import argparse
 import sys
 
 config = configparser.ConfigParser()
 config.read("example.ini")
 s3 = boto3.client(
     "s3",
-    aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'),
-    aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY'),
+    aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
+    aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"),
 )
 
 # Set COG inputs
@@ -31,48 +30,21 @@ output_profile["blockysize"] = 256
 output_bucket = config["DEFAULT"]["output_bucket"]
 output_dir = config["DEFAULT"]["output_dir"]
 
-parser = argparse.ArgumentParser(description="Cogify handler workflow")
-
-parser.add_argument(
-    "--collection",
-    type=str,
-    default="OMNO2d",
-    help="The name of the collection for the he5 data",
-)
-
-parser.add_argument(
-    "--href", type=str,
-    default="https://acdisc.gesdisc.eosdis.nasa.gov/data//Aura_OMI_Level3/OMNO2d.003/2022/OMI-Aura_L3-OMNO2d_2022m0111_v003-2022m0112t181633.he5",
-    help="The href of he5 file to download"
-)
-
-parser.add_argument(
-    "--granule_id", type=str,
-    default="G2199243759-GES_DISC",
-    help="The href of he5 file to download"
-)
-
-
-parser.add_argument(
-    "--upload", default=False, action="store_true", help="Upload cog to s3 bucket"
-)
-
-args = parser.parse_args()
-
 
 def upload_file(outfilename, collection):
-    filename = outfilename.split('/tmp/')[1]
+    filename = outfilename.split("/tmp/")[1]
     try:
         s3.upload_file(
             outfilename,
             output_bucket,
             f"{collection}/{filename}",
         )
-        print('File uploaded to s3')
+        print("File uploaded to s3")
         return f"s3://{output_bucket}/{collection}/{filename}"
     except Exception as e:
         print("Failed to copy to S3 bucket")
         print(e)
+        return None
 
 
 def download_file(file_uri: str):
@@ -186,11 +158,12 @@ def to_cog(upload, **config):
             config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
         )
     return_obj = {
-        "filename":  outfilename,
+        "filename": outfilename,
     }
     if upload:
         s3location = upload_file(outfilename, config["collection"])
-        return_obj['s3_filename'] = s3location
+        return_obj["s3_filename"] = s3location
+
     return return_obj
 
 
@@ -202,12 +175,9 @@ def handler(event, context):
     to_cog_config["filename"] = downloaded_filename
     to_cog_config["collection"] = collection
 
+    return_obj = {"granule_id": event["granule_id"]}
 
-    return_obj = {
-        "granule_id": event["granule_id"]
-    }
-
-    if event['upload']:
+    if event["upload"]:
         upload = True
     else:
         upload = False
@@ -217,15 +187,15 @@ def handler(event, context):
     return_obj["s3_filename"] = output_locations["s3_filename"]
     return_obj["filename"] = output_locations["filename"]
 
-    print(return_obj)
+    print(f"Returning data: {return_obj}")
     return return_obj
 
 
 if __name__ == "__main__":
     sample_event = {
-        "collection": args.collection,
-        "href": args.href,
-        "upload": args.upload,
-        "granule_id": "G2199243759-GES_DISC"
+        "collection": "OMNO2d",
+        "href": "https://acdisc.gesdisc.eosdis.nasa.gov/data//Aura_OMI_Level3/OMNO2d.003/2022/OMI-Aura_L3-OMNO2d_2022m0111_v003-2022m0112t181633.he5",
+        "upload": True,
+        "granule_id": "G2199243759-GES_DISC",
     }
     handler(sample_event, {})

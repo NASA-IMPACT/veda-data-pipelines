@@ -6,8 +6,8 @@ from aws_cdk import aws_lambda
 from aws_cdk import aws_stepfunctions_tasks as tasks
 import os
 
-class CdkStack(core.Stack):
 
+class CdkStack(core.Stack):
     def __init__(self, scope: core.Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
         collection = "OMDOAO3e"
@@ -20,12 +20,12 @@ class CdkStack(core.Stack):
                 directory="cmr-query",
                 file="Dockerfile",
                 entrypoint=["/usr/local/bin/python", "-m", "awslambdaric"],
-                cmd=["handler.handler"]
+                cmd=["handler.handler"],
             ),
             handler=aws_lambda.Handler.FROM_IMAGE,
             runtime=aws_lambda.Runtime.FROM_IMAGE,
             memory_size=1024,
-            timeout=core.Duration.seconds(30)
+            timeout=core.Duration.seconds(30),
         )
 
         generate_cog_lambda = aws_lambda.Function(
@@ -35,16 +35,16 @@ class CdkStack(core.Stack):
                 directory="cogify",
                 file="Dockerfile",
                 entrypoint=["/usr/local/bin/python", "-m", "awslambdaric"],
-                cmd=["handler.handler"]
+                cmd=["handler.handler"],
             ),
             handler=aws_lambda.Handler.FROM_IMAGE,
             runtime=aws_lambda.Runtime.FROM_IMAGE,
             memory_size=4096,
             timeout=core.Duration.seconds(60),
             environment=dict(
-                EARTHDATA_USERNAME=os.environ['EARTHDATA_USERNAME'],
-                EARTHDATA_PASSWORD=os.environ['EARTHDATA_PASSWORD']
-            )
+                EARTHDATA_USERNAME=os.environ["EARTHDATA_USERNAME"],
+                EARTHDATA_PASSWORD=os.environ["EARTHDATA_PASSWORD"],
+            ),
         )
 
         generate_stac_item_lambda = aws_lambda.Function(
@@ -54,36 +54,38 @@ class CdkStack(core.Stack):
                 directory="stac-gen",
                 file="Dockerfile",
                 entrypoint=["/usr/local/bin/python", "-m", "awslambdaric"],
-                cmd=["handler.handler"]
+                cmd=["handler.handler"],
             ),
             handler=aws_lambda.Handler.FROM_IMAGE,
             runtime=aws_lambda.Runtime.FROM_IMAGE,
             memory_size=4096,
             timeout=core.Duration.seconds(60),
             environment=dict(
-                EARTHDATA_USERNAME=os.environ['EARTHDATA_USERNAME'],
-                EARTHDATA_PASSWORD=os.environ['EARTHDATA_PASSWORD']
-            )
+                EARTHDATA_USERNAME=os.environ["EARTHDATA_USERNAME"],
+                EARTHDATA_PASSWORD=os.environ["EARTHDATA_PASSWORD"],
+            ),
         )
 
         ## State Machine Steps
         start_state = stepfunctions.Pass(self, "StartState")
         discover_task = tasks.LambdaInvoke(
-            self, "Discover Granules Task",
-            lambda_function=discover_lambda
+            self, "Discover Granules Task", lambda_function=discover_lambda
         )
         generate_cog_task = tasks.LambdaInvoke(
-            self, "Generate COG Task",
-            lambda_function=generate_cog_lambda
+            self, "Generate COG Task", lambda_function=generate_cog_lambda
         )
         generate_stac_item_task = tasks.LambdaInvoke(
-            self, "Generate STAC Item Task",
-            lambda_function=generate_stac_item_lambda
+            self,
+            "Generate STAC Item Task",
+            lambda_function=generate_stac_item_lambda,
+            input_path="$.Payload",
         )
 
-        map_cogs = stepfunctions.Map(self, "Map State",
+        map_cogs = stepfunctions.Map(
+            self,
+            "Map State",
             max_concurrency=10,
-            items_path=stepfunctions.JsonPath.string_at("$.Payload")
+            items_path=stepfunctions.JsonPath.string_at("$.Payload"),
         )
 
         # Generate a cog and create stac item for each element
@@ -91,21 +93,24 @@ class CdkStack(core.Stack):
 
         definition = start_state.next(discover_task).next(map_cogs)
 
-        simple_state_machine = stepfunctions.StateMachine(self, f"{collection}-COG-StateMachine",
-            definition=definition
+        simple_state_machine = stepfunctions.StateMachine(
+            self, f"{collection}-COG-StateMachine", definition=definition
         )
 
         # Rule to run it
-        rule = events.Rule(self, "Schedule Rule",
-            schedule=events.Schedule.cron(hour="1"),
-            enabled=True
+        rule = events.Rule(
+            self, "Schedule Rule", schedule=events.Schedule.cron(hour="1"), enabled=True
         )
         rule.add_target(
-            targets.SfnStateMachine(simple_state_machine,
-            input=events.RuleTargetInput.from_object({
-                "collection": collection,
-                "hours": 96,
-                "version": version,
-                "include": "^.+he5$"
-            }))
+            targets.SfnStateMachine(
+                simple_state_machine,
+                input=events.RuleTargetInput.from_object(
+                    {
+                        "collection": collection,
+                        "hours": 96,
+                        "version": version,
+                        "include": "^.+he5$",
+                    }
+                ),
+            )
         )
