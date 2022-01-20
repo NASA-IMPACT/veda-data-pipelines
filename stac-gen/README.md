@@ -1,7 +1,7 @@
 Docker to query CMR for granules associated with a given collection and temporal range.
 
 ```bash
-docker build -t cmr-query .
+docker build -t stac-gen .
 # Currently runs an example for OMI Ozone
-docker run cmr-query python -m handler
+docker run --env USER=<user> --env PASSWORD=<pw> --env HOST=<host> stac-gen python -m handler
 ```

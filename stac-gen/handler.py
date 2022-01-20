@@ -1,17 +1,15 @@
 from cmr import GranuleQuery
+import os
 import json
 import pystac
 from pystac.utils import str_to_datetime
 from shapely.geometry import shape
+from pypgstac import pypgstac
 from rio_stac.stac import bbox_to_geom, create_stac_item
 
-
-def try_int(x):
-    try:
-        return int(x)
-    except ValueError:
-        return x
-
+HOST = os.environ.get('HOST')
+USER = os.environ.get('USER')
+PASSWORD = os.environ.get('PASSWORD')
 
 def create_item(cmr, cog, collection):
 
@@ -21,13 +19,13 @@ def create_item(cmr, cog, collection):
         if ".he5" in link["href"]:
             name = link["title"] if "title" in link else link["href"]
             assets[name] = pystac.Asset(
-                    href=link["href"],
-                    media_type="application/x-hdf5",
-                    roles=["data"],
-                    title="hdf image",
-                )
+                href=link["href"],
+                media_type="application/x-hdf5",
+                roles=["data"],
+                title="hdf image",
+            )
 
-    dt = str_to_datetime(cmr["updated"])
+    dt = str_to_datetime(cmr["time_start"])
 
     try:
         rstac = create_stac_item(
@@ -37,7 +35,7 @@ def create_item(cmr, cog, collection):
             properties=cmr,
             with_proj=True,
             with_raster=True,
-            assets=assets
+            assets=assets,
         )
     except:
         return f"failed {cmr['id']}"
@@ -57,10 +55,21 @@ def handler(event, context):
     concept_id = event["granule_id"]
     cmr_json = api.concept_id(concept_id).get(1)
 
-    cog = event['s3_filename']
-    collection = event['collection']
+    cog = event["s3_filename"]
+    collection = event["collection"]
 
     stac_item = create_item(cmr=cmr_json[0], cog=cog, collection=collection)
+
+    with open("temp.json", "w+") as f:
+        f.write(json.dumps(stac_item.to_dict()))
+
+    pypgstac.load(
+        table="items",
+        file="temp.json",
+        dsn=f"postgres://{USER}:{PASSWORD}@{HOST}/postgis",
+        method="insert_ignore",  # use insert_ignore to avoid overwritting existing items
+    )
+
     print("Created item...")
 
 
