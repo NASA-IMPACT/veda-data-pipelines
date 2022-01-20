@@ -29,16 +29,18 @@ def create_item(cmr, cog, collection):
 
     dt = str_to_datetime(cmr["updated"])
 
-
-    rstac = create_stac_item(
-        source=cog,
-        collection=collection,
-        input_datetime=dt,
-        properties=cmr,
-        with_proj=True,
-        with_raster=True,
-        assets=assets
-    )
+    try:
+        rstac = create_stac_item(
+            source=cog,
+            collection=collection,
+            input_datetime=dt,
+            properties=cmr,
+            with_proj=True,
+            with_raster=True,
+            assets=assets
+        )
+    except:
+        return f"failed {cmr['id']}"
 
     return rstac
 
