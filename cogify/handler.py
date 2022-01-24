@@ -17,8 +17,6 @@ config = configparser.ConfigParser()
 config.read("example.ini")
 s3 = boto3.client(
     "s3",
-    aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
-    aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"),
 )
 
 # Set COG inputs
@@ -175,7 +173,8 @@ def handler(event, context):
     to_cog_config["filename"] = downloaded_filename
     to_cog_config["collection"] = collection
 
-    return_obj = {"granule_id": event["granule_id"]}
+    return_obj = {"granule_id": event["granule_id"],
+                  "collection": event["collection"]}
 
     if event["upload"]:
         upload = True

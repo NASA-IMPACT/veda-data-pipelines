@@ -43,7 +43,7 @@ class CdkStack(core.Stack):
             timeout=core.Duration.seconds(60),
             environment=dict(
                 EARTHDATA_USERNAME=os.environ["EARTHDATA_USERNAME"],
-                EARTHDATA_PASSWORD=os.environ["EARTHDATA_PASSWORD"],
+                EARTHDATA_PASSWORD=os.environ["EARTHDATA_PASSWORD"]
             ),
         )
 
@@ -63,6 +63,9 @@ class CdkStack(core.Stack):
             environment=dict(
                 EARTHDATA_USERNAME=os.environ["EARTHDATA_USERNAME"],
                 EARTHDATA_PASSWORD=os.environ["EARTHDATA_PASSWORD"],
+                STAC_DB_HOST = os.environ['STAC_DB_HOST'],
+                STAC_DB_USER = os.environ['STAC_DB_USER'],
+                STAC_DB_PASSWORD = os.environ['STAC_DB_PASSWORD']
             ),
         )
 
