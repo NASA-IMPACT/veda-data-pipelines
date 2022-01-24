@@ -193,9 +193,9 @@ def handler(event, context):
 
 if __name__ == "__main__":
     sample_event = {
-        "collection": "OMNO2d",
-        "href": "https://acdisc.gesdisc.eosdis.nasa.gov/data//Aura_OMI_Level3/OMNO2d.003/2022/OMI-Aura_L3-OMNO2d_2022m0111_v003-2022m0112t181633.he5",
+        "collection": "OMDOAO3e",
+        "href": "https://acdisc.gesdisc.eosdis.nasa.gov/data//Aura_OMI_Level3/OMDOAO3e.003/2022/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5",
         "upload": True,
-        "granule_id": "G2199243759-GES_DISC",
+        "granule_id":"G2205784904-GES_DISC"
     }
     handler(sample_event, {})
