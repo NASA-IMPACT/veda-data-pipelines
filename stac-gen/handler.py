@@ -7,11 +7,11 @@ from shapely.geometry import shape
 from pypgstac import pypgstac
 from rio_stac.stac import bbox_to_geom, create_stac_item
 
-HOST = os.environ.get('HOST')
-USER = os.environ.get('USER')
-PASSWORD = os.environ.get('PASSWORD')
+STAC_DB_HOST = os.environ.get('STAC_DB_HOST')
+STAC_DB_USER = os.environ.get('STAC_DB_USER')
+STAC_DB_PASSWORD = os.environ.get('STAC_DB_PASSWORD')
 
-def create_item(cmr, cog, collection):
+def create_item(cmr, cog_url, collection):
 
     assets = {}
 
@@ -24,19 +24,28 @@ def create_item(cmr, cog, collection):
                 roles=["data"],
                 title="hdf image",
             )
+    # TODO placeholder
+    assets['cog'] = pystac.Asset(
+        href=cog_url,
+        media_type='image/tiff; application=geotiff',
+        roles=["data"],
+        title="COG"
+    )
+
 
     dt = str_to_datetime(cmr["time_start"])
 
     try:
         rstac = create_stac_item(
-            source=cog,
+            source=cog_url,
             collection=collection,
             input_datetime=dt,
             properties=cmr,
             with_proj=True,
             with_raster=True,
-            assets=assets,
+            assets=assets
         )
+        print(rstac.to_dict())
     except:
         return f"failed {cmr['id']}"
 
@@ -58,7 +67,7 @@ def handler(event, context):
     cog = event["s3_filename"]
     collection = event["collection"]
 
-    stac_item = create_item(cmr=cmr_json[0], cog=cog, collection=collection)
+    stac_item = create_item(cmr=cmr_json[0], cog_url=cog, collection=collection)
 
     with open("temp.json", "w+") as f:
         f.write(json.dumps(stac_item.to_dict()))
@@ -66,12 +75,11 @@ def handler(event, context):
     pypgstac.load(
         table="items",
         file="temp.json",
-        dsn=f"postgres://{USER}:{PASSWORD}@{HOST}/postgis",
+        dsn=f"postgres://{STAC_DB_USER}:{STAC_DB_PASSWORD}@{STAC_DB_HOST}/postgis",
         method="insert_ignore",  # use insert_ignore to avoid overwritting existing items
     )
 
     print("Created item...")
-
 
 if __name__ == "__main__":
     sample_event = {
