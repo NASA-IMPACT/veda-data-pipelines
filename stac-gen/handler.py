@@ -69,17 +69,22 @@ def handler(event, context):
 
     stac_item = create_item(cmr=cmr_json[0], cog_url=cog, collection=collection)
 
+    print("Created item...")
+
     with open("temp.json", "w+") as f:
         f.write(json.dumps(stac_item.to_dict()))
 
-    pypgstac.load(
-        table="items",
-        file="temp.json",
-        dsn=f"postgres://{STAC_DB_USER}:{STAC_DB_PASSWORD}@{STAC_DB_HOST}/postgis",
-        method="insert_ignore",  # use insert_ignore to avoid overwritting existing items
-    )
+    try:
+        pypgstac.load(
+            table="items",
+            file="temp.json",
+            dsn=f"postgres://{STAC_DB_USER}:{STAC_DB_PASSWORD}@{STAC_DB_HOST}/postgis",
+            method="insert_ignore",  # use insert_ignore to avoid overwritting existing items
+        )
+        print('Inserted to database')
+    except Exception as e:
+        print(e)
 
-    print("Created item...")
 
 if __name__ == "__main__":
     sample_event = {
