@@ -46,10 +46,11 @@ def create_item(cmr, cog_url, collection):
             assets=assets
         )
         print(rstac.to_dict())
+        print("Created item...")
     except Exception as e:
         print (e)
         return f"failed {cmr['id']}"
-    print(rstac.to_dict())
+
     return rstac
 
 
@@ -57,6 +58,7 @@ def handler(event, context):
     """
     Lambda handler for STAC Collection Item generation
     """
+
     api = GranuleQuery()
 
     # Granule Id and concept Id refer to the same thing
@@ -70,14 +72,16 @@ def handler(event, context):
 
     stac_item = create_item(cmr=cmr_json[0], cog_url=cog, collection=collection)
 
-    print(stac_item)
-    print("Created item...")
 
-    stac_dict = stac_item.to_dict()
+    try:
+        stac_dict = stac_item.to_dict()
+    except Exception as e:
+        print(e)
+        return
 
     with open("/tmp/temp.json", "w+") as f:
         f.write(json.dumps(stac_dict))
-    print(f"postgres://{STAC_DB_USER}:{STAC_DB_PASSWORD}@{STAC_DB_HOST}/postgis")
+
     try:
         pypgstac.load(
             table="items",
