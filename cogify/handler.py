@@ -11,15 +11,12 @@ import requests
 import boto3
 from typing import Optional
 import configparser
-import argparse
 import sys
 
 config = configparser.ConfigParser()
 config.read("example.ini")
 s3 = boto3.client(
     "s3",
-    aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'),
-    aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY'),
 )
 
 # Set COG inputs
@@ -31,37 +28,21 @@ output_profile["blockysize"] = 256
 output_bucket = config["DEFAULT"]["output_bucket"]
 output_dir = config["DEFAULT"]["output_dir"]
 
-parser = argparse.ArgumentParser(description="Cogify handler workflow")
-
-parser.add_argument(
-    "--collection",
-    type=str,
-    required=True,
-    help="The name of the collection for the he5 data",
-)
-
-parser.add_argument(
-    "--href", type=str, required=True, help="The href of he5 file to download"
-)
-
-parser.add_argument(
-    "--upload", default=False, action="store_true", help="Upload cog to s3 bucket"
-)
-args = parser.parse_args()
-
 
 def upload_file(outfilename, collection):
-    filename = outfilename.split('/tmp/')[1]
+    filename = outfilename.split("/tmp/")[1]
     try:
         s3.upload_file(
             outfilename,
             output_bucket,
             f"{collection}/{filename}",
         )
-        print('File uploaded to s3')
+        print("File uploaded to s3")
+        return f"s3://{output_bucket}/{collection}/{filename}"
     except Exception as e:
         print("Failed to copy to S3 bucket")
         print(e)
+        return None
 
 
 def download_file(file_uri: str):
@@ -88,7 +69,7 @@ def download_file(file_uri: str):
     return filename
 
 
-def to_cog(**config):
+def to_cog(upload, **config):
     """HDF5 to COG."""
     # Open existing dataset
     filename = config["filename"]
@@ -174,9 +155,14 @@ def to_cog(**config):
             output_profile,
             config=dict(GDAL_NUM_THREADS="ALL_CPUS", GDAL_TIFF_OVR_BLOCKSIZE="128"),
         )
-    if args.upload:
-        upload_file(outfilename, config["collection"])
-    return outfilename
+    return_obj = {
+        "filename": outfilename,
+    }
+    if upload:
+        s3location = upload_file(outfilename, config["collection"])
+        return_obj["s3_filename"] = s3location
+
+    return return_obj
 
 
 def handler(event, context):
@@ -186,16 +172,29 @@ def handler(event, context):
     downloaded_filename = download_file(file_uri=filename)
     to_cog_config["filename"] = downloaded_filename
     to_cog_config["collection"] = collection
-    if event['upload']:
+
+    return_obj = {"granule_id": event["granule_id"],
+                  "collection": event["collection"]}
+
+    if event["upload"]:
         upload = True
     else:
         upload = False
-    outfilename = to_cog(**to_cog_config)
+
+    output_locations = to_cog(upload=upload, **to_cog_config)
+
+    return_obj["s3_filename"] = output_locations["s3_filename"]
+    return_obj["filename"] = output_locations["filename"]
+
+    print(f"Returning data: {return_obj}")
+    return return_obj
+
 
 if __name__ == "__main__":
     sample_event = {
-        "collection": args.collection,
-        "href": args.href,
-        "upload": args.upload
+        "collection": "OMDOAO3e",
+        "href": "https://acdisc.gesdisc.eosdis.nasa.gov/data//Aura_OMI_Level3/OMDOAO3e.003/2022/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5",
+        "upload": True,
+        "granule_id":"G2205784904-GES_DISC"
     }
     handler(sample_event, {})
