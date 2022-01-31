@@ -12,3 +12,12 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app (see root of t
  * `cdk docs`        open CDK documentation
 
 Enjoy!
+
+This workflow defines a state machine which links together the Lamda tasks defined in this repo.
+
+CMR Query (Discovery Task) -> Outputs a list of `.he5` files, each one becomes input for a Map iterator.
+
+Map iterator:
+Generate COG -> Write output to S3, pass granule ID and S3 location to Stac Generation task
+STAC Generation -> Create STAC item from COG and post to database, provided to CDK workflow via environment variables (see `../stac-gen/README.txt`)
+

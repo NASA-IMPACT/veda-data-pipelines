@@ -79,6 +79,7 @@ def handler(event, context):
         print(e)
         return
 
+    # pypgstac requires inserting from a file
     with open("/tmp/temp.json", "w+") as f:
         f.write(json.dumps(stac_dict))
 
@@ -92,6 +93,7 @@ def handler(event, context):
         print('Inserted to database')
     except Exception as e:
         print(e)
+
     os.remove("/tmp/temp.json")
 
     return stac_dict
@@ -100,7 +102,6 @@ def handler(event, context):
 if __name__ == "__main__":
     sample_event = {
         "collection": "OMDOAO3e",
-        "href": "https://acdisc.gesdisc.eosdis.nasa.gov/data//Aura_OMI_Level3/OMDOAO3e.003/2022/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5",
         "s3_filename": "s3://climatedashboard-data/OMDOAO3e/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5.tif",
         "granule_id": "G2205784904-GES_DISC",
     }
