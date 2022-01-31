@@ -28,3 +28,6 @@ __pycache__
 *.he5
 sample-files/
 cdk.out/
+
+# Vim
+*.swo
