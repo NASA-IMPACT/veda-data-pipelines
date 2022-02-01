@@ -12,8 +12,6 @@ STAC_DB_USER = os.environ.get('STAC_DB_USER')
 STAC_DB_PASSWORD = os.environ.get('STAC_DB_PASSWORD')
 
 def create_item(properties, assets, datetime, cog_url, collection):
-
-
     try:
         rstac = create_stac_item(
             source=cog_url,
@@ -27,8 +25,8 @@ def create_item(properties, assets, datetime, cog_url, collection):
         print(rstac.to_dict())
         print("Created item...")
     except Exception as e:
-        print (e)
-        return f"failed {cmr['id']}"
+        print(e)
+        return f"failed to produce stac item for {cog_url}"
 
     return rstac
 
@@ -41,7 +39,7 @@ def create_stac_item_with_cmr(event):
     concept_id = event["granule_id"]
     cmr_json = api.concept_id(concept_id).get(1)[0]
 
-    cog = event["s3_filename"]
+    cog_url = event["s3_filename"]
     collection = event["collection"]
 
     assets = {}
@@ -55,7 +53,6 @@ def create_stac_item_with_cmr(event):
                 roles=["data"],
                 title="hdf image",
             )
-    # TODO placeholder
     assets['cog'] = pystac.Asset(
         href=cog_url,
         media_type='image/tiff; application=geotiff',
@@ -67,7 +64,7 @@ def create_stac_item_with_cmr(event):
     dt = str_to_datetime(cmr_json["time_start"])
 
 
-    stac_item = create_item(properties=cmr_json, assets=assets, datetime=dt, cog_url=cog, collection=collection)
+    stac_item = create_item(properties=cmr_json, assets=assets, datetime=dt, cog_url=cog_url, collection=collection)
     return stac_item
 
 def create_stac_item_with_regex(event):
@@ -114,10 +111,10 @@ def handler(event, context):
             else:
                 stac_item = create_stac_item_with_regex(event)
         else:
-            raise Exception("Either granule_id or datetime_regex must be provided".)
+            raise Exception("Either granule_id or datetime_regex must be provided")
     except Exception as e:
-
-
+        print(e)
+        return
 
 
     try:
@@ -149,11 +146,16 @@ if __name__ == "__main__":
         "collection": "OMDOAO3e",
         "href": "https://acdisc.gesdisc.eosdis.nasa.gov/data//Aura_OMI_Level3/OMDOAO3e.003/2022/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5",
         "s3_filename": "s3://climatedashboard-data/OMDOAO3e/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5.tif",
-        #"granule_id": "G2205784904-GES_DISC",
+        "granule_id": "G2205784904-GES_DISC",
+    }
+
+    handler(sample_event, {})
+
+
+"""
         "datetime_regex": {
             "regex": "^(.*?)(_)([0-9][0-9][0-9][0-9])$",
             "target_group": 3
         }
-    }
 
-    handler(sample_event, {})
+"""
