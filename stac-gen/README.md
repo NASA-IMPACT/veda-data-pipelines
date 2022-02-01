@@ -1,4 +1,4 @@
-Docker to query CMR for meta data associated with a granule, create a STAC Item and then insert it into a remote database.
+This docker image queries CMR for metadata associated with a granule, creates a STAC Item and then inserts it into a remote database.
 
 ```bash
 docker build -t stac-gen .
