@@ -92,13 +92,29 @@ def create_stac_item_with_regex(event):
     stac_item = create_item(properties={}, assets=assets, datetime=dt, cog_url=cog_url, collection=collection)
 
     return stac_item
-"""
-Expect either granule id or date time regex. Both should not be privided
-TODO: enhance documentation
-"""
 def handler(event, context):
     """
     Lambda handler for STAC Collection Item generation
+
+    Arguments:
+    event - object with event parameters to be provided in one of 2 formats.
+         Format option 1 (with Granule ID defined to retrieve all  metadata from CMR):
+        {
+           "collection": "OMDOAO3e",
+            "s3_filename": "s3://climatedashboard-data/OMDOAO3e/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5.tif",
+            "granule_id": "G2205784904-GES_DISC",
+        }
+        Format option 2 (with regex provided to parse datetime from the filename:
+        {
+           "collection": "OMDOAO3e",
+            "s3_filename": "s3://climatedashboard-data/OMSO2PCA/OMSO2PCA_LUT_SCD_2005.tif",
+            "datetime_regex": {
+                "regex": "^(.*?)(_)([0-9][0-9][0-9][0-9])(.tif)$",
+                # target_group is the group that contains the datetime string when the original filename is matched on the user provided regex
+                "target_group": 3
+            }
+        }
+
     """
     try:
         if "granule_id" in event:
