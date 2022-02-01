@@ -6,6 +6,7 @@ from pystac.utils import str_to_datetime
 from shapely.geometry import shape
 from pypgstac import pypgstac
 from rio_stac.stac import bbox_to_geom, create_stac_item
+import re
 
 STAC_DB_HOST = os.environ.get('STAC_DB_HOST')
 STAC_DB_USER = os.environ.get('STAC_DB_USER')
@@ -68,7 +69,7 @@ def create_stac_item_with_cmr(event):
     return stac_item
 
 def create_stac_item_with_regex(event):
-    cog = event["s3_filename"]
+    cog_url = event["s3_filename"]
     collection = event["collection"]
     assets = {}
     assets['cog'] = pystac.Asset(
@@ -78,16 +79,17 @@ def create_stac_item_with_regex(event):
         title="COG"
     )
     datetime_regex = re.compile(event['datetime_regex']['regex'])
-    filename = cog.split(f"{collection}/")
     try:
-        match = datetime_regex.match(filename)
+        match = datetime_regex.match(cog_url)
+        print(match)
         datestring = match.group(event['datetime_regex']['target_group'])
-        dt = str_to_Datetime(datestring)
+        print(datestring)
+        dt = str_to_datetime(datestring)
     except Exception as e:
-        print(f"Could not parse date string from filename: {filename}")
-        return
+        print(f"Could not parse date string from filename: {cog_url}")
+        return e
 
-    stac_item = create_item(properties={}, assets=assets, datetime=dt, cog_url=cog, collection=collection)
+    stac_item = create_item(properties={}, assets=assets, datetime=dt, cog_url=cog_url, collection=collection)
 
     return stac_item
 """
@@ -145,17 +147,14 @@ if __name__ == "__main__":
     sample_event = {
         "collection": "OMDOAO3e",
         "href": "https://acdisc.gesdisc.eosdis.nasa.gov/data//Aura_OMI_Level3/OMDOAO3e.003/2022/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5",
-        "s3_filename": "s3://climatedashboard-data/OMDOAO3e/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5.tif",
-        "granule_id": "G2205784904-GES_DISC",
-    }
-
-    handler(sample_event, {})
-
-
-"""
+        #"s3_filename": "s3://climatedashboard-data/OMDOAO3e/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5.tif",
+        "s3_filename": "s3://climatedashboard-data/OMSO2PCA/OMSO2PCA_LUT_SCD_2005.tif",
+        #"granule_id": "G2205784904-GES_DISC",
         "datetime_regex": {
-            "regex": "^(.*?)(_)([0-9][0-9][0-9][0-9])$",
+            "regex": "^(.*?)(_)([0-9][0-9][0-9][0-9])(.tif)$",
             "target_group": 3
         }
 
-"""
+    }
+
+    handler(sample_event, {})
