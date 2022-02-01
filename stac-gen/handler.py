@@ -11,11 +11,42 @@ STAC_DB_HOST = os.environ.get('STAC_DB_HOST')
 STAC_DB_USER = os.environ.get('STAC_DB_USER')
 STAC_DB_PASSWORD = os.environ.get('STAC_DB_PASSWORD')
 
-def create_item(cmr, cog_url, collection):
+def create_item(properties, assets, datetime, cog_url, collection):
+
+
+    try:
+        rstac = create_stac_item(
+            source=cog_url,
+            collection=collection,
+            input_datetime=datetime,
+            properties=properties,
+            with_proj=True,
+            with_raster=True,
+            assets=assets
+        )
+        print(rstac.to_dict())
+        print("Created item...")
+    except Exception as e:
+        print (e)
+        return f"failed {cmr['id']}"
+
+    return rstac
+
+def create_stac_item_with_cmr(event):
+    api = GranuleQuery()
+
+    # Granule Id and concept Id refer to the same thing
+    # Different terminology is used by different sections of CMR
+
+    concept_id = event["granule_id"]
+    cmr_json = api.concept_id(concept_id).get(1)[0]
+
+    cog = event["s3_filename"]
+    collection = event["collection"]
 
     assets = {}
 
-    for link in cmr["links"]:
+    for link in cmr_json["links"]:
         if ".he5" in link["href"]:
             name = link["title"] if "title" in link else link["href"]
             assets[name] = pystac.Asset(
@@ -33,44 +64,60 @@ def create_item(cmr, cog_url, collection):
     )
 
 
-    dt = str_to_datetime(cmr["time_start"])
+    dt = str_to_datetime(cmr_json["time_start"])
 
+
+    stac_item = create_item(properties=cmr_json, assets=assets, datetime=dt, cog_url=cog, collection=collection)
+    return stac_item
+
+def create_stac_item_with_regex(event):
+    cog = event["s3_filename"]
+    collection = event["collection"]
+    assets = {}
+    assets['cog'] = pystac.Asset(
+        href=cog_url,
+        media_type='image/tiff; application=geotiff',
+        roles=["data"],
+        title="COG"
+    )
+    datetime_regex = re.compile(event['datetime_regex']['regex'])
+    filename = cog.split(f"{collection}/")
     try:
-        rstac = create_stac_item(
-            source=cog_url,
-            collection=collection,
-            input_datetime=dt,
-            properties=cmr,
-            with_proj=True,
-            with_raster=True,
-            assets=assets
-        )
-        print(rstac.to_dict())
-        print("Created item...")
+        match = datetime_regex.match(filename)
+        datestring = match.group(event['datetime_regex']['target_group'])
+        dt = str_to_Datetime(datestring)
     except Exception as e:
-        print (e)
-        return f"failed {cmr['id']}"
+        print(f"Could not parse date string from filename: {filename}")
+        return
 
-    return rstac
+    stac_item = create_item(properties={}, assets=assets, datetime=dt, cog_url=cog, collection=collection)
 
-
+    return stac_item
+"""
+Expect either granule id or date time regex. Both should not be privided
+TODO: enhance documentation
+"""
 def handler(event, context):
     """
     Lambda handler for STAC Collection Item generation
     """
+    try:
+        if "granule_id" in event:
+            if "datetime_regex" in event:
+                raise Exception("Either granule_id or datetime_regex must be provided, not both.")
+            else:
+                # Only granule_id provided, look up in CMR
+                stac_item = create_stac_item_with_cmr(event)
+        elif "datetime_regex" in event:
+            if "granule_id" in event:
+                raise Exception("Either granule_id or datetime_regex must be provided, not both.")
+            else:
+                stac_item = create_stac_item_with_regex(event)
+        else:
+            raise Exception("Either granule_id or datetime_regex must be provided".)
+    except Exception as e:
 
-    api = GranuleQuery()
 
-    # Granule Id and concept Id refer to the same thing
-    # Different terminology is used by different sections of CMR
-
-    concept_id = event["granule_id"]
-    cmr_json = api.concept_id(concept_id).get(1)
-
-    cog = event["s3_filename"]
-    collection = event["collection"]
-
-    stac_item = create_item(cmr=cmr_json[0], cog_url=cog, collection=collection)
 
 
     try:
@@ -102,7 +149,11 @@ if __name__ == "__main__":
         "collection": "OMDOAO3e",
         "href": "https://acdisc.gesdisc.eosdis.nasa.gov/data//Aura_OMI_Level3/OMDOAO3e.003/2022/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5",
         "s3_filename": "s3://climatedashboard-data/OMDOAO3e/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5.tif",
-        "granule_id": "G2205784904-GES_DISC",
+        #"granule_id": "G2205784904-GES_DISC",
+        "datetime_regex": {
+            "regex": "^(.*?)(_)([0-9][0-9][0-9][0-9])$",
+            "target_group": 3
+        }
     }
 
     handler(sample_event, {})
