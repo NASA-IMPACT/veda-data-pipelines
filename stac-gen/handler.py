@@ -13,6 +13,9 @@ STAC_DB_USER = os.environ.get('STAC_DB_USER')
 STAC_DB_PASSWORD = os.environ.get('STAC_DB_PASSWORD')
 
 def create_item(properties, assets, datetime, cog_url, collection):
+    """
+    Function to create a stac item from a COG using rio_stac
+    """
     try:
         rstac = create_stac_item(
             source=cog_url,
@@ -32,10 +35,10 @@ def create_item(properties, assets, datetime, cog_url, collection):
     return rstac
 
 def create_stac_item_with_cmr(event):
+    """
+    Function to query CMR for metadata and create a stac item
+    """
     api = GranuleQuery()
-
-    # Granule Id and concept Id refer to the same thing
-    # Different terminology is used by different sections of CMR
 
     concept_id = event["granule_id"]
     cmr_json = api.concept_id(concept_id).get(1)[0]
@@ -69,6 +72,10 @@ def create_stac_item_with_cmr(event):
     return stac_item
 
 def create_stac_item_with_regex(event):
+    """
+    Function to create a STAC item using a user provided regex to parse datetime from a filename
+    """
+
     cog_url = event["s3_filename"]
     collection = event["collection"]
     assets = {}
