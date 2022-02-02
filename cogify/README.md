@@ -40,3 +40,7 @@ python3 ERA5/fetch.py
 # Generate the cog
 python3 run.py -f download.nc -c ERA5
 ```
+
+
+AWS Provisioning:
+To function as a lambda task, the Lambda function's execution role needs to be given permission to AWS PutObject
