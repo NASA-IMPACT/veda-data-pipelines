@@ -161,6 +161,7 @@ def handler(event, context):
         print('Inserted to database')
     except Exception as e:
         print(e)
+        return e
     os.remove("/tmp/temp.json")
 
     return stac_dict

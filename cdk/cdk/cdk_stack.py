@@ -12,8 +12,27 @@ class CdkStack(core.Stack):
         super().__init__(scope, construct_id, **kwargs)
         collection = "OMDOAO3e"
         version = "003"
+
+        bucket = "climatedashboard-data"
+        prefix= "OMSO2PCA/"
         # Discover function
-        discover_lambda = aws_lambda.Function(
+        s3_discover_lambda = aws_lambda.Function(
+            self,
+            f"{id}-{bucket}-discover-fn",
+            code=aws_lambda.Code.from_asset_image(
+                directory="s3-discovery",
+                file="Dockerfile",
+                entrypoint=["/usr/local/bin/python", "-m", "awslambdaric"],
+                cmd=["handler.handler"],
+            ),
+            handler=aws_lambda.Handler.FROM_IMAGE,
+            runtime=aws_lambda.Runtime.FROM_IMAGE,
+            memory_size=1024,
+            timeout=core.Duration.seconds(30),
+        )
+
+        # Discover function
+        cmr_discover_lambda = aws_lambda.Function(
             self,
             f"{id}-{collection}-discover-fn",
             code=aws_lambda.Code.from_asset_image(
@@ -69,36 +88,67 @@ class CdkStack(core.Stack):
             ),
         )
 
-        ## State Machine Steps
-        start_state = stepfunctions.Pass(self, "StartState")
-        discover_task = tasks.LambdaInvoke(
-            self, "Discover Granules Task", lambda_function=discover_lambda
+        ## CMR Workflow State Machine Steps
+        cmr_start_state = stepfunctions.Pass(self, "CMR Discovery StartState")
+        s3_start_state = stepfunctions.Pass(self, "S3 Discovery StartState")
+        cmr_discover_task = tasks.LambdaInvoke(
+            self, "CMR Discover Granules Task", lambda_function=cmr_discover_lambda
         )
+        s3_discover_task = tasks.LambdaInvoke(
+            self, "S3 Discover COGs Task", lambda_function=s3_discover_lambda
+        )
+
         generate_cog_task = tasks.LambdaInvoke(
             self, "Generate COG Task", lambda_function=generate_cog_lambda
         )
-        generate_stac_item_task = tasks.LambdaInvoke(
+        cmr_generate_stac_item_task = tasks.LambdaInvoke(
             self,
-            "Generate STAC Item Task",
+            "CMR Generate STAC Item Task",
             lambda_function=generate_stac_item_lambda,
             input_path="$.Payload",
         )
 
+        s3_generate_stac_item_task = tasks.LambdaInvoke(
+            self,
+            "S3 Generate STAC Item Task",
+            lambda_function=generate_stac_item_lambda
+        )
+
+
         map_cogs = stepfunctions.Map(
             self,
-            "Map State",
+            "Map COG and STAC Item Generator",
             max_concurrency=10,
             items_path=stepfunctions.JsonPath.string_at("$.Payload"),
         )
 
         # Generate a cog and create stac item for each element
-        map_cogs.iterator(generate_cog_task.next(generate_stac_item_task))
+        map_cogs.iterator(generate_cog_task.next(cmr_generate_stac_item_task))
 
-        definition = start_state.next(discover_task).next(map_cogs)
 
-        simple_state_machine = stepfunctions.StateMachine(
-            self, f"{collection}-COG-StateMachine", definition=definition
+        map_stac_items = stepfunctions.Map(
+            self,
+            "Map STAC Item Generator",
+            max_concurrency=10,
+            items_path=stepfunctions.JsonPath.string_at("$.Payload"),
         )
+
+        # Generate a cog and create stac item for each element
+        map_stac_items.iterator(s3_generate_stac_item_task)
+
+
+        cmr_wflow_definition = cmr_start_state.next(cmr_discover_task).next(map_cogs)
+
+        cmr_wflow_state_machine= stepfunctions.StateMachine(
+            self, f"{collection}-COG-StateMachine", definition=cmr_wflow_definition
+        )
+
+        s3_wflow_definition= s3_start_state.next(s3_discover_task).next(map_stac_items)
+
+        s3_wflow_state_machine = stepfunctions.StateMachine(
+            self, f"{bucket}-{prefix}-COG-StateMachine", definition=s3_wflow_definition
+        )
+
 
         # Rule to run it
         rule = events.Rule(
@@ -106,13 +156,26 @@ class CdkStack(core.Stack):
         )
         rule.add_target(
             targets.SfnStateMachine(
-                simple_state_machine,
+                cmr_wflow_state_machine,
                 input=events.RuleTargetInput.from_object(
                     {
                         "collection": collection,
                         "hours": 96,
                         "version": version,
                         "include": "^.+he5$",
+                    }
+                ),
+            )
+        )
+
+        rule.add_target(
+            targets.SfnStateMachine(
+                s3_wflow_state_machine,
+                input=events.RuleTargetInput.from_object(
+                    {
+                        "bucket": bucket,
+                        "prefix": prefix,
+                        "file_type": ".tif"
                     }
                 ),
             )
