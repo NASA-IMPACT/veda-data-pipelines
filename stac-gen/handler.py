@@ -148,6 +148,7 @@ def handler(event, context):
         print(e)
         return
 
+    # pypgstac requires inserting from a file
     with open("/tmp/temp.json", "w+") as f:
         f.write(json.dumps(stac_dict))
 
@@ -178,7 +179,6 @@ if __name__ == "__main__":
             "regex": "^(.*?)(_)([0-9][0-9][0-9][0-9])(.tif)$",
             "target_group": 3
         }
-
     }
 
     handler(sample_event, {})

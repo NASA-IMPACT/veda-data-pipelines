@@ -1,4 +1,4 @@
-Docker to query CMR for granules associated with a given collection and temporal range.
+This docker image queries CMR for metadata associated with a granule, creates a STAC Item and then inserts it into a remote database.
 
 ```bash
 docker build -t stac-gen .
@@ -18,3 +18,12 @@ This Lambda will need to be a part of the same VPC as the STAC_DB_HOST RDS insta
   - Add the target VPC to the Lambda's Configuration (can be done on the Lambda console page > configuration > permissions > execution role)
   - Choose the private subnets created above, and the security group that is relevant to the target database
 - Add `s3:GetObject` permissions to the Lambda's execution role (this Lambda needs to read `tif` files from `S3`
+
+Example Input:
+```
+{
+  "collection": "OMDOAO3e",
+  "s3_filename": "s3://climatedashboard-data/OMDOAO3e/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5.tif",
+  "granule_id": "G2205784904-GES_DISC",
+}
+```
