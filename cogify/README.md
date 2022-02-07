@@ -64,3 +64,9 @@ python3 ERA5/fetch.py
 # Generate the cog
 python3 run.py -f download.nc -c ERA5
 ```
+
+
+AWS Provisioning:
+To function as a lambda task, the Lambda function's execution role needs to be given permission to AWS PutObject.
+
+- Add permission policy to the Lambda's execution role to allow `s3:PutObject`. This is because this Cogify lambda needs to access an S3 Bucket to write COG files
