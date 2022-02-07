@@ -167,16 +167,3 @@ class CdkStack(core.Stack):
                 ),
             )
         )
-
-        rule.add_target(
-            targets.SfnStateMachine(
-                s3_wflow_state_machine,
-                input=events.RuleTargetInput.from_object(
-                    {
-                        "bucket": bucket,
-                        "prefix": prefix,
-                        "file_type": ".tif"
-                    }
-                ),
-            )
-        )
