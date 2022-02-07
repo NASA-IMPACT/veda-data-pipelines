@@ -5,3 +5,23 @@ docker build -t cmr-query .
 # Currently runs an example for OMI Ozone
 docker run cmr-query python -m handler
 ```
+
+Example input:
+```
+{
+    "hours": 240,
+    "collection": "OMDOAO3e",
+    "version": "003",
+    "include": "^.+he5$",
+}
+```
+
+Example output:
+```
+{
+    "collection": xxx,
+    "href": xxx,
+    "granule_id": xxx,
+    "upload": True,
+}
+```
