@@ -95,7 +95,7 @@ class CdkStack(core.Stack):
             self, "CMR Discover Granules Task", lambda_function=cmr_discover_lambda
         )
         s3_discover_task = tasks.LambdaInvoke(
-            self, "S3 Discover COGs Task", lambda_function=s3_discover_lambda
+            self, "S3 Discover Task", lambda_function=s3_discover_lambda
         )
 
         generate_cog_task = tasks.LambdaInvoke(
