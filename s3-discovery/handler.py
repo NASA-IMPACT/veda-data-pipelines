@@ -35,7 +35,7 @@ def handler(event, context):
                 "collection": event["prefix"][:-1],
                 "s3_filename": f's3://{event["bucket"]}/{f}',
                 "datetime_regex": {
-                    "regex": "^(.*?)(_)([0-9][0-9][0-9][0-9])(.tif)$",
+                    "regex": f"^(.*?)(_)([0-9][0-9][0-9][0-9])({event['file_type'})$",
                     "target_group": 3,
                 },
             }
