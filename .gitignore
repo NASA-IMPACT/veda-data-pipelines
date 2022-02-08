@@ -27,3 +27,7 @@ __pycache__
 *.h5
 *.he5
 sample-files/
+cdk.out/
+
+# Vim
+*.swo
