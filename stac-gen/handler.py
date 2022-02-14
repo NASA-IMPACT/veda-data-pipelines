@@ -7,10 +7,12 @@ from shapely.geometry import shape
 from pypgstac import pypgstac
 from rio_stac.stac import bbox_to_geom, create_stac_item
 import re
+import sys
 
-STAC_DB_HOST = os.environ.get('STAC_DB_HOST')
-STAC_DB_USER = os.environ.get('STAC_DB_USER')
-STAC_DB_PASSWORD = os.environ.get('STAC_DB_PASSWORD')
+STAC_DB_HOST = os.environ.get("STAC_DB_HOST")
+STAC_DB_USER = os.environ.get("STAC_DB_USER")
+STAC_DB_PASSWORD = os.environ.get("STAC_DB_PASSWORD")
+
 
 def create_item(properties, assets, datetime, cog_url, collection):
     """
@@ -24,7 +26,7 @@ def create_item(properties, assets, datetime, cog_url, collection):
             properties=properties,
             with_proj=True,
             with_raster=True,
-            assets=assets
+            assets=assets,
         )
         print(rstac.to_dict())
         print("Created item...")
@@ -33,6 +35,7 @@ def create_item(properties, assets, datetime, cog_url, collection):
         return f"failed to produce stac item for {cog_url}"
 
     return rstac
+
 
 def create_stac_item_with_cmr(event):
     """
@@ -57,19 +60,24 @@ def create_stac_item_with_cmr(event):
                 roles=["data"],
                 title="hdf image",
             )
-    assets['cog'] = pystac.Asset(
+    assets["cog"] = pystac.Asset(
         href=cog_url,
-        media_type='image/tiff; application=geotiff',
+        media_type="image/tiff; application=geotiff",
         roles=["data"],
-        title="COG"
+        title="COG",
     )
-
 
     dt = str_to_datetime(cmr_json["time_start"])
 
-
-    stac_item = create_item(properties=cmr_json, assets=assets, datetime=dt, cog_url=cog_url, collection=collection)
+    stac_item = create_item(
+        properties=cmr_json,
+        assets=assets,
+        datetime=dt,
+        cog_url=cog_url,
+        collection=collection,
+    )
     return stac_item
+
 
 def create_stac_item_with_regex(event):
     """
@@ -79,26 +87,36 @@ def create_stac_item_with_regex(event):
     cog_url = event["s3_filename"]
     collection = event["collection"]
     assets = {}
-    assets['cog'] = pystac.Asset(
+    assets["cog"] = pystac.Asset(
         href=cog_url,
-        media_type='image/tiff; application=geotiff',
+        media_type="image/tiff; application=geotiff",
         roles=["data"],
-        title="COG"
+        title="COG",
     )
-    datetime_regex = re.compile(event['datetime_regex']['regex'])
+    datetime_regex = re.compile(event["datetime_regex"]["regex"])
     try:
         match = datetime_regex.match(cog_url)
         print(match)
-        datestring = match.group(event['datetime_regex']['target_group'])
+        elements = [match.group(g) for g in event["datetime_regex"]["target_group"]]
+        print(elements)
+        datestring = "-".join(elements)
         print(datestring)
         dt = str_to_datetime(datestring)
     except Exception as e:
         print(f"Could not parse date string from filename: {cog_url}")
         return e
 
-    stac_item = create_item(properties={}, assets=assets, datetime=dt, cog_url=cog_url, collection=collection)
+    stac_item = create_item(
+        properties={},
+        assets=assets,
+        datetime=dt,
+        cog_url=cog_url,
+        collection=collection,
+    )
 
     return stac_item
+
+
 def handler(event, context):
     """
     Lambda handler for STAC Collection Item generation
@@ -126,13 +144,17 @@ def handler(event, context):
     try:
         if "granule_id" in event:
             if "datetime_regex" in event:
-                raise Exception("Either granule_id or datetime_regex must be provided, not both.")
+                raise Exception(
+                    "Either granule_id or datetime_regex must be provided, not both."
+                )
             else:
                 # Only granule_id provided, look up in CMR
                 stac_item = create_stac_item_with_cmr(event)
         elif "datetime_regex" in event:
             if "granule_id" in event:
-                raise Exception("Either granule_id or datetime_regex must be provided, not both.")
+                raise Exception(
+                    "Either granule_id or datetime_regex must be provided, not both."
+                )
             else:
                 stac_item = create_stac_item_with_regex(event)
         else:
@@ -140,7 +162,6 @@ def handler(event, context):
     except Exception as e:
         print(e)
         return
-
 
     try:
         stac_dict = stac_item.to_dict()
@@ -159,7 +180,7 @@ def handler(event, context):
             dsn=f"postgres://{STAC_DB_USER}:{STAC_DB_PASSWORD}@{STAC_DB_HOST}/postgis",
             method="insert_ignore",  # use insert_ignore to avoid overwritting existing items
         )
-        print('Inserted to database')
+        print("Inserted to database")
     except Exception as e:
         print(e)
         return e
@@ -170,15 +191,14 @@ def handler(event, context):
 
 if __name__ == "__main__":
     sample_event = {
-        "collection": "OMDOAO3e",
-        "href": "https://acdisc.gesdisc.eosdis.nasa.gov/data//Aura_OMI_Level3/OMDOAO3e.003/2022/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5",
-        #"s3_filename": "s3://climatedashboard-data/OMDOAO3e/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5.tif",
-        #"granule_id": "G2205784904-GES_DISC",
-        "s3_filename": "s3://climatedashboard-data/OMSO2PCA/OMSO2PCA_LUT_SCD_2005.tif",
+        "collection": "BMHD_Ida",
+        # "s3_filename": "s3://climatedashboard-data/OMDOAO3e/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5.tif",
+        # "granule_id": "G2205784904-GES_DISC",
+        "s3_filename": "s3://climatedashboard-data/BMHD_Ida/BMHD_Ida2021_NO_LA_August9.tif",
         "datetime_regex": {
-            "regex": "^(.*?)(_)([0-9][0-9][0-9][0-9])(.tif)$",
-            "target_group": 3
-        }
+            "regex": "^(.*?BMHD_Ida)([0-9][0-9][0-9][0-9])(.*?)(_)([A-Za-z]+[0-9])(.tif)$",
+            "target_group": [2, 5],
+        },
     }
 
     handler(sample_event, {})

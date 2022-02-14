@@ -1,4 +1,4 @@
-from aws_cdk import (core, aws_iam)
+from aws_cdk import core, aws_iam
 import aws_cdk.aws_stepfunctions as stepfunctions
 import aws_cdk.aws_events as events
 import aws_cdk.aws_events_targets as targets
@@ -14,9 +14,9 @@ class CdkStack(core.Stack):
         version = "003"
 
         bucket = "climatedashboard-data"
-        prefix= "OMSO2PCA/"
+        prefix = "OMSO2PCA/"
         # Discover function
-        s3_discover_lambda = aws_lambda.Function(
+        s3_discovery_lambda = aws_lambda.Function(
             self,
             f"{id}-{bucket}-discover-fn",
             code=aws_lambda.Code.from_asset_image(
@@ -34,20 +34,15 @@ class CdkStack(core.Stack):
         s3_discovery_lambda.add_to_role_policy(
             aws_iam.PolicyStatement(
                 actions=["s3:GetObject"],
-                resources=[
-                    f"arn:aws:s3:::{bucket}/*"
-                ],
+                resources=[f"arn:aws:s3:::{bucket}/*"],
             )
         )
         s3_discovery_lambda.add_to_role_policy(
             aws_iam.PolicyStatement(
                 actions=["s3:ListBucket"],
-                resources=[
-                    f"arn:aws:s3:::{bucket}"
-                ],
+                resources=[f"arn:aws:s3:::{bucket}"],
             )
         )
-
 
         # Discover function
         cmr_discover_lambda = aws_lambda.Function(
@@ -80,7 +75,7 @@ class CdkStack(core.Stack):
             timeout=core.Duration.seconds(60),
             environment=dict(
                 EARTHDATA_USERNAME=os.environ["EARTHDATA_USERNAME"],
-                EARTHDATA_PASSWORD=os.environ["EARTHDATA_PASSWORD"]
+                EARTHDATA_PASSWORD=os.environ["EARTHDATA_PASSWORD"],
             ),
         )
 
@@ -100,9 +95,9 @@ class CdkStack(core.Stack):
             environment=dict(
                 EARTHDATA_USERNAME=os.environ["EARTHDATA_USERNAME"],
                 EARTHDATA_PASSWORD=os.environ["EARTHDATA_PASSWORD"],
-                STAC_DB_HOST = os.environ['STAC_DB_HOST'],
-                STAC_DB_USER = os.environ['STAC_DB_USER'],
-                STAC_DB_PASSWORD = os.environ['STAC_DB_PASSWORD']
+                STAC_DB_HOST=os.environ["STAC_DB_HOST"],
+                STAC_DB_USER=os.environ["STAC_DB_USER"],
+                STAC_DB_PASSWORD=os.environ["STAC_DB_PASSWORD"],
             ),
         )
 
@@ -113,7 +108,7 @@ class CdkStack(core.Stack):
             self, "CMR Discover Granules Task", lambda_function=cmr_discover_lambda
         )
         s3_discover_task = tasks.LambdaInvoke(
-            self, "S3 Discover Task", lambda_function=s3_discover_lambda
+            self, "S3 Discover Task", lambda_function=s3_discovery_lambda
         )
 
         generate_cog_task = tasks.LambdaInvoke(
@@ -129,9 +124,8 @@ class CdkStack(core.Stack):
         s3_generate_stac_item_task = tasks.LambdaInvoke(
             self,
             "S3 Generate STAC Item Task",
-            lambda_function=generate_stac_item_lambda
+            lambda_function=generate_stac_item_lambda,
         )
-
 
         map_cogs = stepfunctions.Map(
             self,
@@ -143,7 +137,6 @@ class CdkStack(core.Stack):
         # Generate a cog and create stac item for each element
         map_cogs.iterator(generate_cog_task.next(cmr_generate_stac_item_task))
 
-
         map_stac_items = stepfunctions.Map(
             self,
             "Map STAC Item Generator",
@@ -154,19 +147,17 @@ class CdkStack(core.Stack):
         # Generate a cog and create stac item for each element
         map_stac_items.iterator(s3_generate_stac_item_task)
 
-
         cmr_wflow_definition = cmr_start_state.next(cmr_discover_task).next(map_cogs)
 
-        cmr_wflow_state_machine= stepfunctions.StateMachine(
+        cmr_wflow_state_machine = stepfunctions.StateMachine(
             self, f"{collection}-COG-StateMachine", definition=cmr_wflow_definition
         )
 
-        s3_wflow_definition= s3_start_state.next(s3_discover_task).next(map_stac_items)
+        s3_wflow_definition = s3_start_state.next(s3_discover_task).next(map_stac_items)
 
         s3_wflow_state_machine = stepfunctions.StateMachine(
             self, f"{bucket}-{prefix}-COG-StateMachine", definition=s3_wflow_definition
         )
-
 
         # Rule to run it
         rule = events.Rule(
