@@ -1,4 +1,4 @@
-from aws_cdk import core
+from aws_cdk import (core, aws_iam)
 import aws_cdk.aws_stepfunctions as stepfunctions
 import aws_cdk.aws_events as events
 import aws_cdk.aws_events_targets as targets
@@ -30,6 +30,24 @@ class CdkStack(core.Stack):
             memory_size=1024,
             timeout=core.Duration.seconds(30),
         )
+
+        s3_discovery_lambda.add_to_role_policy(
+            aws_iam.PolicyStatement(
+                actions=["s3:GetObject"],
+                resources=[
+                    f"arn:aws:s3:::{bucket}/*"
+                ],
+            )
+        )
+        s3_discovery_lambda.add_to_role_policy(
+            aws_iam.PolicyStatement(
+                actions=["s3:ListBucket"],
+                resources=[
+                    f"arn:aws:s3:::{bucket}"
+                ],
+            )
+        )
+
 
         # Discover function
         cmr_discover_lambda = aws_lambda.Function(
