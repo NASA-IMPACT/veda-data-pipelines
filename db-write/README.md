@@ -1,29 +1,90 @@
-This docker image queries CMR for metadata associated with a granule, creates a STAC Item and then inserts it into a remote database.
+This handler expects a STAC_ITEM to be provided in JSON format. It then performs an insert operation into a remote database, specified via command line.
 
 ```bash
-docker build -t stac-gen .
+docker build -t db-write.
 # Currently runs an example for OMI Ozone
-docker run --env STAC_DB_USER=<user> --env STAC_DB_PASSWORD=<pw> --env STAC_DB_HOST=<host> stac-gen python -m handler
+docker run --env STAC_DB_USER=<user> --env STAC_DB_PASSWORD=<pw> --env STAC_DB_HOST=<host> db-write python -m handler
 ```
-
-AWS Provisioning
-This Lambda will need to be a part of the same VPC as the STAC_DB_HOST RDS instance which hosts the Postgres database. It also needs access to the Internet to query CMR. Add the following permissions / settings to the Lambda.
-- Follow steps [here](https://aws.amazon.com/premiumsupport/knowledge-center/internet-access-lambda-function/) using the VPC that contains the target database. It includes the following steps:
-  - Create public and private subnets within target VPC
-  - Create an Internet Gateway (enables internet access)
-  - Create a NAT gateway
-  - Create route tables for private / public subnets (important note: Lambda will randomly select any of the subnets it is associated with at runtime)
-  - Add `AWSLambdaVPCAccessExecutionRole` to the Lambda's Execution Rolea
-  - Add `ec2:DescribeNetworkInterfaces` and `ec2:CreateNetworkInterface` to the Lambda execution role (not explained in above guide)
-  - Add the target VPC to the Lambda's Configuration (can be done on the Lambda console page > configuration > permissions > execution role)
-  - Choose the private subnets created above, and the security group that is relevant to the target database
-- Add `s3:GetObject` permissions to the Lambda's execution role (this Lambda needs to read `tif` files from `S3`
 
 Example Input:
 ```
 {
-  "collection": "OMDOAO3e",
-  "s3_filename": "s3://climatedashboard-data/OMDOAO3e/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5.tif",
-  "granule_id": "G2205784904-GES_DISC",
+    "stac_item": {
+        "assets": {
+            "cog": {
+                "href": "s3://climatedashboard-data/BMHD_Ida/BMHD_Ida2021_NO_LA_August9.tif",
+                "roles": ["data"],
+                "title": "COG",
+                "type": "image/tiff; application=geotiff",
+            }
+        },
+        "bbox": [
+            -90.3037818244749,
+            29.804659612978707,
+            -89.87578181971654,
+            30.07177072705947,
+        ],
+        "collection": "BMHD_Ida",
+        "geometry": {
+            "coordinates": [
+                [
+                    [-90.3037818244749, 30.07177072705947],
+                    [-90.3037818244749, 29.804659612978707],
+                    [-89.87578181971654, 29.804659612978707],
+                    [-89.87578181971654, 30.07177072705947],
+                    [-90.3037818244749, 30.07177072705947],
+                ]
+            ],
+            "type": "Polygon",
+        },
+        "id": "BMHD_Ida2021_NO_LA_August9.tif",
+        "links": [
+            {
+                "href": "BMHD_Ida",
+                "rel": "collection",
+                "type": "application/json",
+            }
+        ],
+        "properties": {
+            "datetime": "2021-08-09T00:00:00Z",
+            "proj:bbox": [
+                -90.3037818244749,
+                29.804659612978707,
+                -89.87578181971654,
+                30.07177072705947,
+            ],
+            "proj:epsg": 4326,
+            "proj:geometry": {
+                "coordinates": [
+                    [
+                        [-90.3037818244749, 30.07177072705947],
+                        [-90.3037818244749, 29.804659612978707],
+                        [-89.87578181971654, 29.804659612978707],
+                        [-89.87578181971654, 30.07177072705947],
+                        [-90.3037818244749, 30.07177072705947],
+                    ]
+                ],
+                "type": "Polygon",
+            },
+            "proj:shape": [2404, 3852],
+            "proj:transform": [
+                0.00011111111234640703,
+                0.0,
+                -90.3037818244749,
+                0.0,
+                -0.00011111111234640703,
+                30.07177072705947,
+                0.0,
+                0.0,
+                1.0,
+            ],
+        },
+        "stac_extensions": [
+            "https://stac-extensions.github.io/projection/v1.0.0/schema.json",
+            "https://stac-extensions.github.io/raster/v1.1.0/schema.json",
+        ],
+        "stac_version": "1.0.0",
+        "type": "Feature",
+    }
 }
 ```
