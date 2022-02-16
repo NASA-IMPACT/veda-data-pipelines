@@ -188,6 +188,13 @@ class CdkStack(core.Stack):
             lambda_function=generate_stac_item_lambda,
         )
 
+        cmr_db_write_task = tasks.LambdaInvoke(
+            self,
+            "CMR DB Write task",
+            lambda_function=db_write_lambda,
+            input_path="$.Payload",
+        )
+
         s3_db_write_task = tasks.LambdaInvoke(
             self,
             "S3 DB Write task",
@@ -203,7 +210,7 @@ class CdkStack(core.Stack):
         )
 
         # Generate a cog and create stac item for each element
-        map_cogs.iterator(generate_cog_task.next(cmr_generate_stac_item_task))
+        map_cogs.iterator(generate_cog_task.next(cmr_generate_stac_item_task).next(cmr_db_write_task))
 
         map_stac_items = stepfunctions.Map(
             self,
