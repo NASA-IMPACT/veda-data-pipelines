@@ -4,7 +4,10 @@ import aws_cdk.aws_events as events
 import aws_cdk.aws_events_targets as targets
 from aws_cdk import aws_lambda
 from aws_cdk import aws_stepfunctions_tasks as tasks
+from aws_cdk import aws_ec2 as ec2
 import os
+
+VPC_ID = "vpc-0b0926e1be04a588d"
 
 
 class CdkStack(core.Stack):
@@ -15,6 +18,34 @@ class CdkStack(core.Stack):
 
         bucket = "climatedashboard-data"
         prefix = "OMSO2PCA/"
+
+        ec2_network_access = aws_iam.PolicyStatement(
+            actions=[
+                "ec2:CreateNetworkInterface",
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:DeleteNetworkInterface",
+            ],
+            resources=["*"],
+        )
+        full_bucket_access = aws_iam.PolicyStatement(
+            actions=["s3:GetObject"],
+            resources=[f"arn:aws:s3:::{bucket}/*"],
+        )
+
+        database_vpc = ec2.Vpc.from_lookup(self, f"{id}-vpc", vpc_id=VPC_ID)
+
+        lambda_function_security_group = ec2.SecurityGroup(
+            self,
+            f"{id}-lambda-sg",
+            vpc=database_vpc,
+            description="fromCloudOptimizedPipelineLambdas",
+        )
+
+        lambda_function_security_group.add_egress_rule(
+            ec2.Peer.any_ipv4(),
+            connection=ec2.Port(protocol=ec2.Protocol("ALL"), string_representation=""),
+            description="Allow lambda security group all outbound access",
+        )
         # Discover function
         s3_discovery_lambda = aws_lambda.Function(
             self,
@@ -79,6 +110,13 @@ class CdkStack(core.Stack):
             ),
         )
 
+        generate_cog_lambda.add_to_role_policy(
+            aws_iam.PolicyStatement(
+                actions=["s3:PutObject"],
+                resources=[f"arn:aws:s3:::{bucket}/*"],
+            )
+        )
+
         generate_stac_item_lambda = aws_lambda.Function(
             self,
             f"{id}-{collection}-generate-stac-item-fn",
@@ -95,11 +133,34 @@ class CdkStack(core.Stack):
             environment=dict(
                 EARTHDATA_USERNAME=os.environ["EARTHDATA_USERNAME"],
                 EARTHDATA_PASSWORD=os.environ["EARTHDATA_PASSWORD"],
+            ),
+        )
+        generate_stac_item_lambda.add_to_role_policy(full_bucket_access)
+
+        db_write_lambda = aws_lambda.Function(
+            self,
+            f"{id}-{collection}-write-db-fn",
+            code=aws_lambda.Code.from_asset_image(
+                directory="db-write",
+                file="Dockerfile",
+                entrypoint=["/usr/local/bin/python", "-m", "awslambdaric"],
+                cmd=["handler.handler"],
+            ),
+            handler=aws_lambda.Handler.FROM_IMAGE,
+            runtime=aws_lambda.Runtime.FROM_IMAGE,
+            memory_size=4096,
+            timeout=core.Duration.seconds(60),
+            environment=dict(
                 STAC_DB_HOST=os.environ["STAC_DB_HOST"],
                 STAC_DB_USER=os.environ["STAC_DB_USER"],
                 STAC_DB_PASSWORD=os.environ["STAC_DB_PASSWORD"],
             ),
+            vpc=database_vpc,
+            vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE),
+            security_groups=[lambda_function_security_group],
         )
+
+        db_write_lambda.add_to_role_policy(ec2_network_access)
 
         ## CMR Workflow State Machine Steps
         cmr_start_state = stepfunctions.Pass(self, "CMR Discovery StartState")
@@ -127,6 +188,13 @@ class CdkStack(core.Stack):
             lambda_function=generate_stac_item_lambda,
         )
 
+        s3_db_write_task = tasks.LambdaInvoke(
+            self,
+            "S3 DB Write task",
+            lambda_function=db_write_lambda,
+            input_path="$.Payload",
+        )
+
         map_cogs = stepfunctions.Map(
             self,
             "Map COG and STAC Item Generator",
@@ -145,7 +213,7 @@ class CdkStack(core.Stack):
         )
 
         # Generate a cog and create stac item for each element
-        map_stac_items.iterator(s3_generate_stac_item_task)
+        map_stac_items.iterator(s3_generate_stac_item_task.next(s3_db_write_task))
 
         cmr_wflow_definition = cmr_start_state.next(cmr_discover_task).next(map_cogs)
 
