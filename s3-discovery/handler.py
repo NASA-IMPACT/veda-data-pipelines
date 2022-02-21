@@ -37,7 +37,6 @@ def handler(event, context):
                 "datetime_regex": event["datetime_regex"],
             }
         )
-    print(files_objs)
 
     return files_objs
 
