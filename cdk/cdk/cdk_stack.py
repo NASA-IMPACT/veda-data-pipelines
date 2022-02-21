@@ -1,3 +1,5 @@
+import os
+import config
 from aws_cdk import core, aws_iam
 import aws_cdk.aws_stepfunctions as stepfunctions
 import aws_cdk.aws_events as events
@@ -5,9 +7,6 @@ import aws_cdk.aws_events_targets as targets
 from aws_cdk import aws_lambda
 from aws_cdk import aws_stepfunctions_tasks as tasks
 from aws_cdk import aws_ec2 as ec2
-import os
-
-VPC_ID = "vpc-0b0926e1be04a588d"
 
 
 class CdkStack(core.Stack):
@@ -32,7 +31,7 @@ class CdkStack(core.Stack):
             resources=[f"arn:aws:s3:::{bucket}/*"],
         )
 
-        database_vpc = ec2.Vpc.from_lookup(self, f"{id}-vpc", vpc_id=VPC_ID)
+        database_vpc = ec2.Vpc.from_lookup(self, f"{id}-vpc", vpc_id=config.VPC_ID)
 
         lambda_function_security_group = ec2.SecurityGroup(
             self,
@@ -210,7 +209,9 @@ class CdkStack(core.Stack):
         )
 
         # Generate a cog and create stac item for each element
-        map_cogs.iterator(generate_cog_task.next(cmr_generate_stac_item_task).next(cmr_db_write_task))
+        map_cogs.iterator(
+            generate_cog_task.next(cmr_generate_stac_item_task).next(cmr_db_write_task)
+        )
 
         map_stac_items = stepfunctions.Map(
             self,
