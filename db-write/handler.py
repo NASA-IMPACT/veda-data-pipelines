@@ -20,14 +20,15 @@ def handler(event, context):
     Receive a STAC item in JSON format, connect to database and insert it
     """
     stac_json = event["stac_item"]
+    stac_temp_file_name = "/tmp/stac_item.json"
     # pypgstac requires inserting from a file
-    with open("/tmp/temp.json", "w+") as f:
+    with open(stac_temp_file_name, "w+") as f:
         f.write(json.dumps(stac_json))
 
     try:
         pypgstac.load(
             table="items",
-            file="/tmp/temp.json",
+            file=stac_temp_file_name,
             dsn=f"postgres://{STAC_DB_USER}:{STAC_DB_PASSWORD}@{STAC_DB_HOST}/postgis",
             method="insert_ignore",  # use insert_ignore to avoid overwritting existing items
         )
@@ -35,9 +36,10 @@ def handler(event, context):
     except Exception as e:
         print(e)
         return e
-    os.remove("/tmp/temp.json")
+    os.remove(stac_temp_file_name)
 
     return stac_json
+
 
 if __name__ == "__main__":
     sample_event = (
