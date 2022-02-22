@@ -8,20 +8,29 @@ from aws_cdk import aws_lambda
 from aws_cdk import aws_stepfunctions_tasks as tasks
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_sqs as sqs
-from aws_cdk import aws_s3
+from aws_cdk import aws_s3 as s3
+from aws_cdk.aws_lambda_event_sources import SqsEventSource
 
 
 class CdkStack(core.Stack):
     def __init__(self, scope: core.Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
+        stack_name = construct_id
+
         collection = "OMDOAO3e"
         version = "003"
 
         bucket = "climatedashboard-data"
         prefix = "OMSO2PCA/"
 
-        s3bucket = aws_s3.Bucket.from_bucket_name(
+        s3bucket = s3.Bucket.from_bucket_name(
             self, f"{id}-bucket", bucket_name=bucket
+        )
+
+        ndjson_bucket= s3.Bucket(
+            self,
+            "NDJsonBucket",
+            bucket_name=f"{stack_name}-ndjson",
         )
 
         ec2_network_access = aws_iam.PolicyStatement(
@@ -174,6 +183,62 @@ class CdkStack(core.Stack):
                 resources=[ingest_queue.queue_arn],
             )
         )
+
+        build_ndjson_role = aws_iam.Role(
+            self,
+            "BuildNDJsonRole",
+            assumed_by=aws_iam.ServicePrincipal("lambda.amazonaws.com"),
+            managed_policies=[
+                aws_iam.ManagedPolicy.from_aws_managed_policy_name(
+                    "service-role/AWSLambdaBasicExecutionRole"
+                )
+            ],
+        )
+        ingest_queue.grant_consume_messages(build_ndjson_role)
+        ndjson_bucket.grant_write(build_ndjson_role)
+
+        ndjson_dlq = sqs.Queue(
+            self,
+            "NDJsonDLQ",
+            retention_period=core.Duration.days(14),
+        )
+        ndjson_queue = sqs.Queue(
+            self,
+            "NDJsonQueue",
+            visibility_timeout=core.Duration.minutes(15),
+            dead_letter_queue=sqs.DeadLetterQueue(
+                max_receive_count=3,
+                queue=ndjson_dlq,
+            ),
+        )
+        ndjson_queue.grant_send_messages(build_ndjson_role)
+        build_ndjson_function = aws_lambda.Function(
+            self,
+            f"{id}-build_ndjson-lambda",
+            role=build_ndjson_role,
+            code=aws_lambda.Code.from_asset_image(
+                directory="ndjson-builder",
+                file="Dockerfile",
+                entrypoint=["/usr/local/bin/python", "-m", "awslambdaric"],
+                cmd=["handler.handler"],
+            ),
+            handler=aws_lambda.Handler.FROM_IMAGE,
+            runtime=aws_lambda.Runtime.FROM_IMAGE,
+            memory_size=8000,
+            timeout=core.Duration.minutes(10),
+            environment={
+                "BUCKET": ndjson_bucket.bucket_name,
+                "QUEUE_URL": ndjson_queue.queue_url,
+            },
+        )
+
+        item_event_source = SqsEventSource(
+            ingest_queue,
+            batch_size=100,
+            max_batching_window=core.Duration.seconds(300),
+            report_batch_item_failures=True,
+        )
+        build_ndjson_function.add_event_source(item_event_source)
 
 
         generate_cog_lambda = aws_lambda.Function(
