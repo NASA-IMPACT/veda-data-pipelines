@@ -166,6 +166,7 @@ class CdkStack(core.Stack):
             runtime=aws_lambda.Runtime.FROM_IMAGE,
             memory_size=1024,
             timeout=core.Duration.seconds(30),
+            environment={"QUEUE_URL": self.item_queue.queue_url},
         )
 
         generate_cog_lambda = aws_lambda.Function(
