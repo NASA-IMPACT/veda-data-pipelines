@@ -27,6 +27,6 @@ export PGPASSWORD=$(echo $SECRETS | jq -r .password)
 ### Step 3: Insert a given collection
 
 ```bash
-export COLLECTION_NAME=HLSS30_v002
+export COLLECTION_NAME=HLSS30.002
 psql -h $DB_HOST -U $DB_USERNAME -d $DB_NAME -f collections-sql/${COLLECTION_NAME}.sql
 ```
