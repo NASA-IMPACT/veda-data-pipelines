@@ -10,6 +10,10 @@ import boto3
 from aws_lambda_powertools.utilities.data_classes import SQSEvent, event_source
 from smart_open import open
 
+"""
+Code adapted from https://github.com/NASA-IMPACT/cmr-pgstac-loader/blob/main/cdk/app.py @author @sharkinsspatial
+"""
+
 
 def update_href(asset: Dict):
     """Update asset protected http endpoint to the internal S3 endpoint"""
