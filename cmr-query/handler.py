@@ -2,6 +2,8 @@ import datetime as dt
 from cmr import GranuleQuery
 import re
 import json
+import os
+
 
 
 def handler(event, context):
@@ -54,6 +56,7 @@ if __name__ == "__main__":
         "hours": 4,
         "end_date": "2021-07-29 05:00:00",
         "mode": "stac",
+
         "collection": "HLSS30",
         "version": "2.0",
         "include": "^.+he5$",
