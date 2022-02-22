@@ -1,0 +1,5 @@
+smart-open
+aiohttp
+aws-lambda-powertools
+pydantic[email]
+boto3
