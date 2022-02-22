@@ -3,7 +3,7 @@ INSERT INTO pgstac.collections (content) VALUES('{
    "type": "Collection",
    "links":[
    ],
-   "title":"HLSS30_v002",
+   "title":"HLSS30.002",
    "extent":{
       "spatial":{
          "bbox":[
