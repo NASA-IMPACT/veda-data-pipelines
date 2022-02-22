@@ -1,5 +1,5 @@
 INSERT INTO pgstac.collections (content) VALUES('{
-   "id": "HLSS30_v002",
+   "id": "HLSS30.002",
    "type": "Collection",
    "links":[
    ],
