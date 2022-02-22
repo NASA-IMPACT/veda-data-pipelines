@@ -13,8 +13,7 @@ RUN find . -type d -a -name 'tests' -print0 | xargs -0 rm -rf
 RUN echo "Remove lambda python packages"
 RUN rm -rdf ./stack
 RUN rm -rdf ./docutils*
-RUN rm -rdf /asset/boto3* /asset/botocore*
 
-COPY /lambdas/pgstac-loader/handler.py /asset/handler.py
+COPY /lambdas/pgstac-loader/handler.py handler.py
 
 CMD ["echo", "hello world"]
