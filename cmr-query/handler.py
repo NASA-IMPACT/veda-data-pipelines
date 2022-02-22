@@ -11,7 +11,7 @@ def handler(event, context):
     collection = event["collection"]
     version = event["version"]
 
-    enddate = dt.datetime.now()
+    enddate = dt.datetime.strptime(event['end_date'], '%Y-%m-%d %H:%M:%S') if 'end_date' in event else dt.datetime.now()
     startdate = enddate - dt.timedelta(hours=event["hours"])
     print(f"Querying for {collection} granules from {startdate} to {enddate}")
 
@@ -26,30 +26,36 @@ def handler(event, context):
     urls = []
     for granule in granules:
         for link in granule["links"]:
-            if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/data#":
-                href = link["href"]
-                file_obj = {
-                    "collection": collection,
-                    "href": href,
-                    "granule_id": granule["id"],
-                    "upload": True,
-                }
-                if event["include"]:
-                    pattern = re.compile(event["include"])
-                    matched = pattern.match(href)
-                    if matched:
+            if event['mode'] == 'stac':
+                if link["href"][-9:] == "stac.json" and link["href"][0:5] == "https":
+                    urls.append(link)
+            else:
+                if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/data#":
+                    href = link["href"]
+                    file_obj = {
+                        "collection": collection,
+                        "href": href,
+                        "granule_id": granule["id"],
+                        "upload": True,
+                    }
+                    if event["include"]:
+                        pattern = re.compile(event["include"])
+                        matched = pattern.match(href)
+                        if matched:
+                            urls.append(file_obj)
+                    else:
                         urls.append(file_obj)
-                else:
-                    urls.append(file_obj)
     print(f"Returning urls {urls}")
     return urls
 
 
 if __name__ == "__main__":
     sample_event = {
-        "hours": 240,
-        "collection": "OMDOAO3e",
-        "version": "003",
+        "hours": 4,
+        "end_date": "2021-07-29 05:00:00",
+        "mode": "stac",
+        "collection": "HLSS30",
+        "version": "2.0",
         "include": "^.+he5$",
     }
     handler(sample_event, {})
