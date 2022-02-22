@@ -166,8 +166,15 @@ class CdkStack(core.Stack):
             runtime=aws_lambda.Runtime.FROM_IMAGE,
             memory_size=1024,
             timeout=core.Duration.seconds(30),
-            environment={"QUEUE_URL": self.item_queue.queue_url},
+            environment={"QUEUE_URL": ingest_queue.queue_url},
         )
+        cmr_discover_lambda.add_to_role_policy(
+            aws_iam.PolicyStatement(
+                actions=["sqs:SendMessage"],
+                resources=[ingest_queue.queue_arn],
+            )
+        )
+
 
         generate_cog_lambda = aws_lambda.Function(
             self,
