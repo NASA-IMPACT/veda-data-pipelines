@@ -8,10 +8,34 @@ from pypgstac import pypgstac
 from rio_stac.stac import bbox_to_geom, create_stac_item
 import re
 import sys
+import boto3
+
+s3 = boto3.client(
+    "s3",
+)
+
 
 STAC_DB_HOST = os.environ.get("STAC_DB_HOST")
 STAC_DB_USER = os.environ.get("STAC_DB_USER")
 STAC_DB_PASSWORD = os.environ.get("STAC_DB_PASSWORD")
+
+def upload_stac_to_s3(stac_dict):
+    fname = stac_dict['id'].split('.tif')[0]
+    with open(f"/tmp/{fname}.json", "w+") as f:
+        f.write(json.dumps(stac_dict))
+    try:
+        s3.upload_file(
+            f"/tmp/{fname}.json",
+            "climatedashboard-data",
+            f"stac_item_queue/{fname}.json",
+        )
+        print("File uploaded to s3")
+        return f"s3://{output_bucket}/{collection}/{filename}"
+    except Exception as e:
+        print("Failed to copy to S3 bucket")
+        print(e)
+        return None
+
 
 
 def create_item(properties, assets, datetime, cog_url, collection):
@@ -28,7 +52,6 @@ def create_item(properties, assets, datetime, cog_url, collection):
             with_raster=True,
             assets=assets,
         )
-        print(rstac.to_dict())
         print("Created item...")
     except Exception as e:
         print(e)
@@ -165,10 +188,10 @@ def handler(event, context):
 
     try:
         stac_dict = stac_item.to_dict()
+        upload_stac_to_s3(stac_dict)
     except Exception as e:
         print(e)
-        return
-    print(json.dumps(stac_dict, indent=4, sort_keys=True))
+        return e
 
     return {
         "stac_item": stac_dict
