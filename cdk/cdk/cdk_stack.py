@@ -56,7 +56,7 @@ class CdkStack(core.Stack):
                 queue=sqs.Queue(self, id=f"{id}-cog-ingest-dead-letter-queue"),
             ),
             # same visibility as lambda function
-            visibility_timeout=core.Duration.seconds(30),
+            visibility_timeout=core.Duration.seconds(60),
         )
         ingest_queue.add_to_resource_policy(
             aws_iam.PolicyStatement(
@@ -174,7 +174,7 @@ class CdkStack(core.Stack):
             handler=aws_lambda.Handler.FROM_IMAGE,
             runtime=aws_lambda.Runtime.FROM_IMAGE,
             memory_size=1024,
-            timeout=core.Duration.seconds(30),
+            timeout=core.Duration.minutes(15),
             environment={"QUEUE_URL": ingest_queue.queue_url},
         )
         cmr_discover_lambda.add_to_role_policy(
