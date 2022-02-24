@@ -27,7 +27,7 @@ class CdkStack(core.Stack):
             self, f"{id}-bucket", bucket_name=bucket
         )
 
-        ndjson_bucket= s3.Bucket(
+        ndjson_bucket= s3.Bucket.from_bucket_name(
             self,
             "NDJsonBucket",
             bucket_name=f"{stack_name}-ndjson",
@@ -56,7 +56,7 @@ class CdkStack(core.Stack):
                 queue=sqs.Queue(self, id=f"{id}-cog-ingest-dead-letter-queue"),
             ),
             # same visibility as lambda function
-            visibility_timeout=core.Duration.seconds(60),
+            visibility_timeout=core.Duration.minutes(15),
         )
         ingest_queue.add_to_resource_policy(
             aws_iam.PolicyStatement(
