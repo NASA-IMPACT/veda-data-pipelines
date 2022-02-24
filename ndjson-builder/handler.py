@@ -49,8 +49,11 @@ def handler(event: SQSEvent, context):
     QUEUE_URL = os.environ["QUEUE_URL"]
 
     item_urls = [record.body for record in event.records]
+    print(event)
+    print(item_urls)
     file_id = str(uuid4())
     key = f"s3://{BUCKET}/{file_id}.ndjson"
+    print(key)
     asyncio.run(stream_stac_items(item_urls, key))
     client = boto3.client("sqs")
     client.send_message(QueueUrl=QUEUE_URL, MessageBody=key)
