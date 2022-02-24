@@ -21,3 +21,7 @@ Current tasks included are:
  * `cdk docs`        open CDK documentation
 
 Enjoy!
+
+## Config
+
+`VPC_ID` must be defined as an environment variable to deploy this stack. This is the ID of the VPC which contains the target database
