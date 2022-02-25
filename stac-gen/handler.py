@@ -19,8 +19,9 @@ STAC_DB_HOST = os.environ.get("STAC_DB_HOST")
 STAC_DB_USER = os.environ.get("STAC_DB_USER")
 STAC_DB_PASSWORD = os.environ.get("STAC_DB_PASSWORD")
 
+
 def upload_stac_to_s3(stac_dict):
-    fname = stac_dict['id'].split('.tif')[0]
+    fname = stac_dict["id"].split(".tif")[0]
     with open(f"/tmp/{fname}.json", "w+") as f:
         f.write(json.dumps(stac_dict))
     try:
@@ -35,7 +36,6 @@ def upload_stac_to_s3(stac_dict):
         print("Failed to copy to S3 bucket")
         print(e)
         return None
-
 
 
 def create_item(properties, assets, datetime, cog_url, collection):
@@ -170,7 +170,6 @@ def handler(event, context):
                 raise Exception(
                     "Either granule_id or datetime_regex must be provided, not both."
                 )
-            else:
                 # Only granule_id provided, look up in CMR
                 stac_item = create_stac_item_with_cmr(event)
         elif "datetime_regex" in event:
@@ -179,6 +178,11 @@ def handler(event, context):
                     "Either granule_id or datetime_regex must be provided, not both."
                 )
             else:
+                if not isinstance(event["datetime_regex"]["target_group"], list):
+                    raise Exception(
+                        "Target group should be specified as a a list. Ex. [3]"
+                    )
+
                 stac_item = create_stac_item_with_regex(event)
         else:
             raise Exception("Either granule_id or datetime_regex must be provided")
@@ -193,9 +197,7 @@ def handler(event, context):
         print(e)
         return e
 
-    return {
-        "stac_item": stac_dict
-    }
+    return {"stac_item": stac_dict}
 
 
 if __name__ == "__main__":
@@ -206,7 +208,7 @@ if __name__ == "__main__":
         "s3_filename": "s3://climatedashboard-data/BMHD_Ida/BMHD_Ida2021_NO_LA_August9.tif",
         "datetime_regex": {
             "regex": "^(.*?BMHD_Ida)([0-9][0-9][0-9][0-9])(.*?)(_)([A-Za-z]+[0-9])(.tif)$",
-            "target_group": [2, 5],
+            "target_group": [3],
         },
     }
 

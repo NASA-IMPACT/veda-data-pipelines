@@ -50,7 +50,7 @@ if __name__ == "__main__":
         "file_type": ".tif",
         "datetime_regex": {
             "regex": f"^(.*?)(_)([0-9][0-9][0-9][0-9])(.tif)$",
-            "target_group": 3
+            "target_group": [3]
         }
     }
 
