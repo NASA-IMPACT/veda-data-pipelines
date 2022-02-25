@@ -4,4 +4,3 @@ pystac
 shapely
 rio-stac
 pypgstac
-boto3
