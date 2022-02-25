@@ -67,59 +67,6 @@ class CdkStack(core.Stack):
             )
         )
 
-        # In CDK, imported buckets implement IBucketProxy, as opposed to
-        # Bucket, which makes it impossible to add an event notification
-        # to an imported bucket using the `bucket.add_event_notification()`
-        # function. Instead we have to implement the bucket notification
-        # as a custome S3 SDK call
-        custom_s3_sdk_call = custom_resources.AwsSdkCall(
-            service="S3",
-            action="putBucketNotificationConfiguration",
-            parameters={
-                "Bucket": s3bucket.bucket_name,
-                "NotificationConfiguration": {
-                    "QueueConfigurations": [
-                        {
-                            "Events": ["s3:ObjectCreated:*"],
-                            "Filter": {
-                                "Key": {
-                                    "FilterRules": [
-                                        {"Name": "prefix", "Value": "stac_item_queue"},
-                                        {"Name": "suffix", "Value": ".json"},
-                                    ]
-                                }
-                            },
-                            "QueueArn": ingest_queue.queue_arn,
-                        }
-                    ]
-                },
-            },
-            physical_resource_id=custom_resources.PhysicalResourceId.of(
-                f"s3-notification-resource-cog-pipelines-1"
-            ),
-        )
-
-        custom_notification = custom_resources.AwsCustomResource(
-            self,
-            "s3-sqs-notification",
-            policy=custom_resources.AwsCustomResourcePolicy.from_statements(
-                [
-                    aws_iam.PolicyStatement(
-                        effect=aws_iam.Effect.ALLOW,
-                        resources=[s3bucket.bucket_arn],
-                        actions=["s3:PutBucketNotification"],
-                    )
-                ]
-            ),
-            on_create=custom_s3_sdk_call,
-            on_update=custom_s3_sdk_call,
-            # TODO: does `on_delete` needs to be implemented as well?
-            # See: https://stackoverflow.com/a/61641858/15462881
-        )
-
-        custom_notification.node.add_dependency(s3bucket)
-        custom_notification.node.add_dependency(ingest_queue)
-
         lambda_function_security_group = ec2.SecurityGroup(
             self,
             f"{id}-lambda-sg",
