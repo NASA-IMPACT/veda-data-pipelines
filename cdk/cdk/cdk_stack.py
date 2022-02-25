@@ -200,7 +200,7 @@ class CdkStack(core.Stack):
             self,
             f"{id}-{bucket}-discover-fn",
             code=aws_lambda.Code.from_asset_image(
-                directory="s3-discovery",
+                directory="lambdas/s3-discovery",
                 file="Dockerfile",
                 entrypoint=["/usr/local/bin/python", "-m", "awslambdaric"],
                 cmd=["handler.handler"],
@@ -229,7 +229,7 @@ class CdkStack(core.Stack):
             self,
             f"{id}-{collection}-discover-fn",
             code=aws_lambda.Code.from_asset_image(
-                directory="cmr-query",
+                directory="lambdas/cmr-query",
                 file="Dockerfile",
                 entrypoint=["/usr/local/bin/python", "-m", "awslambdaric"],
                 cmd=["handler.handler"],
@@ -244,7 +244,7 @@ class CdkStack(core.Stack):
             self,
             f"{id}-{collection}-generate-cog-fn",
             code=aws_lambda.Code.from_asset_image(
-                directory="cogify",
+                directory="lambdas/cogify",
                 file="Dockerfile",
                 entrypoint=["/usr/local/bin/python", "-m", "awslambdaric"],
                 cmd=["handler.handler"],
@@ -270,7 +270,7 @@ class CdkStack(core.Stack):
             self,
             f"{id}-{collection}-generate-stac-item-fn",
             code=aws_lambda.Code.from_asset_image(
-                directory="stac-gen",
+                directory="lambdas/stac-gen",
                 file="Dockerfile",
                 entrypoint=["/usr/local/bin/python", "-m", "awslambdaric"],
                 cmd=["handler.handler"],
