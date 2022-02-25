@@ -2,7 +2,7 @@
 
 This document describes how to insert STAC collection metadata from a local machine into the `delta-backend-dev` database. Using cloud resources may be useful in the future for a tested and repeatable process, but a local process is all that is required at this time.
 
-These steps assumeg you can connect to the PG STAC database instance from another AWS resource (such as an EC2) or security group inbound rule permitting access for your IP.
+These steps assume you can connect to the PG STAC database instance from another AWS resource (such as an EC2) or security group inbound rule permitting access for your IP.
 
 ### Step 1: Generate collection sql
 
