@@ -31,7 +31,7 @@ def upload_stac_to_s3(stac_dict):
             f"stac_item_queue/{fname}.json",
         )
         print("File uploaded to s3")
-        return f"s3://{output_bucket}/{collection}/{filename}"
+        return f"s3://climatedashboard-data/stac_item_queue/{fname}.json"
     except Exception as e:
         print("Failed to copy to S3 bucket")
         print(e)
@@ -101,6 +101,18 @@ def create_stac_item_with_cmr(event):
     )
     return stac_item
 
+def get_maria_dt(url):
+    if 'Stage0' in url:
+        return str_to_datetime('2017-09-19')
+    elif 'Stage1' in url:
+        return str_to_datetime('2017-11-20')
+    elif 'Stage2' in url:
+        return str_to_datetime('2018-01-20')
+    elif 'Stage3' in url:
+        return str_to_datetime('2018-03-20')
+    else:
+        raise Exception('Invalid')
+
 
 def create_stac_item_with_regex(event):
     """
@@ -116,6 +128,10 @@ def create_stac_item_with_regex(event):
         roles=["data"],
         title="COG",
     )
+
+    dt = get_maria_dt(cog_url)
+
+    """
     datetime_regex = re.compile(event["datetime_regex"]["regex"])
     try:
         match = datetime_regex.match(cog_url)
@@ -128,6 +144,7 @@ def create_stac_item_with_regex(event):
     except Exception as e:
         print(f"Could not parse date string from filename: {cog_url}")
         return e
+    """
 
     stac_item = create_item(
         properties={},
@@ -192,6 +209,7 @@ def handler(event, context):
 
     try:
         stac_dict = stac_item.to_dict()
+        print(stac_dict)
         upload_stac_to_s3(stac_dict)
     except Exception as e:
         print(e)
@@ -202,10 +220,10 @@ def handler(event, context):
 
 if __name__ == "__main__":
     sample_event = {
-        "collection": "BMHD_Ida",
+        "collection": "BMHD_Maria_Stages",
         # "s3_filename": "s3://climatedashboard-data/OMDOAO3e/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5.tif",
         # "granule_id": "G2205784904-GES_DISC",
-        "s3_filename": "s3://climatedashboard-data/BMHD_Ida/BMHD_Ida2021_NO_LA_August9.tif",
+        "s3_filename": "s3://climatedashboard-data/BMHD_Maria_Stages/Maria_Stage3.tif",
         "datetime_regex": {
             "regex": "^(.*?BMHD_Ida)([0-9][0-9][0-9][0-9])(.*?)(_)([A-Za-z]+[0-9])(.tif)$",
             "target_group": [3],

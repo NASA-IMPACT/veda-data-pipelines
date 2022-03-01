@@ -59,7 +59,6 @@ def handler(event, context):
 
 
 if __name__ == "__main__":
-    sample_event = {
         "hours": 4,
         "end_date": "2021-07-29 05:00:00",
         "mode": "stac",
