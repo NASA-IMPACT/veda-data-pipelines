@@ -212,6 +212,14 @@ class CdkStack(core.Stack):
 
         pgstac_secret.grant_read(pgstac_loader_role)
 
+        pgstac_security_group = ec2.SecurityGroup(
+            self,
+            f"{id}-pgstac-loader-sg",
+            vpc=database_vpc,
+            description="fromCogPipelinesPgstacLoader",
+        )
+
+
         pgstac_loader = aws_lambda.Function(
             self,
             f"{id}-pgstac-loader-lambda",
@@ -230,7 +238,13 @@ class CdkStack(core.Stack):
                 "SECRET_NAME": SECRET_NAME,
             },
             reserved_concurrent_executions=3,
+            vpc=database_vpc,
+            vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE),
+            security_groups=[lambda_function_security_group],
+
         )
+        pgstac_loader.add_to_role_policy(ec2_network_access)
+
         ndjson_event_source = SqsEventSource(
             ndjson_queue,
             batch_size=5,
