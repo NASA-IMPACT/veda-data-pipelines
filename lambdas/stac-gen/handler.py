@@ -129,9 +129,7 @@ def create_stac_item_with_regex(event):
         title="COG",
     )
 
-    dt = get_maria_dt(cog_url)
 
-    """
     datetime_regex = re.compile(event["datetime_regex"]["regex"])
     try:
         match = datetime_regex.match(cog_url)
@@ -144,7 +142,6 @@ def create_stac_item_with_regex(event):
     except Exception as e:
         print(f"Could not parse date string from filename: {cog_url}")
         return e
-    """
 
     stac_item = create_item(
         properties={},
