@@ -30,14 +30,14 @@ def update_href(asset: Dict):
     return updated_asset
 
 
-async def stream_stac_items(urls: List[str], key: str):
+async def stream_stac_items(urls: List[str], key: str, collection: str = None):
     with open(key, "w") as f:
         async with aiohttp.ClientSession() as session:
             for url in urls:
                 async with session.get(url) as resp:
                     stac = await resp.json()
                     url_components = urlparse(url)
-                    stac["collection"] = url_components.path.split("/")[2].split(".")[0]
+                    stac["collection"] = collection if collection else url_components.path.split("/")[2].split(".")[0]
                     assets = {k: update_href(v) for (k, v) in stac["assets"].items()}
                     stac["assets"] = assets
                     f.write(json.dumps(stac) + "\n")
@@ -47,13 +47,13 @@ async def stream_stac_items(urls: List[str], key: str):
 def handler(event: SQSEvent, context):
     BUCKET = os.environ["BUCKET"]
     QUEUE_URL = os.environ["QUEUE_URL"]
-
+    COLLECTION = os.environ["COLLECTION"]
     item_urls = [record.body for record in event.records]
     print(event)
     print(item_urls)
     file_id = str(uuid4())
     key = f"s3://{BUCKET}/{file_id}.ndjson"
     print(key)
-    asyncio.run(stream_stac_items(item_urls, key))
+    asyncio.run(stream_stac_items(item_urls, key, COLLECTION))
     client = boto3.client("sqs")
     client.send_message(QueueUrl=QUEUE_URL, MessageBody=key)
