@@ -178,6 +178,7 @@ class CdkStack(core.Stack):
             environment={
                 "BUCKET": ndjson_bucket.bucket_name,
                 "QUEUE_URL": ndjson_queue.queue_url,
+                "COLLECTION": "HLSS30.002"
             },
         )
 
