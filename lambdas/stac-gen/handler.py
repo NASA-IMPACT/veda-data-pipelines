@@ -103,15 +103,24 @@ def create_stac_item_with_cmr(event):
 
 def get_maria_dt(url):
     if 'Stage0' in url:
-        return str_to_datetime('2017-09-19')
+        start = str_to_datetime('2017-07-21')
+        end = str_to_datetime('2017-09-19')
     elif 'Stage1' in url:
-        return str_to_datetime('2017-11-20')
+        start = str_to_datetime('2017-09-20')
+        end = str_to_datetime('2017-11-20')
     elif 'Stage2' in url:
-        return str_to_datetime('2018-01-20')
+        start = str_to_datetime('2017-11-21')
+        end = str_to_datetime('2018-01-20')
     elif 'Stage3' in url:
-        return str_to_datetime('2018-03-20')
+        start = str_to_datetime('2018-01-21')
+        end = str_to_datetime('2018-03-20')
     else:
         raise Exception('Invalid')
+
+    return {
+        "start_datetime": start.strftime('%Y-%m-%dT%H:%M:%SZ'),
+        "end_datetime": end.strftime('%Y-%m-%dT%H:%M:%SZ')
+    }
 
 
 def create_stac_item_with_regex(event):
@@ -129,7 +138,8 @@ def create_stac_item_with_regex(event):
         title="COG",
     )
 
-    dt = get_maria_dt(cog_url)
+    properties = get_maria_dt(cog_url)
+    dt = None
 
     """
     datetime_regex = re.compile(event["datetime_regex"]["regex"])
@@ -147,7 +157,7 @@ def create_stac_item_with_regex(event):
     """
 
     stac_item = create_item(
-        properties={},
+        properties=properties,
         assets=assets,
         datetime=dt,
         cog_url=cog_url,
@@ -220,7 +230,7 @@ def handler(event, context):
 
 if __name__ == "__main__":
     sample_event = {
-        "collection": "BMHD_Maria_Stages",
+        "collection": "BMHD_Maria",
         # "s3_filename": "s3://climatedashboard-data/OMDOAO3e/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5.tif",
         # "granule_id": "G2205784904-GES_DISC",
         "s3_filename": "s3://climatedashboard-data/BMHD_Maria_Stages/Maria_Stage3.tif",
