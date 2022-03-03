@@ -101,19 +101,6 @@ def create_stac_item_with_cmr(event):
     )
     return stac_item
 
-def get_maria_dt(url):
-    if 'Stage0' in url:
-        return str_to_datetime('2017-09-19')
-    elif 'Stage1' in url:
-        return str_to_datetime('2017-11-20')
-    elif 'Stage2' in url:
-        return str_to_datetime('2018-01-20')
-    elif 'Stage3' in url:
-        return str_to_datetime('2018-03-20')
-    else:
-        raise Exception('Invalid')
-
-
 def create_stac_item_with_regex(event):
     """
     Function to create a STAC item using a user provided regex to parse datetime from a filename
