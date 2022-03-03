@@ -1,2 +1,3 @@
 python-cmr
 awslambdaric
+boto3
