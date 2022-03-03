@@ -1,6 +1,6 @@
 ## ndJSON builder function
 
-Handler for a lambda which receieves messages from a SQSEventSource trigger containing a list of STAC JSON files. Fetch and build the data into ndJSON files, upload to 
+Code intended to receive messages from an SQSEventSource trigger. Those messages contain a list of STAC JSON file URLs. Fetches and build the data into ndJSON files, upload to 
 
 ```bash
 docker build -t ndjson-builder .

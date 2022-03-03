@@ -122,7 +122,6 @@ def get_maria_dt(url):
         "end_datetime": end.strftime('%Y-%m-%dT%H:%M:%SZ')
     }
 
-
 def create_stac_item_with_regex(event):
     """
     Function to create a STAC item using a user provided regex to parse datetime from a filename
@@ -138,10 +137,15 @@ def create_stac_item_with_regex(event):
         title="COG",
     )
 
+
+    # For maria
     properties = get_maria_dt(cog_url)
     dt = None
+    
 
+    # For non maria
     """
+    properties = {}
     datetime_regex = re.compile(event["datetime_regex"]["regex"])
     try:
         match = datetime_regex.match(cog_url)
