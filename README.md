@@ -1,6 +1,6 @@
 # cloud-optimized-data-pipelines
 
-This repo houses docker images and deployment code for producing cloud-optimized
+This repo houses function code and deployment code for producing cloud-optimized
 data products and STAC metadata for interfaces such as https://github.com/NASA-IMPACT/delta-ui.
 
 # Requirements
@@ -23,14 +23,14 @@ pip install aws-cdk.aws-stepfunctions-tasks
 
 ## Dataset Worfklows
 
-The `dataset-workflows/` directory includes pre-defined workflows for data ingest, processing and publication. Each dataset will have it's own workflow which should be documented and repeatable for other developers. Dataset workflows fall into 2 categories:
+The `dataset-workflows/` directory includes scripts and cloud deployments for data ingest, processing and publication workflows. Each dataset managed by this repository should have it's own sub-directory within dataset-workflows. Ech workflow should be documented and repeatable for other developers. Dataset workflows fall into 2 categories:
 
-* Manual: Small, one time ingests (100 files or less) may be processed manually. Example: Black Marble Nightlights data for Hurricanes Ida and Maria.
-* Cloud:
+* Manual workflows: Small, one time ingests (100 files or less) may be processed manually. Example: Black Marble Nightlights data for Hurricanes Ida and Maria.
+* Cloud workflows:
     * Large scale ingests will require cloud resources for monitoring, scaling and long-running processes. Example: HLS.
     * Small scale ingests which are ongoing or require automation. Example: Facebook COG generation triggered by new data in `s3://dataforgood-fb-data/`
 
-Each dataset has it's own directory in `dataset-workflows` with documentation on how data ingest and publish runs. Optionally, datasets may have suffixes for the tool used to run the ingest and publish, for example `dataset-workflows/hls-cdk` would include cdk for deploying the HLS pipeline for publishing HLS STAC records.
+As noted, each dataset has it's own directory in `dataset-workflows` with documentation and code for data ingest, processing and publish. Not all steps are necessary for all wokflows. Optionally, datasets may have suffixes to indicate the tool used to run the ingest and publish. For example `dataset-workflows/hls-cdk` would include cdk for deploying the HLS pipeline for publishing HLS STAC records.
 
 ## Lambdas
 
