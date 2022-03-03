@@ -42,10 +42,11 @@ def handler(event: SQSEvent, context):
             )
         )
 
-filename = "example.ndjson"
-sample_event = SQSEvent({
-    "Records": [{
-        "Body": filename
-    }]
-})
-handler(sample_event, {})
+if __name__ == '__main__':
+    filename = "example.ndjson"
+    sample_event = SQSEvent({
+        "Records": [{
+            "Body": filename
+        }]
+    })
+    handler(sample_event, {})
