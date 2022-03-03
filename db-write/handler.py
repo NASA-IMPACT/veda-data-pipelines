@@ -8,22 +8,32 @@ from pypgstac import pypgstac
 from rio_stac.stac import bbox_to_geom, create_stac_item
 import re
 import sys
+import boto3
 
 STAC_DB_HOST = os.environ.get("STAC_DB_HOST")
 STAC_DB_USER = os.environ.get("STAC_DB_USER")
 STAC_DB_PASSWORD = os.environ.get("STAC_DB_PASSWORD")
 
+s3_client = boto3.client('s3')
 
 def handler(event, context):
     """
     Simple Lambda that should belong to the VPC of the STAC_DB_HOST
     Receive a STAC item in JSON format, connect to database and insert it
     """
-    stac_json = event["stac_item"]
     stac_temp_file_name = "/tmp/stac_item.json"
+
+    if "stac_item" in event:
+        stac_json = event["stac_item"]
+        with open(stac_temp_file_name, "w+") as f:
+            f.write(json.dumps(stac_json))
+    elif "stac_file_url" in event:
+        print('download')
+        s3_client.download_file(
+            "climatedashboard-data", event["stac_file_url"], stac_temp_file_name
+        )
+        print(open(stac_temp_file_name).read())
     # pypgstac requires inserting from a file
-    with open(stac_temp_file_name, "w+") as f:
-        f.write(json.dumps(stac_json))
 
     try:
         pypgstac.load(
@@ -37,8 +47,6 @@ def handler(event, context):
         print(e)
         return e
     os.remove(stac_temp_file_name)
-
-    return stac_json
 
 
 if __name__ == "__main__":
@@ -124,4 +132,8 @@ if __name__ == "__main__":
         },
     )
 
-    handler(sample_event, {})
+    sample_download = {
+        "stac_file_url": "stac_item_queue/Maria_Stage3.json"
+    }
+
+    handler(sample_download, {})
