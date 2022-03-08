@@ -85,7 +85,7 @@ class CdkStack(core.Stack):
             self,
             f"{id}-{collection}-discover-fn",
             code=aws_lambda.Code.from_asset_image(
-                directory="lambdas/cmr-query",
+                directory="../../lambdas/cmr-query",
                 file="Dockerfile",
                 entrypoint=["/usr/local/bin/python", "-m", "awslambdaric"],
                 cmd=["handler.handler"],
@@ -139,7 +139,7 @@ class CdkStack(core.Stack):
             f"{id}-build_ndjson-lambda",
             role=build_ndjson_role,
             code=aws_lambda.Code.from_asset_image(
-                directory="lambdas/ndjson-builder",
+                directory="../../lambdas/ndjson-builder",
                 file="Dockerfile",
                 entrypoint=["/usr/local/bin/python", "-m", "awslambdaric"],
                 cmd=["handler.handler"],
@@ -199,7 +199,7 @@ class CdkStack(core.Stack):
             f"{id}-pgstac-loader-lambda",
             role=pgstac_loader_role,
             code=aws_lambda.Code.from_asset_image(
-                directory="lambdas/pgstac-loader",
+                directory="../../lambdas/pgstac-loader",
                 file="Dockerfile",
                 entrypoint=["/usr/local/bin/python", "-m", "awslambdaric"],
                 cmd=["handler.handler"],

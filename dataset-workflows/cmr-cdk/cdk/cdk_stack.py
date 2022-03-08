@@ -19,18 +19,15 @@ class CdkStack(core.Stack):
         super().__init__(scope, construct_id, **kwargs)
         stack_name = construct_id
 
+        collection = "OMDOAO3e"
+        version = "003"
+
         bucket = "climatedashboard-data"
-        collection = "OMSO2PCA"
 
         s3bucket = s3.Bucket.from_bucket_name(
             self, f"{id}-bucket", bucket_name=bucket
         )
 
-        ndjson_bucket= s3.Bucket.from_bucket_name(
-            self,
-            "NDJsonBucket",
-            bucket_name=f"{stack_name}-ndjson",
-        )
 
         ec2_network_access = aws_iam.PolicyStatement(
             actions=[
@@ -40,6 +37,7 @@ class CdkStack(core.Stack):
             ],
             resources=["*"],
         )
+
         full_bucket_access = aws_iam.PolicyStatement(
             actions=["s3:GetObject", "s3:PutObject"],
             resources=[f"arn:aws:s3:::{bucket}/*"],
@@ -59,12 +57,13 @@ class CdkStack(core.Stack):
             connection=ec2.Port(protocol=ec2.Protocol("ALL"), string_representation=""),
             description="Allow lambda security group all outbound access",
         )
+
         # Discover function
-        s3_discovery_lambda = aws_lambda.Function(
+        cmr_discover_lambda = aws_lambda.Function(
             self,
-            f"{id}-{bucket}-discover-fn",
+            f"{id}-{collection}-discover-fn",
             code=aws_lambda.Code.from_asset_image(
-                directory="../../lambdas/s3-discovery",
+                directory="../../lambdas/cmr-query",
                 file="Dockerfile",
                 entrypoint=["/usr/local/bin/python", "-m", "awslambdaric"],
                 cmd=["handler.handler"],
@@ -72,25 +71,35 @@ class CdkStack(core.Stack):
             handler=aws_lambda.Handler.FROM_IMAGE,
             runtime=aws_lambda.Runtime.FROM_IMAGE,
             memory_size=1024,
-            timeout=core.Duration.seconds(30),
+            timeout=core.Duration.minutes(15),
         )
 
-        s3_discovery_lambda.add_to_role_policy(
+
+        generate_cog_lambda = aws_lambda.Function(
+            self,
+            f"{id}-{collection}-generate-cog-fn",
+            code=aws_lambda.Code.from_asset_image(
+                directory="../../lambdas/cogify",
+                file="Dockerfile",
+                entrypoint=["/usr/local/bin/python", "-m", "awslambdaric"],
+                cmd=["handler.handler"],
+            ),
+            handler=aws_lambda.Handler.FROM_IMAGE,
+            runtime=aws_lambda.Runtime.FROM_IMAGE,
+            memory_size=4096,
+            timeout=core.Duration.seconds(60),
+            environment=dict(
+                EARTHDATA_USERNAME=os.environ["EARTHDATA_USERNAME"],
+                EARTHDATA_PASSWORD=os.environ["EARTHDATA_PASSWORD"],
+            ),
+        )
+
+        generate_cog_lambda.add_to_role_policy(
             aws_iam.PolicyStatement(
-                actions=["s3:GetObject"],
+                actions=["s3:PutObject"],
                 resources=[f"arn:aws:s3:::{bucket}/*"],
             )
         )
-        s3_discovery_lambda.add_to_role_policy(
-            aws_iam.PolicyStatement(
-                actions=["s3:ListBucket"],
-                resources=[f"arn:aws:s3:::{bucket}"],
-            )
-        )
-
-       
-
-
 
         generate_stac_item_lambda = aws_lambda.Function(
             self,
@@ -112,22 +121,9 @@ class CdkStack(core.Stack):
         )
         generate_stac_item_lambda.add_to_role_policy(full_bucket_access)
 
-        db_write_role = aws_iam.Role(
-            self,
-            "PGStacLoaderRole",
-            assumed_by=aws_iam.ServicePrincipal("lambda.amazonaws.com"),
-            managed_policies=[
-                aws_iam.ManagedPolicy.from_aws_managed_policy_name(
-                    "service-role/AWSLambdaBasicExecutionRole"
-                )
-            ],
-        )
-
-
         db_write_lambda = aws_lambda.Function(
             self,
             f"{id}-{collection}-write-db-fn",
-            role=db_write_role,
             code=aws_lambda.Code.from_asset_image(
                 directory="../../lambdas/db-write",
                 file="Dockerfile",
@@ -150,36 +146,62 @@ class CdkStack(core.Stack):
 
         db_write_lambda.add_to_role_policy(ec2_network_access)
 
-        s3_start_state = stepfunctions.Pass(self, "S3 Discovery StartState")
-        s3_discover_task = tasks.LambdaInvoke(
-            self, "S3 Discover Task", lambda_function=s3_discovery_lambda
+        ## CMR Workflow State Machine Steps
+        cmr_start_state = stepfunctions.Pass(self, "CMR Discovery StartState")
+        cmr_discover_task = tasks.LambdaInvoke(
+            self, "CMR Discover Granules Task", lambda_function=cmr_discover_lambda
         )
 
-        s3_generate_stac_item_task = tasks.LambdaInvoke(
+        generate_cog_task = tasks.LambdaInvoke(
+            self, "Generate COG Task", lambda_function=generate_cog_lambda
+        )
+        cmr_generate_stac_item_task = tasks.LambdaInvoke(
             self,
-            "S3 Generate STAC Item Task",
+            "CMR Generate STAC Item Task",
             lambda_function=generate_stac_item_lambda,
+            input_path="$.Payload",
         )
 
-        s3_db_write_task = tasks.LambdaInvoke(
+
+        cmr_db_write_task = tasks.LambdaInvoke(
             self,
-            "S3 DB Write task",
+            "CMR DB Write task",
             lambda_function=db_write_lambda,
             input_path="$.Payload",
         )
 
-        map_stac_items = stepfunctions.Map(
+        map_cogs = stepfunctions.Map(
             self,
-            "Map STAC Item Generator",
+            "Map COG and STAC Item Generator",
             max_concurrency=10,
             items_path=stepfunctions.JsonPath.string_at("$.Payload"),
         )
 
-        # Create stac item for each element
-        map_stac_items.iterator(s3_generate_stac_item_task.next(s3_db_write_task))
+        # Generate a cog and create stac item for each element
+        map_cogs.iterator(
+            generate_cog_task.next(cmr_generate_stac_item_task).next(cmr_db_write_task)
+        )
 
-        s3_wflow_definition = s3_start_state.next(s3_discover_task).next(map_stac_items)
+        cmr_wflow_definition = cmr_start_state.next(cmr_discover_task).next(map_cogs)
 
-        s3_wflow_state_machine = stepfunctions.StateMachine(
-            self, f"{bucket}-{collection}-COG-StateMachine", definition=s3_wflow_definition
+        cmr_wflow_state_machine = stepfunctions.StateMachine(
+            self, f"{collection}-COG-StateMachine", definition=cmr_wflow_definition
+        )
+
+        # Rule to run it
+        rule = events.Rule(
+            self, "Schedule Rule", schedule=events.Schedule.cron(hour="1"), enabled=True
+        )
+        rule.add_target(
+            targets.SfnStateMachine(
+                cmr_wflow_state_machine,
+                input=events.RuleTargetInput.from_object(
+                    {
+                        "collection": collection,
+                        "hours": 96,
+                        "version": version,
+                        "include": "^.+he5$",
+                    }
+                ),
+            )
         )
