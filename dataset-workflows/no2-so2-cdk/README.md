@@ -7,7 +7,7 @@ The CDK code in this repository currently deploys state machines and the tasks t
 
 Current tasks included are:
 
-* CMR Query (Discovery Task) -> Outputs a list of `.he5` files, each one becomes input for a Map iterator.
+* S3 Discovery Task - Discovers a list files, each one becomes input for a Map iterator.
 * Inputs to the Map iterator are submitted to:
     * Generate COG: Creates and writes COG to S3, pass granule ID and S3 location to Stac Generation task
     * STAC Generation: Creates STAC item from COG and posts to STAC database. Credentials are provided to the CDK workflow via environment variables. See `../stac-gen/README.txt` for more details.
@@ -22,6 +22,11 @@ Current tasks included are:
 
 Enjoy!
 
-## Config
+## Deploying this stack
 
-`VPC_ID` must be defined as an environment variable to deploy this stack. This is the ID of the VPC which contains the target database
+`VPC_ID` must be defined as an environment variable to deploy this stack. This is the ID of the VPC which contains the target database.
+
+```
+nvm use 14
+pip install aws-cdk.aws-stepfunctions-tasks
+```

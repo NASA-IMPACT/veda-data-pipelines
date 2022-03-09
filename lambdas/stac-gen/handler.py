@@ -14,11 +14,9 @@ s3 = boto3.client(
     "s3",
 )
 
-
 STAC_DB_HOST = os.environ.get("STAC_DB_HOST")
 STAC_DB_USER = os.environ.get("STAC_DB_USER")
 STAC_DB_PASSWORD = os.environ.get("STAC_DB_PASSWORD")
-
 
 def upload_stac_to_s3(stac_dict):
     fname = stac_dict["id"].split(".tif")[0]
@@ -85,9 +83,10 @@ def create_stac_item_with_cmr(event):
             )
     assets["cog"] = pystac.Asset(
         href=cog_url,
-        media_type="image/tiff; application=geotiff",
-        roles=["data"],
-        title="COG",
+        name="cog_default",
+        media_type="image/tiff; application=geotiff; profile=cloud-optimized",
+        roles=["data", "layer"],
+        title="cog_default"
     )
 
     dt = str_to_datetime(cmr_json["time_start"])

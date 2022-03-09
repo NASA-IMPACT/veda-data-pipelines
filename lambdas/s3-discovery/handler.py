@@ -4,7 +4,6 @@ s3 = boto3.resource(
     "s3",
 )
 
-
 def list_bucket(bucket, prefix, file_type):
     try:
         files = []
