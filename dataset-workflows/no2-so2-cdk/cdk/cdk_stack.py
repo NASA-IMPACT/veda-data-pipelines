@@ -26,12 +26,6 @@ class CdkStack(core.Stack):
             self, f"{id}-bucket", bucket_name=bucket
         )
 
-        ndjson_bucket= s3.Bucket.from_bucket_name(
-            self,
-            "NDJsonBucket",
-            bucket_name=f"{stack_name}-ndjson",
-        )
-
         ec2_network_access = aws_iam.PolicyStatement(
             actions=[
                 "ec2:CreateNetworkInterface",
