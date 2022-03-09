@@ -14,6 +14,7 @@ from aws_cdk.aws_lambda_event_sources import SqsEventSource
 
 SECRET_NAME = os.environ["SECRET_NAME"]
 
+
 class CdkStack(core.Stack):
     def __init__(self, scope: core.Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -23,15 +24,20 @@ class CdkStack(core.Stack):
 
         bucket = "climatedashboard-data"
 
-        s3bucket = s3.Bucket.from_bucket_name(
-            self, f"{id}-bucket", bucket_name=bucket
-        )
+        s3bucket = s3.Bucket.from_bucket_name(self, f"{id}-bucket", bucket_name=bucket)
 
-        ndjson_bucket= s3.Bucket.from_bucket_name(
-            self,
-            "NDJsonBucket",
-            bucket_name=f"{stack_name}-ndjson",
-        )
+        try:
+            ndjson_bucket = s3.Bucket(
+                self,
+                "NDJsonBucket",
+                bucket_name=f"{stack_name}-ndjson",
+            )
+        except:
+            ndjson_bucket = s3.Bucket.from_bucket_name(
+                self,
+                "NDJsonBucket",
+                bucket_name=f"{stack_name}-ndjson",
+            )
 
         ec2_network_access = aws_iam.PolicyStatement(
             actions=[
@@ -151,7 +157,7 @@ class CdkStack(core.Stack):
             environment={
                 "BUCKET": ndjson_bucket.bucket_name,
                 "QUEUE_URL": ndjson_queue.queue_url,
-                "COLLECTION": "HLSS30.002"
+                "COLLECTION": "HLSS30.002",
             },
         )
 
@@ -193,7 +199,6 @@ class CdkStack(core.Stack):
             description="fromCogPipelinesPgstacLoader",
         )
 
-
         pgstac_loader = aws_lambda.Function(
             self,
             f"{id}-pgstac-loader-lambda",
@@ -215,7 +220,6 @@ class CdkStack(core.Stack):
             vpc=database_vpc,
             vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE),
             security_groups=[lambda_function_security_group],
-
         )
         pgstac_loader.add_to_role_policy(ec2_network_access)
 
