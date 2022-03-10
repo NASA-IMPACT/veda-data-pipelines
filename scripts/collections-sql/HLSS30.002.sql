@@ -4,6 +4,9 @@ INSERT INTO pgstac.collections (content) VALUES('{
    "links":[
    ],
    "title":"HLSS30.002",
+    
+   "dashboard:is_periodic": True,
+   "dashboard:time_density": 
    "extent":{
       "spatial":{
          "bbox":[
@@ -38,7 +41,12 @@ INSERT INTO pgstac.collections (content) VALUES('{
        "href": "https://cmr.earthdata.nasa.gov/search/concepts/C2021957295-LPCLOUD.html",
        "type": "text/html"
    }],
-   "stac_version":"1.0.0"
+   "stac_version":"1.0.0",
+   "properties": {
+     "dashboard:is_periodic": true
+     "dashboard:time_density": "hour",
+      
+   }
 }')
 ON CONFLICT (id) DO UPDATE 
   SET content = excluded.content;
