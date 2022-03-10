@@ -131,11 +131,11 @@ def create_stac_item_with_regex(event):
     assets = {}
     assets["cog"] = pystac.Asset(
         href=cog_url,
-        media_type="image/tiff; application=geotiff",
-        roles=["data"],
-        title="COG",
+        name="cog_default",
+        media_type="image/tiff; application=geotiff; profile=cloud-optimized",
+        roles=["data", "layer"],
+        title="cog_default"
     )
-
 
     # For maria
     """
