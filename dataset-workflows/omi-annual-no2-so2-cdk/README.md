@@ -29,4 +29,5 @@ Enjoy!
 ```
 nvm use 14
 pip install aws-cdk.aws-stepfunctions-tasks
+cdk deploy
 ```
