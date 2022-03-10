@@ -184,7 +184,7 @@ def handler(event, context):
            "collection": "OMDOAO3e",
             "s3_filename": "s3://climatedashboard-data/OMSO2PCA/OMSO2PCA_LUT_SCD_2005.tif",
             "datetime_regex": {
-                "regex": "^(.*?)(_)([0-9][0-9][0-9][0-9])(.tif)$",
+                "regex": "^(.*?)(_)([0-9][0-9][0-9][0-9])(.*?)(.tif)$",
                 # target_group is the group that contains the datetime string when the original filename is matched on the user provided regex
                 "target_group": 3
             }

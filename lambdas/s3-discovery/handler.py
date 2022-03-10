@@ -48,7 +48,7 @@ if __name__ == "__main__":
         # File type
         "file_type": ".tif",
         "datetime_regex": {
-            "regex": f"^(.*?)(_)([0-9][0-9][0-9][0-9])(.tif)$",
+            "regex": f"^(.*?)(_)([0-9][0-9][0-9][0-9])(.*?)(.tif)$",
             "target_group": [3]
         }
     }
