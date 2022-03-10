@@ -81,9 +81,8 @@ def create_stac_item_with_cmr(event):
                 roles=["data"],
                 title="hdf image",
             )
-    assets["cog"] = pystac.Asset(
+    assets["cog_default"] = pystac.Asset(
         href=cog_url,
-        name="cog_default",
         media_type="image/tiff; application=geotiff; profile=cloud-optimized",
         roles=["data", "layer"],
         title="cog_default"
@@ -129,9 +128,8 @@ def create_stac_item_with_regex(event):
     cog_url = event["s3_filename"]
     collection = event["collection"]
     assets = {}
-    assets["cog"] = pystac.Asset(
+    assets["cog_default"] = pystac.Asset(
         href=cog_url,
-        name="cog_default",
         media_type="image/tiff; application=geotiff; profile=cloud-optimized",
         roles=["data", "layer"],
         title="cog_default"
