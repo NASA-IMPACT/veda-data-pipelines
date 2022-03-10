@@ -126,7 +126,7 @@ class CdkStack(core.Stack):
                 STAC_DB_USER=os.environ["STAC_DB_USER"],
                 # TODO: Aimee - may want to be consistent about environment name for PG PASSWORD.
                 # PGPASSWORD is the name of the variable used by the psql cli to load without requesting a password via a command line prompt.
-                STAC_DB_PASSWORD=os.environ["PGPASSWORD"],
+                PGPASSWORD=os.environ["PGPASSWORD"],
             ),
             vpc=database_vpc,
             vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE),

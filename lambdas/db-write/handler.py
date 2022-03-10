@@ -12,7 +12,7 @@ import boto3
 
 STAC_DB_HOST = os.environ.get("STAC_DB_HOST")
 STAC_DB_USER = os.environ.get("STAC_DB_USER")
-STAC_DB_PASSWORD = os.environ.get("PGPASSWORD")
+PGPASSWORD = os.environ.get("PGPASSWORD")
 
 s3_client = boto3.client('s3')
 
@@ -39,7 +39,7 @@ def handler(event, context):
         pypgstac.load(
             table="items",
             file=stac_temp_file_name,
-            dsn=f"postgres://{STAC_DB_USER}:{STAC_DB_PASSWORD}@{STAC_DB_HOST}/postgis",
+            dsn=f"postgres://{STAC_DB_USER}:{PGPASSWORD}@{STAC_DB_HOST}/postgis",
             # use upsert
             method="upsert",  # use insert_ignore to avoid overwritting existing items
         )

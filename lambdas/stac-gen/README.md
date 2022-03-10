@@ -3,7 +3,7 @@ This docker image queries CMR for metadata associated with a granule, creates a 
 ```bash
 docker build -t stac-gen .
 # Currently runs an example for OMI Ozone
-docker run --env STAC_DB_USER=<user> --env STAC_DB_PASSWORD=<pw> --env STAC_DB_HOST=<host> stac-gen python -m handler
+docker run --env STAC_DB_USER=<user> --env PGPASSWORD=<pw> --env STAC_DB_HOST=<host> stac-gen python -m handler
 ```
 
 `stac-gen` lambda handler will create a STAC item from a COG using either CMR queried metadata, or properties parsed from file name. JSON STAC item is returned.
