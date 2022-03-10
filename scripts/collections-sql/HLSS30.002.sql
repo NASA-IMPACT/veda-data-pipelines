@@ -45,7 +45,9 @@ INSERT INTO pgstac.collections (content) VALUES('{
    "properties": {
      "dashboard:is_periodic": true
      "dashboard:time_density": "hour",
-      
+     "summaries": {
+       "datetime": ["2021-07-29 01:00:00","2021-07-29 05:00:00Z"]
+     }
    }
 }')
 ON CONFLICT (id) DO UPDATE 
