@@ -44,7 +44,7 @@ if __name__ == "__main__":
     sample_event = {
         "bucket": "climatedashboard-data",
         # Directory
-        "prefix": "OMSO2PCA/",
+        "prefix": "OMSO2PCA-COG/",
         # File type
         "file_type": ".tif",
         "datetime_regex": {

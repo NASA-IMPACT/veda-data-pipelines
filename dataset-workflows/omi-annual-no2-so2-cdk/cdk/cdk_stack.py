@@ -17,7 +17,7 @@ class CdkStack(core.Stack):
         stack_name = construct_id
 
         bucket = "climatedashboard-data"
-        collection = "OMSO2PCA"
+        collection = "omi-annual-no2-so2"
 
         s3bucket = s3.Bucket.from_bucket_name(
             self, f"{id}-bucket", bucket_name=bucket

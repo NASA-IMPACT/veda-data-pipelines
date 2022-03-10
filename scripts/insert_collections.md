@@ -30,3 +30,7 @@ export PGPASSWORD=$(echo $SECRETS | jq -r .password)
 export COLLECTION_NAME=HLSS30.002
 psql -h $STAC_DB_HOST -U $STAC_DB_USER -d $STAC_DB_NAME -f collections-sql/${COLLECTION_NAME}.sql
 ```
+
+### Deleting collections
+
+... ADD ME ...

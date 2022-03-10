@@ -40,7 +40,8 @@ def handler(event, context):
             table="items",
             file=stac_temp_file_name,
             dsn=f"postgres://{STAC_DB_USER}:{STAC_DB_PASSWORD}@{STAC_DB_HOST}/postgis",
-            method="insert_ignore",  # use insert_ignore to avoid overwritting existing items
+            # use upsert
+            method="upsert",  # use insert_ignore to avoid overwritting existing items
         )
         print("Inserted to database")
     except Exception as e:
