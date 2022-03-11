@@ -10,9 +10,6 @@ from aws_cdk import aws_stepfunctions_tasks as tasks
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_sqs as sqs
 from aws_cdk import aws_s3 as s3
-from aws_cdk.aws_lambda_event_sources import SqsEventSource
-
-SECRET_NAME = os.environ["SECRET_NAME"]
 
 class CdkStack(core.Stack):
     def __init__(self, scope: core.Construct, construct_id: str, **kwargs) -> None:
@@ -20,7 +17,7 @@ class CdkStack(core.Stack):
         stack_name = construct_id
 
         bucket = "climatedashboard-data"
-        collection = "OMSO2PCA"
+        collection = "omi-annual-no2-so2"
 
         s3bucket = s3.Bucket.from_bucket_name(
             self, f"{id}-bucket", bucket_name=bucket
@@ -82,10 +79,6 @@ class CdkStack(core.Stack):
             )
         )
 
-       
-
-
-
         generate_stac_item_lambda = aws_lambda.Function(
             self,
             f"{id}-{collection}-generate-stac-item-fn",
@@ -98,11 +91,7 @@ class CdkStack(core.Stack):
             handler=aws_lambda.Handler.FROM_IMAGE,
             runtime=aws_lambda.Runtime.FROM_IMAGE,
             memory_size=4096,
-            timeout=core.Duration.seconds(60),
-            environment=dict(
-                EARTHDATA_USERNAME=os.environ["EARTHDATA_USERNAME"],
-                EARTHDATA_PASSWORD=os.environ["EARTHDATA_PASSWORD"],
-            ),
+            timeout=core.Duration.seconds(60)
         )
         generate_stac_item_lambda.add_to_role_policy(full_bucket_access)
 
@@ -135,7 +124,9 @@ class CdkStack(core.Stack):
             environment=dict(
                 STAC_DB_HOST=os.environ["STAC_DB_HOST"],
                 STAC_DB_USER=os.environ["STAC_DB_USER"],
-                STAC_DB_PASSWORD=os.environ["STAC_DB_PASSWORD"],
+                # TODO: Aimee - may want to be consistent about environment name for PG PASSWORD.
+                # PGPASSWORD is the name of the variable used by the psql cli to load without requesting a password via a command line prompt.
+                PGPASSWORD=os.environ["PGPASSWORD"],
             ),
             vpc=database_vpc,
             vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE),

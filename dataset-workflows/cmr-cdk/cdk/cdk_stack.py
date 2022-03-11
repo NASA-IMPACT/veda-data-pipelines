@@ -137,7 +137,7 @@ class CdkStack(core.Stack):
             environment=dict(
                 STAC_DB_HOST=os.environ["STAC_DB_HOST"],
                 STAC_DB_USER=os.environ["STAC_DB_USER"],
-                STAC_DB_PASSWORD=os.environ["STAC_DB_PASSWORD"],
+                PGPASSWORD=os.environ["PGPASSWORD"],
             ),
             vpc=database_vpc,
             vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE),
