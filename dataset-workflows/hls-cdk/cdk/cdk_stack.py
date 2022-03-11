@@ -14,7 +14,6 @@ from aws_cdk.aws_lambda_event_sources import SqsEventSource
 
 SECRET_NAME = os.environ["SECRET_NAME"]
 
-
 class CdkStack(core.Stack):
     def __init__(self, scope: core.Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -86,6 +85,7 @@ class CdkStack(core.Stack):
             description="Allow lambda security group all outbound access",
         )
 
+
         # Discover function
         cmr_discover_lambda = aws_lambda.Function(
             self,
@@ -139,7 +139,6 @@ class CdkStack(core.Stack):
         )
 
         ndjson_queue.grant_send_messages(build_ndjson_role)
-
         build_ndjson_function = aws_lambda.Function(
             self,
             f"{id}-build_ndjson-lambda",
@@ -157,7 +156,7 @@ class CdkStack(core.Stack):
             environment={
                 "BUCKET": ndjson_bucket.bucket_name,
                 "QUEUE_URL": ndjson_queue.queue_url,
-                "COLLECTION": "HLSS30.002",
+                "COLLECTION": "HLSS30.002"
             },
         )
 
