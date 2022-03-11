@@ -26,10 +26,8 @@ INSERT INTO pgstac.collections (content) VALUES('{
     "license": "MIT",
     "description": "OMI_trno2 - 0.10 x 0.10 Annual as Cloud-Optimized GeoTIFFs (COGs)",
     "stac_version": "1.0.0",
-    "properties": {
-        "dashboard:is_periodic": true,
-        "dashboard:time_density": "year"
-    },
+    "dashboard:is_periodic": true,
+    "dashboard:time_density": "year",
     "item_assets": {
         "cog_default": {
         "type": "image/tiff; application=geotiff; profile=cloud-optimized",
