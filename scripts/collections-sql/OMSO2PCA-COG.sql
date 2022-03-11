@@ -26,10 +26,8 @@ INSERT INTO pgstac.collections (content) VALUES('{
     "license": "MIT",
     "description": "OMI/Aura Sulfur Dioxide (SO2) Total Column L3 1 day Best Pixel in 0.25 degree x 0.25 degree V3 as Cloud-Optimized GeoTIFFs (COGs)",
     "stac_version": "1.0.0",
-    "properties": {
-        "dashboard:is_periodic": true,
-        "dashboard:time_density": "year"
-    },
+    "dashboard:is_periodic": true,
+    "dashboard:time_density": "year",
     "item_assets": {
         "cog_default": {
         "type": "image/tiff; application=geotiff; profile=cloud-optimized",

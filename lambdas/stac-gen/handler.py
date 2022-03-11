@@ -1,6 +1,7 @@
 from cmr import GranuleQuery
 import os
 import json
+from pathlib import Path
 import pystac
 from pystac.utils import str_to_datetime
 from shapely.geometry import shape
@@ -41,14 +42,21 @@ def create_item(properties, assets, datetime, cog_url, collection):
     Function to create a stac item from a COG using rio_stac
     """
     try:
+        item_id = Path(cog_url).stem
         rstac = create_stac_item(
+            id=item_id,
             source=cog_url,
             collection=collection,
             input_datetime=datetime,
             properties=properties,
             with_proj=True,
             with_raster=True,
-            assets=assets,
+            # TODO (aimee):
+            # If we want to have multiple assets _and_ the raster stats from get_raster_info we need to make this conditional more flexible:
+            # https://github.com/developmentseed/rio-stac/blob/0.3.2/rio_stac/stac.py#L315-L330
+            asset_name = "cog_default",
+            asset_roles = ["data", "layer"],
+            asset_media_type = "image/tiff; application=geotiff; profile=cloud-optimized",            
         )
         print("Created item...")
     except Exception as e:
@@ -81,12 +89,6 @@ def create_stac_item_with_cmr(event):
                 roles=["data"],
                 title="hdf image",
             )
-    assets["cog_default"] = pystac.Asset(
-        href=cog_url,
-        media_type="image/tiff; application=geotiff; profile=cloud-optimized",
-        roles=["data", "layer"],
-        title="cog_default"
-    )
 
     dt = str_to_datetime(cmr_json["time_start"])
 
@@ -128,12 +130,6 @@ def create_stac_item_with_regex(event):
     cog_url = event["s3_filename"]
     collection = event["collection"]
     assets = {}
-    assets["cog_default"] = pystac.Asset(
-        href=cog_url,
-        media_type="image/tiff; application=geotiff; profile=cloud-optimized",
-        roles=["data", "layer"],
-        title="cog_default"
-    )
 
     # For maria
     """
