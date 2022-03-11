@@ -23,7 +23,7 @@ pip install aws-cdk.aws-stepfunctions-tasks
 
 ## Dataset Worfklows
 
-The `dataset-workflows/` directory includes scripts and cloud deployments for data ingest, processing and publication workflows. Each dataset managed by this repository should have it's own sub-directory within dataset-workflows. Ech workflow should be documented and repeatable for other developers. Dataset workflows fall into 2 categories:
+The `dataset-workflows/` directory includes scripts and cloud deployments for data ingest, processing and publication workflows. Each dataset managed by this repository should have it's own sub-directory within dataset-workflows. Each workflow should be documented and repeatable for other developers. Dataset workflows fall into 2 categories:
 
 * Manual workflows: Small, one time ingests (100 files or less) may be processed manually. Example: Black Marble Nightlights data for Hurricanes Ida and Maria.
 * Cloud workflows:
