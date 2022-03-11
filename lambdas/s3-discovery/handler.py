@@ -4,7 +4,6 @@ s3 = boto3.resource(
     "s3",
 )
 
-
 def list_bucket(bucket, prefix, file_type):
     try:
         files = []
@@ -45,11 +44,11 @@ if __name__ == "__main__":
     sample_event = {
         "bucket": "climatedashboard-data",
         # Directory
-        "prefix": "OMSO2PCA/",
+        "prefix": "OMSO2PCA-COG/",
         # File type
         "file_type": ".tif",
         "datetime_regex": {
-            "regex": f"^(.*?)(_)([0-9][0-9][0-9][0-9])(.tif)$",
+            "regex": f"^(.*?)(_)([0-9][0-9][0-9][0-9])(.*?)(.tif)$",
             "target_group": [3]
         }
     }

@@ -1,0 +1,114 @@
+{
+    "stac_item": {
+        "type": "Feature",
+        "stac_version": "1.0.0",
+        "id": "OMSO2PCA_LUT_SCD_2011.tif",
+        "properties": {
+            "proj:epsg": 4326,
+            "proj:geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -180,
+                            90
+                        ],
+                        [
+                            -180,
+                            -90
+                        ],
+                        [
+                            180,
+                            -90
+                        ],
+                        [
+                            180,
+                            90
+                        ],
+                        [
+                            -180,
+                            90
+                        ]
+                    ]
+                ]
+            },
+            "proj:bbox": [
+                -180,
+                -90,
+                180,
+                90
+            ],
+            "proj:shape": [
+                720,
+                1440
+            ],
+            "proj:transform": [
+                0.25,
+                0,
+                -180,
+                0,
+                -0.25,
+                90,
+                0,
+                0,
+                1
+            ],
+            "datetime": "2011-03-10T00:00:00Z"
+        },
+        "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+                [
+                    [
+                        -180,
+                        90
+                    ],
+                    [
+                        -180,
+                        -90
+                    ],
+                    [
+                        180,
+                        -90
+                    ],
+                    [
+                        180,
+                        90
+                    ],
+                    [
+                        -180,
+                        90
+                    ]
+                ]
+            ]
+        },
+        "links": [
+            {
+                "rel": "collection",
+                "href": "OMSO2PCA-COG",
+                "type": "application/json"
+            }
+        ],
+        "assets": {
+            "cog_default": {
+                "href": "s3://climatedashboard-data/OMSO2PCA-COG/OMSO2PCA_LUT_SCD_2011.tif",
+                "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+                "title": "cog_default",
+                "roles": [
+                    "data", "layer"
+                ]
+            }
+        },
+        "bbox": [
+            -180,
+            -90,
+            180,
+            90
+        ],
+        "stac_extensions": [
+            "https://stac-extensions.github.io/projection/v1.0.0/schema.json",
+            "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
+        ],
+        "collection": "OMSO2PCA-COG"
+    }
+}

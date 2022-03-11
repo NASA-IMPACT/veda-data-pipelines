@@ -1,6 +1,7 @@
 from cmr import GranuleQuery
 import os
 import json
+from pathlib import Path
 import pystac
 from pystac.utils import str_to_datetime
 from shapely.geometry import shape
@@ -14,11 +15,9 @@ s3 = boto3.client(
     "s3",
 )
 
-
 STAC_DB_HOST = os.environ.get("STAC_DB_HOST")
 STAC_DB_USER = os.environ.get("STAC_DB_USER")
-STAC_DB_PASSWORD = os.environ.get("STAC_DB_PASSWORD")
-
+PGPASSWORD = os.environ.get("PGPASSWORD")
 
 def upload_stac_to_s3(stac_dict):
     fname = stac_dict["id"].split(".tif")[0]
@@ -43,14 +42,21 @@ def create_item(properties, assets, datetime, cog_url, collection):
     Function to create a stac item from a COG using rio_stac
     """
     try:
+        item_id = Path(cog_url).stem
         rstac = create_stac_item(
+            id=item_id,
             source=cog_url,
             collection=collection,
             input_datetime=datetime,
             properties=properties,
             with_proj=True,
             with_raster=True,
-            assets=assets,
+            # TODO (aimee):
+            # If we want to have multiple assets _and_ the raster stats from get_raster_info we need to make this conditional more flexible:
+            # https://github.com/developmentseed/rio-stac/blob/0.3.2/rio_stac/stac.py#L315-L330
+            asset_name = "cog_default",
+            asset_roles = ["data", "layer"],
+            asset_media_type = "image/tiff; application=geotiff; profile=cloud-optimized",            
         )
         print("Created item...")
     except Exception as e:
@@ -83,12 +89,6 @@ def create_stac_item_with_cmr(event):
                 roles=["data"],
                 title="hdf image",
             )
-    assets["cog"] = pystac.Asset(
-        href=cog_url,
-        media_type="image/tiff; application=geotiff",
-        roles=["data"],
-        title="COG",
-    )
 
     dt = str_to_datetime(cmr_json["time_start"])
 
@@ -130,13 +130,6 @@ def create_stac_item_with_regex(event):
     cog_url = event["s3_filename"]
     collection = event["collection"]
     assets = {}
-    assets["cog"] = pystac.Asset(
-        href=cog_url,
-        media_type="image/tiff; application=geotiff",
-        roles=["data"],
-        title="COG",
-    )
-
 
     # For maria
     """
@@ -187,7 +180,7 @@ def handler(event, context):
            "collection": "OMDOAO3e",
             "s3_filename": "s3://climatedashboard-data/OMSO2PCA/OMSO2PCA_LUT_SCD_2005.tif",
             "datetime_regex": {
-                "regex": "^(.*?)(_)([0-9][0-9][0-9][0-9])(.tif)$",
+                "regex": "^(.*?)(_)([0-9][0-9][0-9][0-9])(.*?)(.tif)$",
                 # target_group is the group that contains the datetime string when the original filename is matched on the user provided regex
                 "target_group": 3
             }
