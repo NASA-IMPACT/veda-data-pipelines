@@ -196,7 +196,7 @@ profile_name = "my-profile-name"
 
 # use `profile_name: str` param `Session()` or default AWS profile to ensure 
 # correct access
-BUCKET = boto3.Session().resource("s3").Bucket("covid-eo-data")
+BUCKET = boto3.Session().resource("s3").Bucket("s3-bucket-name")
 
 # S3 prefix for searching 
 prefix = "OMNO2d_HRMDifference"
