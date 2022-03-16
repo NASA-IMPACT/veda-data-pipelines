@@ -8,7 +8,7 @@ from cdk.cdk_stack import CdkStack
 app = core.App()
 CdkStack(
     app,
-    "cog-pipeline-hls",
+    "cog-pipeline-hls-staging",
     env=dict(
         region=os.environ["CDK_DEFAULT_REGION"],
         account=os.environ["CDK_DEFAULT_ACCOUNT"],
