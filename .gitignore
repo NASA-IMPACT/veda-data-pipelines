@@ -31,3 +31,4 @@ cdk.out/
 
 # Vim
 *.swo
+*cdk.context.json
