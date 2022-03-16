@@ -3,7 +3,7 @@ This handler expects a STAC_ITEM to be provided in JSON format. It then performs
 ```bash
 docker build -t db-write.
 # Currently runs an example for OMI Ozone
-docker run --env STAC_DB_USER=<user> --env STAC_DB_PASSWORD=<pw> --env STAC_DB_HOST=<host> db-write python -m handler
+docker run --env STAC_DB_USER=<user> --env PGPASSWORD=<pw> --env STAC_DB_HOST=<host> db-write python -m handler
 ```
 
 Example Input:
