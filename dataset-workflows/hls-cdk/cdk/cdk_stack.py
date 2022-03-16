@@ -217,7 +217,7 @@ class CdkStack(core.Stack):
             },
             reserved_concurrent_executions=3,
             vpc=database_vpc,
-            vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE),
+            #vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE),
             security_groups=[lambda_function_security_group],
         )
         pgstac_loader.add_to_role_policy(ec2_network_access)
