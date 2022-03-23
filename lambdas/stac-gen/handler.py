@@ -43,10 +43,22 @@ def upload_stac_to_s3(stac_dict):
         return None
 
 
-def create_item(properties, assets, datetime, cog_url, collection):
+def create_item(
+    properties,
+    assets,
+    datetime,
+    cog_url,
+    collection,
+    asset_name=None,
+    asset_roles=None,
+    asset_media_type=None
+):
     """
     Function to create a stac item from a COG using rio_stac
     """
+    asset_name = asset_name or ASSET_NAME
+    asset_roles = asset_roles or ASSET_ROLE
+    asset_media_type = asset_media_type or ASSET_MEDIA_TYPE
     try:
         item_id = Path(cog_url).stem
         rstac = create_stac_item(
@@ -60,9 +72,9 @@ def create_item(properties, assets, datetime, cog_url, collection):
             # TODO (aimee):
             # If we want to have multiple assets _and_ the raster stats from get_raster_info we need to make this conditional more flexible:
             # https://github.com/developmentseed/rio-stac/blob/0.3.2/rio_stac/stac.py#L315-L330
-            asset_name = "cog_default",
-            asset_roles = ["data", "layer"],
-            asset_media_type = "image/tiff; application=geotiff; profile=cloud-optimized",            
+            asset_name=asset_name,
+            asset_roles=asset_roles,
+            asset_media_type=asset_media_type,
         )
         print("Created item...")
     except Exception as e:
