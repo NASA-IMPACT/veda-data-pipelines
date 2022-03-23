@@ -32,3 +32,6 @@ cdk.out/
 # Vim
 *.swo
 *cdk.context.json
+
+cogify/env/*
+*/env/*

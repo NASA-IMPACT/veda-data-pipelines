@@ -9,15 +9,15 @@ INSERT INTO pgstac.collections (content) VALUES('{
             "title": "Mapping the world population one building at a time"
        }
    ],
-   "title":"Population Density (Facebook)",
+   "title":"Population Density Maps using satellite imagery built by Meta",
    "extent":{
       "spatial":{
          "bbox":[
             [
-               -180,
-               -90,
-               180,
-               90
+               -180.00041666666667,
+                -55.985972222324634,
+                179.82041666695605,
+                71.33069444444445
             ]
          ]
       },
@@ -30,9 +30,22 @@ INSERT INTO pgstac.collections (content) VALUES('{
          ]
       }
    },
-   "license":"public-domain",
+   "license":"MIT",
    "description":"Facebook high-resolution population density: Darker areas indicate higher population density areas and lighter areas indicate lower population density areas, with a 30m² resolution.",
-   "stac_version":"1.0.0"
+   "stac_version":"1.0.0",
+   "dashboard:is_periodic": false,
+   "dashboard:time_density": null,
+   "item_assets": {
+        "cog_default": {
+            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+            "roles": [
+                "data",
+                "layer"
+            ],
+            "title": "Default COG Layer",
+            "description": "Cloud optimized default layer to display on map"
+        }
+    }
 }')
 ON CONFLICT (id) DO UPDATE
   SET content = excluded.content;
