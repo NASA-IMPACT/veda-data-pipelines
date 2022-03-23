@@ -179,6 +179,9 @@ def create_stac_item_with_regex(event):
         datetime=dt,
         cog_url=cog_url,
         collection=collection,
+        asset_name=event.get("asset_name"),
+        asset_roles=event.get("asset_roles"),
+        asset_media_type=event.get("asset_media_type")
     )
 
     return stac_item
