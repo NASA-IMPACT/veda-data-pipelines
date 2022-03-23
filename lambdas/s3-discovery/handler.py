@@ -4,7 +4,6 @@ s3 = boto3.resource(
     "s3",
 )
 
-
 def list_bucket(bucket, prefix, file_type):
     try:
         files = []
@@ -34,13 +33,9 @@ def handler(event, context):
                 # Remove trailing back slash used for prefixing
                 "collection": event["prefix"][:-1],
                 "s3_filename": f's3://{event["bucket"]}/{f}',
-                "datetime_regex": {
-                    "regex": f"^(.*?)(_)([0-9][0-9][0-9][0-9])({event['file_type'})$",
-                    "target_group": 3,
-                },
+                "datetime_regex": event["datetime_regex"],
             }
         )
-    print(files_objs)
 
     return files_objs
 
@@ -49,9 +44,13 @@ if __name__ == "__main__":
     sample_event = {
         "bucket": "climatedashboard-data",
         # Directory
-        "prefix": "OMSO2PCA/",
+        "prefix": "OMSO2PCA-COG/",
         # File type
         "file_type": ".tif",
+        "datetime_regex": {
+            "regex": f"^(.*?)(_)([0-9][0-9][0-9][0-9])(.*?)(.tif)$",
+            "target_group": [3]
+        }
     }
 
     handler(sample_event, {})

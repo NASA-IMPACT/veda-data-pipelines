@@ -2,7 +2,7 @@
 
 This document describes how to update (insert/edit/delete) STAC collection metadata from a local machine into the `delta-backend-dev` database. Using cloud resources may be useful in the future for a tested and repeatable process, but a local process is all that is required at this time.
 
-These steps assumeg you can connect to the PG STAC database instance from another AWS resource (such as an EC2) or security group inbound rule permitting access for your IP.
+These steps assume you can connect to the PG STAC database instance from another AWS resource (such as an EC2) or security group inbound rule permitting access for your IP.
 
 ## Inserting/Updating collection metadata
 
@@ -19,9 +19,9 @@ Before you run these commands, you will need AWS credentials set in your environ
 ```bash
 export AWS_PGSTAC_SECRET_ID=delta-backend-dev/pgstac/XXX
 export SECRETS=$(aws secretsmanager get-secret-value --secret-id $AWS_PGSTAC_SECRET_ID | jq -c '.SecretString | fromjson')
-export DB_HOST=$(echo $SECRETS | jq -r .host)
-export DB_USERNAME=$(echo $SECRETS | jq -r .username)
-export DB_NAME=$(echo $SECRETS | jq -r .dbname)
+export STAC_DB_HOST=$(echo $SECRETS | jq -r .host)
+export STAC_DB_USER=$(echo $SECRETS | jq -r .username)
+export STAC_DB_NAME=$(echo $SECRETS | jq -r .dbname)
 # Setting this environment variable to surpass a psql password prompt
 export PGPASSWORD=$(echo $SECRETS | jq -r .password)
 ```
@@ -30,7 +30,7 @@ export PGPASSWORD=$(echo $SECRETS | jq -r .password)
 
 ```bash
 export COLLECTION_NAME=HLSS30.002
-psql -h $DB_HOST -U $DB_USERNAME -d $DB_NAME -f collections-sql/${COLLECTION_NAME}.sql
+psql -h $STAC_DB_HOST -U $STAC_DB_USER -d $STAC_DB_NAME -f collections-sql/${COLLECTION_NAME}.sql
 ```
 
 ## Deleting collection metadata
