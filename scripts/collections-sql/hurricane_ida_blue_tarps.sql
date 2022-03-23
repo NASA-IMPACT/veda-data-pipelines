@@ -24,9 +24,22 @@ INSERT INTO pgstac.collections (content) VALUES('{
          ]
       }
    },
-   "license":"public-domain",
+   "license":"MIT",
    "description":"Blue tarps were detected in the aftermath of Hurricane Ida using Planet Imagery. The detection algorithm involved segmenting out blue pixels from the buildings in the affected region.",
-   "stac_version":"1.0.0"
+   "stac_version":"1.0.0",
+   "dashboard:is_periodic": false,
+   "dashboard:time_density": "day",
+   "item_assets": {
+        "cog_default": {
+            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+            "roles": [
+                "data",
+                "layer"
+            ],
+            "title": "Default COG Layer",
+            "description": "Cloud optimized default layer to display on map"
+        }
+    }
 }')
 ON CONFLICT (id) DO UPDATE
   SET content = excluded.content;
