@@ -33,5 +33,4 @@ cdk.out/
 *.swo
 *cdk.context.json
 
-cogify/env/*
-*/env/*
+env/
