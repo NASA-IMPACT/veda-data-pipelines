@@ -18,9 +18,14 @@ INSERT INTO pgstac.collections (content) VALUES('{
       "temporal":{
          "interval":[
             [
+               "2021-08-23T00:00:00Z",
                "2021-09-26T00:00:00Z",
-               "2021-11-25T00:00:00Z"
+               "2021-11-24T00:00:00Z"
+               "2021-12-15T00:00:00Z",
+               "2022-01-11T00:00:00Z",
+               "2022-02-12T00:00:00Z",
             ]
+
          ]
       }
    },
@@ -37,7 +42,16 @@ INSERT INTO pgstac.collections (content) VALUES('{
                 "layer"
             ],
             "title": "Default COG Layer",
-            "description": "Cloud optimized default layer to display on map"
+            "description": "Cloud optimized default blue-tarp detection layer to display on map"
+        },
+        "cog_base": {
+            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+            "roles": [
+                "data",
+                "layer"
+            ],
+            "title": "Original COG Layer",
+            "description": "Cloud optimized building maps segmented from Planetscope layer to display on map"
         }
     }
 }')
