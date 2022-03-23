@@ -1,19 +1,25 @@
-from cmr import GranuleQuery
-import os
+import boto3
 import json
-from pathlib import Path
+import os
 import pystac
-from pystac.utils import str_to_datetime
-from shapely.geometry import shape
-from pypgstac import pypgstac
-from rio_stac.stac import bbox_to_geom, create_stac_item
 import re
 import sys
-import boto3
+
+from cmr import GranuleQuery
+from pathlib import Path
+from pypgstac import pypgstac
+from pystac.utils import str_to_datetime
+from rio_stac.stac import bbox_to_geom, create_stac_item
+from shapely.geometry import shape
+
 
 s3 = boto3.client(
     "s3",
 )
+
+ASSET_NAME = "cog_default"
+ASSET_ROLE = ["data", "layer"]
+ASSET_MEDIA_TYPE = "image/tiff; application=geotiff; profile=cloud-optimized"
 
 STAC_DB_HOST = os.environ.get("STAC_DB_HOST")
 STAC_DB_USER = os.environ.get("STAC_DB_USER")
