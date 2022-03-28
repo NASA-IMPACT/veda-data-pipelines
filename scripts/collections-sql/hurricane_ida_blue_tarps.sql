@@ -1,5 +1,5 @@
 INSERT INTO pgstac.collections (content) VALUES('{
-   "id": "Hurricane_Ida_Blue_Tarps",
+   "id": "blue-tarp-detection",
    "type": "Collection",
    "links":[
    ],
