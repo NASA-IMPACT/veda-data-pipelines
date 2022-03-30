@@ -39,7 +39,7 @@ INSERT INTO pgstac.collections (content) VALUES('{
             ],
             "title": "Default COG Layer",
             "description": "Cloud optimized default base PlanetScope image (used for blue-tarp detection) layer to display on map"
-        },
+        }
     }
 }')
 ON CONFLICT (id) DO UPDATE

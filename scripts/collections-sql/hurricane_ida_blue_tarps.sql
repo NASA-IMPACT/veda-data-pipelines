@@ -19,7 +19,7 @@ INSERT INTO pgstac.collections (content) VALUES('{
          "interval":[
             [
                "2021-08-23T00:00:00Z",
-               "2022-02-12T00:00:00Z",
+               "2022-02-12T00:00:00Z"
             ]
 
          ]
@@ -39,7 +39,7 @@ INSERT INTO pgstac.collections (content) VALUES('{
             ],
             "title": "Default COG Layer",
             "description": "Cloud optimized default blue-tarp detection layer to display on map"
-        },
+        }
     }
 }')
 ON CONFLICT (id) DO UPDATE
