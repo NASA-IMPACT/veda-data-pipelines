@@ -6,6 +6,8 @@ import re
 import sys
 
 from cmr import GranuleQuery
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from pathlib import Path
 from pypgstac import pypgstac
 from pystac.utils import str_to_datetime
