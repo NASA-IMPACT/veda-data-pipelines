@@ -191,6 +191,7 @@ def create_stac_item_with_cmr(event):
     )
     return stac_item
 
+
 def create_stac_item_with_regex(event):
     """
     Function to create a STAC item using a user provided regex to parse datetime from a filename
@@ -201,20 +202,26 @@ def create_stac_item_with_regex(event):
     assets = {}
 
     properties = event.get("properties", {})
+
     try:
-        start_datetime, end_datetime, single_datetime = extract_dates(cog_url)
-        if start_datetime and end_datetime:
+        datetime_range = event.get("datetime_range", None)
+        start_datetime, end_datetime, single_datetime = extract_dates(
+                cog_url,
+                datetime_range
+            )
+        if datetime_range or (start_datetime and end_datetime):
             properties['start_datetime'] = start_datetime
             properties['end_datetime'] = end_datetime
+            single_datetime = None
 
     except Exception as e:
         print(f"Could not parse date string from filename: {cog_url}")
         return e
 
     stac_item = create_item(
-        properties=event.get("properties", {}),
+        properties=properties,
         assets=assets,
-        datetime=dt,
+        datetime=single_datetime,
         cog_url=cog_url,
         collection=collection,
         asset_name=event.get("asset_name"),
