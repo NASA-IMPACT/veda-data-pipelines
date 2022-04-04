@@ -22,7 +22,25 @@ s3 = boto3.client(
 ASSET_NAME = "cog_default"
 ASSET_ROLE = ["data", "layer"]
 ASSET_MEDIA_TYPE = "image/tiff; application=geotiff; profile=cloud-optimized"
-DATE_REGEX = re.compile("\d{4}-\d{2}-\d{2}")
+DATE_REGEX_DICT = [
+    {
+        "regex": re.compile("\d{4}-\d{2}-\d{2}"),
+        "format": "%Y-%m-%d"
+    },
+    {
+        "regex": re.compile("\d{6}"),
+        "format": "%Y%m"
+    },
+    {
+        "regex": re.compile("\d{8}"),
+        "format": "%Y%m%d"
+    },
+    {
+        "regex": re.compile("\d{4}"),
+        "format": "%Y"
+    },
+]
+
 
 STAC_DB_HOST = os.environ.get("STAC_DB_HOST")
 STAC_DB_USER = os.environ.get("STAC_DB_USER")
