@@ -194,40 +194,31 @@ def handler(event, context):
         {
            "collection": "OMDOAO3e",
             "s3_filename": "s3://climatedashboard-data/OMSO2PCA/OMSO2PCA_LUT_SCD_2005.tif",
-            "datetime_regex": {
+            "filename_regex": {
                 "regex": "^(.*?)(_)([0-9][0-9][0-9][0-9])(.*?)(.tif)$",
-                # target_group is the group that contains the datetime string when the original filename is matched on the user provided regex
-                "target_group": 3
             }
         }
 
     """
     try:
-        if "granule_id" in event:
-            if "datetime_regex" in event:
-                raise Exception(
-                    "Either granule_id or datetime_regex must be provided, not both."
-                )
-                # Only granule_id provided, look up in CMR
-                stac_item = create_stac_item_with_cmr(event)
-        elif "datetime_regex" in event:
-            if "granule_id" in event:
-                raise Exception(
-                    "Either granule_id or datetime_regex must be provided, not both."
-                )
-            else:
-                if not isinstance(event["datetime_regex"]["target_group"], list):
-                    raise Exception(
-                        "Target group should be specified as a a list. Ex. [3]"
-                    )
+        granule_id = event.get("granule_id")
+        datetime_holder = event.get("filename_regex")
 
-                stac_item = create_stac_item_with_regex(event)
+        if granule_id and datetime_holder:
+            raise Exception(
+                "Either granule_id or filename_regex must be provided, not both."
+            )
+
+        if granule_id:
+            # Only granule_id provided, look up in CMR
+            stac_item = create_stac_item_with_cmr(event)
+        elif datetime_holder:
+            stac_item = create_stac_item_with_regex(event)
         else:
-            raise Exception("Either granule_id or datetime_regex must be provided")
+            raise Exception("Either granule_id or filename_regex must be provided")
     except Exception as e:
         print(e)
         return
-
     try:
         stac_dict = stac_item.to_dict()
         upload_stac_to_s3(stac_dict)
