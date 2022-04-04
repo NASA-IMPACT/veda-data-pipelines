@@ -231,12 +231,9 @@ def handler(event, context):
 if __name__ == "__main__":
     sample_event = {
         "collection": "social-vulnerability-index-housing",
-        "s3_filename": "s3://climatedashboard-data/social_vulnerability_index/svi_2000_tract_housing_wgs84_cog.tif",
-        "datetime_regex": {
+        "s3_filename": "s3://climatedashboard-data/social_vulnerability_index/svi_2000-01-01-2000-02-02_tract_housing_wgs84_cog.tif",
+        "filename_regex": {
             "regex": "^(.*?)_(\\d{4})_(.*?).tif$",
-            "target_group": [
-            2
-            ]
         },
         "properties": {}
     }
