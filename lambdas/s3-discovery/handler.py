@@ -1,15 +1,19 @@
 import boto3
+import re
 
 s3 = boto3.resource(
     "s3",
 )
 
-def list_bucket(bucket, prefix, file_type):
+def list_bucket(bucket, prefix, file_type, filename_regex):
     try:
         files = []
         bucket = s3.Bucket(bucket)
         for obj in bucket.objects.filter(Prefix=prefix):
-            if file_type:
+            if filename_regex:
+                if re.match(filename_regex, obj.key):
+                    files.append(obj.key)
+            elif file_type:
                 if obj.key.endswith(file_type):
                     files.append(obj.key)
             else:
@@ -23,7 +27,7 @@ def list_bucket(bucket, prefix, file_type):
 
 def handler(event, context):
     filenames = list_bucket(
-        bucket=event["bucket"], prefix=event["prefix"], file_type=event["file_type"]
+        bucket=event["bucket"], prefix=event.get("prefix"), file_type=event.get("file_type"), filename_regex=event.get("filename_regex")
     )
 
     files_objs = []
@@ -31,26 +35,27 @@ def handler(event, context):
         files_objs.append(
             {
                 # Remove trailing back slash used for prefixing
-                "collection": event["prefix"][:-1],
+                "collection": event.get("collection", event["prefix"][:-1]),
                 "s3_filename": f's3://{event["bucket"]}/{f}',
                 "datetime_regex": event["datetime_regex"],
             }
         )
-
     return files_objs
 
 
 if __name__ == "__main__":
     sample_event = {
         "bucket": "climatedashboard-data",
-        # Directory
-        "prefix": "OMSO2PCA-COG/",
-        # File type
+        "prefix": "social_vulnerability_index/",
         "file_type": ".tif",
+        "filename_regex": "^(.*)_housing_(.*)$",
         "datetime_regex": {
-            "regex": f"^(.*?)(_)([0-9][0-9][0-9][0-9])(.*?)(.tif)$",
-            "target_group": [3]
-        }
+            "regex": "^(.*?)_(\\d{4})_(.*?).tif$",
+            "target_group": [
+                2
+            ]
+        },
+        "collection": "social-vulnerability-index-housing"
     }
 
     handler(sample_event, {})

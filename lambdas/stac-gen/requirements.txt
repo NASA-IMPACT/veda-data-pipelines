@@ -1,7 +1,8 @@
 python-cmr
+click==8.0.4
 awslambdaric
-pystac
+pystac==1.4.0
 shapely
 rio-stac
-pypgstac
+pypgstac==0.4.5
 boto3
