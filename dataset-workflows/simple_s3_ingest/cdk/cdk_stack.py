@@ -38,6 +38,8 @@ class CdkStack(core.Stack):
 
         database_vpc = ec2.Vpc.from_lookup(self, f"{id}-vpc", vpc_id=config.VPC_ID)
 
+        database_security_group = ec2.SecurityGroup.from_security_group_id(self, "SG", config.SECURITY_GROUP_ID)
+
         lambda_function_security_group = ec2.SecurityGroup(
             self,
             f"{id}-lambda-sg",
@@ -50,6 +52,13 @@ class CdkStack(core.Stack):
             connection=ec2.Port(protocol=ec2.Protocol("ALL"), string_representation=""),
             description="Allow lambda security group all outbound access",
         )
+
+        database_security_group.add_ingress_rule(
+            lambda_function_security_group,
+            connection=ec2.Port.tcp(5432),
+            description="Allow pgstac database write access to lambda",
+        )
+
         # Discover function
         s3_discovery_lambda = aws_lambda.Function(
             self,
