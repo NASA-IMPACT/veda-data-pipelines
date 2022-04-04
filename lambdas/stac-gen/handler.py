@@ -153,18 +153,13 @@ def create_stac_item_with_regex(event):
     collection = event["collection"]
     assets = {}
 
-    datetime_regex = re.compile(event["datetime_regex"]["regex"])
+    properties = event.get("properties", {})
     try:
-        match = datetime_regex.match(cog_url)
-        print(match)
-        elements = [match.group(g) for g in event["datetime_regex"]["target_group"]]
-        print(elements)
-        datestring = "-".join(elements)
-        print(datestring)
-        # if only year, add in the month and day
-        if len(datestring) == 4:
-            datestring += '-01-01'
-        dt = str_to_datetime(datestring)
+        start_datetime, end_datetime, single_datetime = extract_dates(cog_url)
+        if start_datetime and end_datetime:
+            properties['start_datetime'] = start_datetime
+            properties['end_datetime'] = end_datetime
+
     except Exception as e:
         print(f"Could not parse date string from filename: {cog_url}")
         return e
