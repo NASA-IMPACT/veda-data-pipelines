@@ -41,6 +41,10 @@ DATE_REGEX_DICT = [
     },
 ]
 
+DATETIME_RANGE_METHODS = {
+    "month": calculate_month_range
+    "year": calculate_year_range
+}
 
 STAC_DB_HOST = os.environ.get("STAC_DB_HOST")
 STAC_DB_USER = os.environ.get("STAC_DB_USER")
@@ -106,23 +110,46 @@ def create_item(
     return rstac
 
 
-def extract_dates(filename):
+def calculate_year_range(datetime_obj):
+    start_datetime = datetime_obj.replace(month=1, day=1)
+    end_datetime = datetime_obj.replace(month=12, day=31)
+    return start_datetime, end_datetime
+
+
+def calculate_month_range(datetime_obj):
+    start_datetime = datetime_obj.replace(day=1)
+    end_datetime = datetime_obj + relativedelta(day=31)
+    return start_datetime, end_datetime
+
+
+def extract_dates(filename, datetime_range):
     """
     Extracts start, end, or single date string from filename
     and convert it to iso format datetime.
     """
-    dates = DATE_REGEX.findall(filename)
+    dates = []
+    for regex_dict in DATE_REGEX_DICT:
+        internal_dates = regex_dict['regex'].findall(filename)
+        dates += [datetime.strptime(dt, regex_dict['format']) for dt in internal_dates]
+        start and end datetime
+    dates = sort(dates)
+
     start_datetime = None
     end_datetime = None
     single_datetime = None
+
     total_dates = len(dates)
     if total_dates > 1:
-        start_datetime = str_to_datetime(dates[0])
-        end_datetime = str_to_datetime(dates[-1])
+        start_datetime = dates[0]
+        end_datetime = dates[-1]
     elif total_dates == 1:
-        single_datetime = str_to_datetime(dates[0])
+        single_datetime = dates[0]
+        start_datetime, end_datetime = DATETIME_RANGE_METHODS[datetime_range](
+            dates[0]
+        )
     elif total_dates == 0:
         raise Exception("No dates provided in filename. Atleast one date in format yyyy-mm-dd is required.")
+
     return start_datetime, end_datetime, single_datetime
 
 
