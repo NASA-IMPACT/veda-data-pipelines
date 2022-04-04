@@ -36,8 +36,7 @@ def handler(event, context):
             {
                 # Remove trailing back slash used for prefixing
                 "collection": event.get("collection", event["prefix"][:-1]),
-                "s3_filename": f's3://{event["bucket"]}/{f}',
-                "datetime_regex": event["datetime_regex"],
+                "s3_filename": f's3://{event["bucket"]}/{f}'
             }
         )
     return files_objs
@@ -49,12 +48,6 @@ if __name__ == "__main__":
         "prefix": "social_vulnerability_index/",
         "file_type": ".tif",
         "filename_regex": "^(.*)_housing_(.*)$",
-        "datetime_regex": {
-            "regex": "^(.*?)_(\\d{4})_(.*?).tif$",
-            "target_group": [
-                2
-            ]
-        },
         "collection": "social-vulnerability-index-housing"
     }
 
