@@ -1,8 +1,10 @@
-# Inserting Collection Metadata
+# Updating Collection Metadata
 
-This document describes how to insert STAC collection metadata from a local machine into the `delta-backend-dev` database. Using cloud resources may be useful in the future for a tested and repeatable process, but a local process is all that is required at this time.
+This document describes how to update (insert/edit/delete) STAC collection metadata from a local machine into the `delta-backend-dev` database. Using cloud resources may be useful in the future for a tested and repeatable process, but a local process is all that is required at this time.
 
 These steps assume you can connect to the PG STAC database instance from another AWS resource (such as an EC2) or security group inbound rule permitting access for your IP.
+
+## Inserting/Updating collection metadata
 
 ### Step 1: Generate collection sql
 
@@ -31,6 +33,21 @@ export COLLECTION_NAME=HLSS30.002
 psql -h $STAC_DB_HOST -U $STAC_DB_USER -d $STAC_DB_NAME -f collections-sql/${COLLECTION_NAME}.sql
 ```
 
-### Deleting collections
+## Deleting collection metadata
 
-... ADD ME ...
+Sometimes we might need to delete a collection metadata from the database (example: when you misspelled the `id` :eyes: ).
+The following command can be used to do so:
+
+```sql
+
+DELETE FROM pgstac.collections
+where content @> '{<property>: <value>}';
+
+```
+
+An example:
+
+```sql
+DELETE FROM pgstac.collections
+where content @> '{"id": "Hurrican_Ida_Blue_Tarps"}';
+```

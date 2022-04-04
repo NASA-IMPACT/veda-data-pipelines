@@ -122,27 +122,6 @@ def create_stac_item_with_cmr(event):
     )
     return stac_item
 
-def get_maria_dt(url):
-    if 'Stage0' in url:
-        start = str_to_datetime('2017-07-21')
-        end = str_to_datetime('2017-09-19')
-    elif 'Stage1' in url:
-        start = str_to_datetime('2017-09-20')
-        end = str_to_datetime('2017-11-20')
-    elif 'Stage2' in url:
-        start = str_to_datetime('2017-11-21')
-        end = str_to_datetime('2018-01-20')
-    elif 'Stage3' in url:
-        start = str_to_datetime('2018-01-21')
-        end = str_to_datetime('2018-03-20')
-    else:
-        raise Exception('Invalid')
-
-    return {
-        "start_datetime": start.strftime('%Y-%m-%dT%H:%M:%SZ'),
-        "end_datetime": end.strftime('%Y-%m-%dT%H:%M:%SZ')
-    }
-
 def create_stac_item_with_regex(event):
     """
     Function to create a STAC item using a user provided regex to parse datetime from a filename
@@ -152,14 +131,6 @@ def create_stac_item_with_regex(event):
     collection = event["collection"]
     assets = {}
 
-    # For maria
-    """
-    properties = get_maria_dt(cog_url)
-    dt = None
-    """
-
-    # For non maria
-    properties = {}
     datetime_regex = re.compile(event["datetime_regex"]["regex"])
     try:
         match = datetime_regex.match(cog_url)
@@ -168,13 +139,16 @@ def create_stac_item_with_regex(event):
         print(elements)
         datestring = "-".join(elements)
         print(datestring)
+        # if only year, add in the month and day
+        if len(datestring) == 4:
+            datestring += '-01-01'
         dt = str_to_datetime(datestring)
     except Exception as e:
         print(f"Could not parse date string from filename: {cog_url}")
         return e
 
     stac_item = create_item(
-        properties=properties,
+        properties=event.get("properties", {}),
         assets=assets,
         datetime=dt,
         cog_url=cog_url,
@@ -239,10 +213,8 @@ def handler(event, context):
 
     try:
         stac_dict = stac_item.to_dict()
-        print(stac_dict)
         upload_stac_to_s3(stac_dict)
     except Exception as e:
-        print(e)
         return e
 
     return {"stac_item": stac_dict}
@@ -250,14 +222,15 @@ def handler(event, context):
 
 if __name__ == "__main__":
     sample_event = {
-        "collection": "BMHD_Maria",
-        # "s3_filename": "s3://climatedashboard-data/OMDOAO3e/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5.tif",
-        # "granule_id": "G2205784904-GES_DISC",
-        "s3_filename": "s3://climatedashboard-data/BMHD_Maria_Stages/Maria_Stage3.tif",
+        "collection": "social-vulnerability-index-housing",
+        "s3_filename": "s3://climatedashboard-data/social_vulnerability_index/svi_2000_tract_housing_wgs84_cog.tif",
         "datetime_regex": {
-            "regex": "^(.*?BMHD_Ida)([0-9][0-9][0-9][0-9])(.*?)(_)([A-Za-z]+[0-9])(.tif)$",
-            "target_group": [3],
+            "regex": "^(.*?)_(\\d{4})_(.*?).tif$",
+            "target_group": [
+            2
+            ]
         },
+        "properties": {}
     }
 
     handler(sample_event, {})
