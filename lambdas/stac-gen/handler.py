@@ -20,10 +20,12 @@ s3 = boto3.client(
 ASSET_NAME = "cog_default"
 ASSET_ROLE = ["data", "layer"]
 ASSET_MEDIA_TYPE = "image/tiff; application=geotiff; profile=cloud-optimized"
+DATE_REGEX = re.compile("\d{4}-\d{2}-\d{2}")
 
 STAC_DB_HOST = os.environ.get("STAC_DB_HOST")
 STAC_DB_USER = os.environ.get("STAC_DB_USER")
 PGPASSWORD = os.environ.get("PGPASSWORD")
+
 
 def upload_stac_to_s3(stac_dict):
     fname = stac_dict["id"].split(".tif")[0]
@@ -82,6 +84,26 @@ def create_item(
         return f"failed to produce stac item for {cog_url}"
 
     return rstac
+
+
+def extract_dates(filename):
+    """
+    Extracts start, end, or single date string from filename
+    and convert it to iso format datetime.
+    """
+    dates = DATE_REGEX.findall(filename)
+    start_datetime = None
+    end_datetime = None
+    single_datetime = None
+    total_dates = len(dates)
+    if total_dates > 1:
+        start_datetime = str_to_datetime(dates[0])
+        end_datetime = str_to_datetime(dates[-1])
+    elif total_dates == 1:
+        single_datetime = str_to_datetime(dates[0])
+    elif total_dates == 0:
+        raise Exception("No dates provided in filename. Atleast one date in format yyyy-mm-dd is required.")
+    return start_datetime, end_datetime, single_datetime
 
 
 def create_stac_item_with_cmr(event):
