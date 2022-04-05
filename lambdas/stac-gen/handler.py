@@ -41,14 +41,26 @@ DATE_REGEX_DICT = [
     },
 ]
 
-DATETIME_RANGE_METHODS = {
-    "month": calculate_month_range
-    "year": calculate_year_range
-}
 
 STAC_DB_HOST = os.environ.get("STAC_DB_HOST")
 STAC_DB_USER = os.environ.get("STAC_DB_USER")
 PGPASSWORD = os.environ.get("PGPASSWORD")
+
+
+def calculate_year_range(datetime_obj):
+    start_datetime = datetime_obj.replace(month=1, day=1)
+    end_datetime = datetime_obj.replace(month=12, day=31)
+    return start_datetime, end_datetime
+
+def calculate_month_range(datetime_obj):
+    start_datetime = datetime_obj.replace(day=1)
+    end_datetime = datetime_obj + relativedelta(day=31)
+    return start_datetime, end_datetime
+
+DATETIME_RANGE_METHODS = {
+    "month": calculate_month_range,
+    "year": calculate_year_range
+}
 
 
 def upload_stac_to_s3(stac_dict):
@@ -109,19 +121,6 @@ def create_item(
 
     return rstac
 
-
-def calculate_year_range(datetime_obj):
-    start_datetime = datetime_obj.replace(month=1, day=1)
-    end_datetime = datetime_obj.replace(month=12, day=31)
-    return start_datetime, end_datetime
-
-
-def calculate_month_range(datetime_obj):
-    start_datetime = datetime_obj.replace(day=1)
-    end_datetime = datetime_obj + relativedelta(day=31)
-    return start_datetime, end_datetime
-
-
 def extract_dates(filename, datetime_range):
     """
     Extracts start, end, or single date string from filename
@@ -131,8 +130,7 @@ def extract_dates(filename, datetime_range):
     for regex_dict in DATE_REGEX_DICT:
         internal_dates = regex_dict['regex'].findall(filename)
         dates += [datetime.strptime(dt, regex_dict['format']) for dt in internal_dates]
-        start and end datetime
-    dates = sort(dates)
+    dates.sort()
 
     start_datetime = None
     end_datetime = None
@@ -209,13 +207,15 @@ def create_stac_item_with_regex(event):
                 cog_url,
                 datetime_range
             )
+        
         if datetime_range or (start_datetime and end_datetime):
-            properties['start_datetime'] = start_datetime
-            properties['end_datetime'] = end_datetime
+            properties['start_datetime'] = f"{start_datetime.isoformat()}Z"
+            properties['end_datetime'] = f"{end_datetime.isoformat()}Z"
             single_datetime = None
 
     except Exception as e:
         print(f"Could not parse date string from filename: {cog_url}")
+        print(e)
         return e
 
     stac_item = create_item(
@@ -274,8 +274,9 @@ def handler(event, context):
         print(e)
         return
     try:
+
         stac_dict = stac_item.to_dict()
-        upload_stac_to_s3(stac_dict)
+        # upload_stac_to_s3(stac_dict)
     except Exception as e:
         return e
 
@@ -284,12 +285,11 @@ def handler(event, context):
 
 if __name__ == "__main__":
     sample_event = {
-        "collection": "social-vulnerability-index-housing",
-        "s3_filename": "s3://climatedashboard-data/social_vulnerability_index/svi_2000-01-01-2000-02-02_tract_housing_wgs84_cog.tif",
-        "filename_regex": {
-            "regex": "^(.*?)_(\\d{4})_(.*?).tif$",
-        },
-        "properties": {}
+      "collection": "nightlights-hd-monthly",
+      "s3_filename": "s3://climatedashboard-data/delivery/BMHD_Maria_Stages/BeforeMaria_Stage0_2017-07-21_2017-09-19.tif",
+      "filename_regex": "^.*.tif$",
+      "granule_id": None,
+      "datetime_range": None
     }
 
     handler(sample_event, {})
