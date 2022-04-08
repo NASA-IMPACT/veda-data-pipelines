@@ -24,19 +24,19 @@ ASSET_ROLE = ["data", "layer"]
 ASSET_MEDIA_TYPE = "image/tiff; application=geotiff; profile=cloud-optimized"
 DATE_REGEX_DICT = [
     {
-        "regex": re.compile("\d{4}-\d{2}-\d{2}"),
+        "regex": re.compile("_\d{4}-\d{2}-\d{2}"),
         "format": "%Y-%m-%d"
     },
     {
-        "regex": re.compile("\d{6}"),
+        "regex": re.compile("_\d{6}"),
         "format": "%Y%m"
     },
     {
-        "regex": re.compile("\d{8}"),
+        "regex": re.compile("_\d{8}"),
         "format": "%Y%m%d"
     },
     {
-        "regex": re.compile("\d{4}"),
+        "regex": re.compile("_\d{4}"),
         "format": "%Y"
     },
 ]
@@ -129,7 +129,7 @@ def extract_dates(filename, datetime_range):
     dates = []
     for regex_dict in DATE_REGEX_DICT:
         internal_dates = regex_dict['regex'].findall(filename)
-        dates += [datetime.strptime(dt, regex_dict['format']) for dt in internal_dates]
+        dates += [datetime.strptime(dt.replace('_', ''), regex_dict['format']) for dt in internal_dates]
     dates.sort()
 
     start_datetime = None
