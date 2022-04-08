@@ -11,6 +11,7 @@ from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_sqs as sqs
 from aws_cdk import aws_s3 as s3
 
+
 class CdkStack(core.Stack):
     def __init__(self, scope: core.Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -175,5 +176,5 @@ class CdkStack(core.Stack):
         s3_wflow_definition = s3_start_state.next(s3_discover_task).next(map_stac_items)
 
         s3_wflow_state_machine = stepfunctions.StateMachine(
-            self, f"{name}-COG-StateMachine", definition=s3_wflow_definition
+            self, f"{name}-{config.ENV}-COG-StateMachine", definition=s3_wflow_definition, state_machine_name=f"{name}-{config.ENV}"
         )
