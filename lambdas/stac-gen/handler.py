@@ -24,7 +24,7 @@ ASSET_ROLE = ["data", "layer"]
 ASSET_MEDIA_TYPE = "image/tiff; application=geotiff; profile=cloud-optimized"
 DATE_REGEX_DICT = [
     {
-        "regex": re.compile("_(\d{4}-\d{2}-\d{2})|(\d{8})|(\d{6})|(\d{4})"),
+        "regex": re.compile("(_\d{4}-\d{2}-\d{2})|(_\d{8})|(_\d{6})|(_\d{4})"),
         "format": ["%Y-%m-%d", "%Y%m%d", "%Y%m", "%Y"]
     }
 ]
@@ -115,14 +115,16 @@ def extract_dates(filename, datetime_range):
     and convert it to iso format datetime.
     """
     dates = []
+
     for regex_dict in DATE_REGEX_DICT:
         internal_dates = regex_dict['regex'].findall(filename)
         for index, internal_date in enumerate(internal_dates[0]):
-            if internal_date:
+            if internal_date := internal_date.replace('_', ''):
                 dates += [
                     datetime.strptime(internal_date, regex_dict['format'][index])
                 ]
     dates.sort()
+
     start_datetime = None
     end_datetime = None
     single_datetime = None
@@ -279,7 +281,7 @@ def handler(event, context):
 if __name__ == "__main__":
     sample_event = {
       "collection": "nightlights-hd-monthly",
-      "s3_filename": "s3://climatedashboard-data/delivery/BMHD_Maria_Stages/BeforeMaria_Stage0_2017-07-21.tif",
+      "s3_filename": "s3://climatedashboard-data/delivery/BMHD_Maria_Stages/70001_BeforeMaria_Stage0_2017-07-21.tif",
       "filename_regex": "^.*.tif$",
       "granule_id": None,
       "datetime_range": None
