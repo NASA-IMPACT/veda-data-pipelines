@@ -8,10 +8,10 @@ INSERT INTO pgstac.collections (content) VALUES('{
       "spatial":{
          "bbox":[
             [
-               -90.3037818244749,
-               29.804659612978707,
-               -89.87578181971654,
-               30.07177072705947
+                -180,
+                -90,
+                180,
+                90
             ]
          ]
       },
@@ -28,7 +28,7 @@ INSERT INTO pgstac.collections (content) VALUES('{
    "description": "The High Definition Nightlights dataset is processed to eliminate light sources, including moonlight reflectance and other interferences. Darker colors indicate fewer night lights and less activity. Lighter colors indicate more night lights and more activity.",
    "stac_version": "1.0.0",
    "dashboard:is_periodic": false,
-   "dashboard:time_density": "month"
+   "dashboard:time_density": "month",
    "item_assets": {
       "cog_default": {
          "type": "image/tiff; application=geotiff; profile=cloud-optimized",
