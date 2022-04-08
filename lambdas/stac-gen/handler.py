@@ -5,14 +5,14 @@ import pystac
 import re
 import sys
 
-from cmr import GranuleQuery
+# from cmr import GranuleQuery
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from pathlib import Path
-from pypgstac import pypgstac
-from pystac.utils import str_to_datetime
-from rio_stac.stac import bbox_to_geom, create_stac_item
-from shapely.geometry import shape
+# from pathlib import Path
+# from pypgstac import pypgstac
+# from pystac.utils import str_to_datetime
+# from rio_stac.stac import bbox_to_geom, create_stac_item
+# from shapely.geometry import shape
 
 
 s3 = boto3.client(
@@ -24,21 +24,9 @@ ASSET_ROLE = ["data", "layer"]
 ASSET_MEDIA_TYPE = "image/tiff; application=geotiff; profile=cloud-optimized"
 DATE_REGEX_DICT = [
     {
-        "regex": re.compile("_\d{4}-\d{2}-\d{2}"),
-        "format": "%Y-%m-%d"
-    },
-    {
-        "regex": re.compile("_\d{6}"),
-        "format": "%Y%m"
-    },
-    {
-        "regex": re.compile("_\d{8}"),
-        "format": "%Y%m%d"
-    },
-    {
-        "regex": re.compile("_\d{4}"),
-        "format": "%Y"
-    },
+        "regex": re.compile("_(\d{4}-\d{2}-\d{2})|(\d{8})|(\d{6})|(\d{4})"),
+        "format": ["%Y-%m-%d", "%Y%m%d", "%Y%m", "%Y"]
+    }
 ]
 
 
@@ -129,9 +117,12 @@ def extract_dates(filename, datetime_range):
     dates = []
     for regex_dict in DATE_REGEX_DICT:
         internal_dates = regex_dict['regex'].findall(filename)
-        dates += [datetime.strptime(dt.replace('_', ''), regex_dict['format']) for dt in internal_dates]
+        for index, internal_date in enumerate(internal_dates[0]):
+            if internal_date:
+                dates += [
+                    datetime.strptime(internal_date, regex_dict['format'][index])
+                ]
     dates.sort()
-
     start_datetime = None
     end_datetime = None
     single_datetime = None
@@ -142,9 +133,10 @@ def extract_dates(filename, datetime_range):
         end_datetime = dates[-1]
     elif total_dates == 1:
         single_datetime = dates[0]
-        start_datetime, end_datetime = DATETIME_RANGE_METHODS[datetime_range](
-            dates[0]
-        )
+        if datetime_range:
+            start_datetime, end_datetime = DATETIME_RANGE_METHODS[datetime_range](
+                    dates[0]
+                )
     elif total_dates == 0:
         raise Exception("No dates provided in filename. Atleast one date in format yyyy-mm-dd is required.")
 
@@ -212,6 +204,7 @@ def create_stac_item_with_regex(event):
             properties['start_datetime'] = f"{start_datetime.isoformat()}Z"
             properties['end_datetime'] = f"{end_datetime.isoformat()}Z"
             single_datetime = None
+
 
     except Exception as e:
         print(f"Could not parse date string from filename: {cog_url}")
@@ -286,7 +279,7 @@ def handler(event, context):
 if __name__ == "__main__":
     sample_event = {
       "collection": "nightlights-hd-monthly",
-      "s3_filename": "s3://climatedashboard-data/delivery/BMHD_Maria_Stages/BeforeMaria_Stage0_2017-07-21_2017-09-19.tif",
+      "s3_filename": "s3://climatedashboard-data/delivery/BMHD_Maria_Stages/BeforeMaria_Stage0_2017-07-21.tif",
       "filename_regex": "^.*.tif$",
       "granule_id": None,
       "datetime_range": None
