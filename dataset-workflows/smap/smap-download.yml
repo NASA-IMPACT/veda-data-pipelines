@@ -1,0 +1,9 @@
+name: smap-download
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python
+  - xarray
+  - s3fs
+  - pip
