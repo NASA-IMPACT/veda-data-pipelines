@@ -1,10 +1,8 @@
 import datetime as dt
 from cmr import GranuleQuery
 import re
-import json
 import os
 import boto3
-
 
 
 def handler(event, context):
@@ -14,8 +12,10 @@ def handler(event, context):
     collection = event["collection"]
     version = event["version"]
 
-    enddate = dt.datetime.strptime(event['end_date'], '%Y-%m-%d %H:%M:%S') if 'end_date' in event else dt.datetime.now()
-    startdate = enddate - dt.timedelta(hours=event["hours"])
+    startdate = dt.datetime.strptime(event["temporal"][0], '%Y-%m-%dT%H:%M:%SZ')
+    enddate = dt.datetime.strptime(event["temporal"][1], '%Y-%m-%dT%H:%M:%SZ')
+    # enddate = dt.datetime.strptime(event['end_date'], '%Y-%m-%d %H:%M:%S') if 'end_date' in event else dt.datetime.now()
+    # startdate = enddate - dt.timedelta(hours=event["hours"])
     print(f"Querying for {collection} granules from {startdate} to {enddate}")
 
     api = GranuleQuery()
@@ -23,6 +23,7 @@ def handler(event, context):
         api.short_name(collection)
         .version(version)
         .temporal(startdate, enddate)
+        .bounding_box(*event["bounding_box"])
         .get_all()
     )
 
@@ -54,18 +55,19 @@ def handler(event, context):
         for item_url in urls:
             client.send_message(QueueUrl=QUEUE_URL, MessageBody=item_url['href'])
 
-    print(f"Returning urls {urls}")
+    print(f"Returning {len(urls)} urls")
     return urls
 
 
 if __name__ == "__main__":
     sample_event = {
         "hours": 4,
-        "end_date": "2021-07-29 05:00:00",
         "mode": "stac",
         "queue_messages": True,
-        "collection": "HLSS30",
+        "collection": "HLSL30",
         "version": "2.0",
         "include": "^.+he5$",
+        "temporal": ["2021-08-23T00:00:00Z","2022-02-12T00:00:00Z"],
+        "bounding_box": [-90.300691019583,29.791754950316868,-89.86300184384689,30.099979027371006]
     }
-    handler(sample_event, {})
+    print(handler(sample_event, {}))

@@ -1,25 +1,25 @@
 import os
+import queue
 import config
-from aws_cdk import core, aws_iam, custom_resources
-import aws_cdk.aws_stepfunctions as stepfunctions
-import aws_cdk.aws_events as events
-import aws_cdk.aws_events_targets as targets
+from aws_cdk import core, aws_iam
 from aws_cdk import aws_secretsmanager as secretsmanager
 from aws_cdk import aws_lambda
-from aws_cdk import aws_stepfunctions_tasks as tasks
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_sqs as sqs
 from aws_cdk import aws_s3 as s3
 from aws_cdk.aws_lambda_event_sources import SqsEventSource
 
-SECRET_NAME = os.environ["SECRET_NAME"]
+
+SECRET_NAME = config.SECRET_NAME
 
 class CdkStack(core.Stack):
     def __init__(self, scope: core.Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
         stack_name = construct_id
+        name = "hls-ingest"
+        stack = f"{name}-{config.ENV}"
 
-        collection = "HLSS30.002"
+        collection = "HLSL30.002"
 
         bucket = "climatedashboard-data"
 
@@ -56,9 +56,10 @@ class CdkStack(core.Stack):
         ingest_queue = sqs.Queue(
             self,
             f"{id}-ingest-queue",
+            queue_name=f"{stack}-ingest-queue",
             dead_letter_queue=sqs.DeadLetterQueue(
                 max_receive_count=5,
-                queue=sqs.Queue(self, id=f"{id}-cog-ingest-dead-letter-queue"),
+                queue=sqs.Queue(self, id=f"{id}-cog-ingest-dead-letter-queue", queue_name=f"{stack}-ingest-dead-letter-queue"),
             ),
             # same visibility as lambda function
             visibility_timeout=core.Duration.minutes(15),
@@ -90,6 +91,7 @@ class CdkStack(core.Stack):
         cmr_discover_lambda = aws_lambda.Function(
             self,
             f"{id}-{collection}-discover-fn",
+            function_name=f"{stack}-cmr-discover-fn",
             code=aws_lambda.Code.from_asset_image(
                 directory="../../lambdas/cmr-query",
                 file="Dockerfile",
@@ -142,6 +144,7 @@ class CdkStack(core.Stack):
         build_ndjson_function = aws_lambda.Function(
             self,
             f"{id}-build_ndjson-lambda",
+            function_name=f"{stack}-build_ndjson-fn",
             role=build_ndjson_role,
             code=aws_lambda.Code.from_asset_image(
                 directory="../../lambdas/ndjson-builder",
@@ -156,7 +159,7 @@ class CdkStack(core.Stack):
             environment={
                 "BUCKET": ndjson_bucket.bucket_name,
                 "QUEUE_URL": ndjson_queue.queue_url,
-                "COLLECTION": "HLSS30.002"
+                "COLLECTION": "HLSL30.002"
             },
         )
 
@@ -183,10 +186,10 @@ class CdkStack(core.Stack):
 
         ndjson_bucket.grant_read(pgstac_loader_role)
 
-        pgstac_secret = secretsmanager.Secret.from_secret_arn(
+        pgstac_secret = secretsmanager.Secret.from_secret_name(
             self,
             id="PGStacSecret",
-            secret_arn=SECRET_NAME,
+            secret_name=SECRET_NAME,
         )
 
         pgstac_secret.grant_read(pgstac_loader_role)
@@ -201,6 +204,7 @@ class CdkStack(core.Stack):
         pgstac_loader = aws_lambda.Function(
             self,
             f"{id}-pgstac-loader-lambda",
+            function_name=f"{stack}-pgstac-loader-fn",
             role=pgstac_loader_role,
             code=aws_lambda.Code.from_asset_image(
                 directory="../../lambdas/pgstac-loader",

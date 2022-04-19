@@ -1,14 +1,10 @@
 import os
 import config
-from aws_cdk import core, aws_iam, custom_resources
+from aws_cdk import core, aws_iam
 import aws_cdk.aws_stepfunctions as stepfunctions
-import aws_cdk.aws_events as events
-import aws_cdk.aws_events_targets as targets
-from aws_cdk import aws_secretsmanager as secretsmanager
 from aws_cdk import aws_lambda
 from aws_cdk import aws_stepfunctions_tasks as tasks
 from aws_cdk import aws_ec2 as ec2
-from aws_cdk import aws_sqs as sqs
 from aws_cdk import aws_s3 as s3
 
 
@@ -60,10 +56,11 @@ class CdkStack(core.Stack):
             description="Allow pgstac database write access to lambda",
         )
 
-        # Discover function
+        # Lambda function: Discover from s3
         s3_discovery_lambda = aws_lambda.Function(
             self,
             f"{id}-discover-fn",
+            function_name=f"{name}-{config.ENV}-discover-fn",
             code=aws_lambda.Code.from_asset_image(
                 directory="../../lambdas/s3-discovery",
                 file="Dockerfile",
@@ -89,9 +86,27 @@ class CdkStack(core.Stack):
             )
         )
 
+        # Lambda function: Discover from CMR
+        cmr_discovery_lambda = aws_lambda.Function(
+            self,
+            f"{id}-cmr-discovery-fn",
+            function_name=f"{name}-{config.ENV}-cmr-discovery-fn",
+            code=aws_lambda.Code.from_asset_image(
+                directory="../../lambdas/cmr-query",
+                file="Dockerfile",
+                entrypoint=["/usr/local/bin/python", "-m", "awslambdaric"],
+                cmd=["handler.handler"],
+            ),
+            handler=aws_lambda.Handler.FROM_IMAGE,
+            runtime=aws_lambda.Runtime.FROM_IMAGE,
+            memory_size=1024,
+            timeout=core.Duration.seconds(30),
+        )
+
         generate_stac_item_lambda = aws_lambda.Function(
             self,
             f"{id}-{name}-generate-stac-item-fn",
+            function_name=f"{name}-{config.ENV}-generate-stac-item-fn",
             code=aws_lambda.Code.from_asset_image(
                 directory="../../lambdas/stac-gen",
                 file="Dockerfile",
@@ -116,10 +131,10 @@ class CdkStack(core.Stack):
             ],
         )
 
-
         db_write_lambda = aws_lambda.Function(
             self,
             f"{id}-{name}-write-db-fn",
+            function_name=f"{name}-{config.ENV}-write-db-fn",
             role=db_write_role,
             code=aws_lambda.Code.from_asset_image(
                 directory="../../lambdas/db-write",
@@ -146,6 +161,9 @@ class CdkStack(core.Stack):
         db_write_lambda.add_to_role_policy(ec2_network_access)
 
         s3_start_state = stepfunctions.Pass(self, "S3 Discovery StartState")
+        cmr_discover_task = tasks.LambdaInvoke(
+            self, "CMR Discover Task", lambda_function=cmr_discovery_lambda
+        )
         s3_discover_task = tasks.LambdaInvoke(
             self, "S3 Discover Task", lambda_function=s3_discovery_lambda
         )
@@ -173,7 +191,9 @@ class CdkStack(core.Stack):
         # Create stac item for each element
         map_stac_items.iterator(s3_generate_stac_item_task.next(s3_db_write_task))
 
-        s3_wflow_definition = s3_start_state.next(s3_discover_task).next(map_stac_items)
+        s3_wflow_definition = s3_start_state.next(
+            stepfunctions.Choice(self, "Discovery Choice (CMR or S3)").when(stepfunctions.Condition.string_equals("$.discovery", "s3"), s3_discover_task.next(map_stac_items)).when(stepfunctions.Condition.string_equals("$.discovery", "cmr"), cmr_discover_task.next(map_stac_items)).otherwise(stepfunctions.Fail(self, "Discovery Type not supported"))
+        )
 
         s3_wflow_state_machine = stepfunctions.StateMachine(
             self, f"{name}-{config.ENV}-COG-StateMachine", definition=s3_wflow_definition, state_machine_name=f"{name}-{config.ENV}"

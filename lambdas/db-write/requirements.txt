@@ -3,5 +3,5 @@ awslambdaric
 pystac
 shapely
 rio-stac
-pypgstac
+pypgstac==0.4.5
 boto3

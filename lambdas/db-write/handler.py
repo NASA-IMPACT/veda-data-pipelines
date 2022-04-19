@@ -1,13 +1,6 @@
-from cmr import GranuleQuery
 import os
 import json
-import pystac
-from pystac.utils import str_to_datetime
-from shapely.geometry import shape
 from pypgstac import pypgstac
-from rio_stac.stac import bbox_to_geom, create_stac_item
-import re
-import sys
 import boto3
 
 STAC_DB_HOST = os.environ.get("STAC_DB_HOST")
@@ -25,10 +18,10 @@ def handler(event, context):
 
     if "stac_item" in event:
         stac_json = event["stac_item"]
+        print(stac_json)
         with open(stac_temp_file_name, "w+") as f:
-            f.write(json.dumps(stac_json))
+            json.dump(stac_json, f)
     elif "stac_file_url" in event:
-        print('download')
         s3_client.download_file(
             "climatedashboard-data", event["stac_file_url"], stac_temp_file_name
         )
@@ -37,7 +30,7 @@ def handler(event, context):
 
     try:
         pypgstac.load(
-            table="items",
+            table=event.get("type", "items"),
             file=stac_temp_file_name,
             dsn=f"postgres://{STAC_DB_USER}:{PGPASSWORD}@{STAC_DB_HOST}/postgis",
             # use upsert
@@ -51,10 +44,16 @@ def handler(event, context):
 
 
 if __name__ == "__main__":
-    sample_event = (json.loads(open("sample-stac-item.json", "r").read()))
+    sample_item = json.load(open("sample-stac-item.json", "r"))
 
     sample_download = {
-        "stac_file_url": "stac_item_queue/Maria_Stage3.json"
+        "stac_file_url": "stac_item_queue/Maria_Stage3.json",
+        "type": "items"
     }
 
-    handler(sample_event, {})
+    sample_item_event = {
+        "stac_item": sample_item,
+        "type": "collections"
+    }
+
+    handler(sample_item_event, {})
