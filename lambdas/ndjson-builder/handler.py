@@ -48,7 +48,6 @@ def handler(event: SQSEvent, context):
     BUCKET = os.environ["BUCKET"]
     QUEUE_URL = os.environ["QUEUE_URL"]
     COLLECTION = os.environ["COLLECTION"]
-    print(event)
     item_urls = [record.body for record in event.records]
     print(event)
     print(item_urls)
