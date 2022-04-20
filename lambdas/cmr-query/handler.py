@@ -14,8 +14,6 @@ def handler(event, context):
 
     startdate = dt.datetime.strptime(event["temporal"][0], '%Y-%m-%dT%H:%M:%SZ')
     enddate = dt.datetime.strptime(event["temporal"][1], '%Y-%m-%dT%H:%M:%SZ')
-    # enddate = dt.datetime.strptime(event['end_date'], '%Y-%m-%d %H:%M:%S') if 'end_date' in event else dt.datetime.now()
-    # startdate = enddate - dt.timedelta(hours=event["hours"])
     print(f"Querying for {collection} granules from {startdate} to {enddate}")
 
     api = GranuleQuery()
@@ -61,13 +59,12 @@ def handler(event, context):
 
 if __name__ == "__main__":
     sample_event = {
-        "hours": 4,
         "mode": "stac",
-        "queue_messages": True,
-        "collection": "HLSL30",
+        "queue_messages": False,
+        "collection": "HLSS30",
         "version": "2.0",
         "include": "^.+he5$",
-        "temporal": ["2021-08-23T00:00:00Z","2022-02-12T00:00:00Z"],
-        "bounding_box": [-90.300691019583,29.791754950316868,-89.86300184384689,30.099979027371006]
+        "temporal": ["2018-01-21T00:00:00Z","2018-03-20T23:59:59Z"],
+        "bounding_box": [-67.2716765, 17.9121390, -65.5747876, 18.5156946]
     }
-    print(handler(sample_event, {}))
+    handler(sample_event, {})
