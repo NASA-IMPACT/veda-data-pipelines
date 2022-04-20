@@ -25,9 +25,13 @@ def handler(event, context):
         s3_client.download_file(
             "climatedashboard-data", event["stac_file_url"], stac_temp_file_name
         )
-        print(open(stac_temp_file_name).read())
-    # pypgstac requires inserting from a file
 
+    if event.get("dry_run"):
+        print("Dry run, not inserting, would have inserted:")
+        print(open(stac_temp_file_name).read())
+        return
+
+    # pypgstac requires inserting from a file
     try:
         pypgstac.load(
             table=event.get("type", "items"),
@@ -53,7 +57,8 @@ if __name__ == "__main__":
 
     sample_item_event = {
         "stac_item": sample_item,
-        "type": "collections"
+        "type": "collections",
+        "dry_run": True
     }
 
     handler(sample_item_event, {})
