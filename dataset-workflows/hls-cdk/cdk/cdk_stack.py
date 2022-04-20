@@ -19,7 +19,7 @@ class CdkStack(core.Stack):
         name = "hls-ingest"
         stack = f"{name}-{config.ENV}"
 
-        collection = "HLSL30.002"
+        collection = config.COLLECTION
 
         bucket = "climatedashboard-data"
 
@@ -29,13 +29,13 @@ class CdkStack(core.Stack):
             ndjson_bucket = s3.Bucket(
                 self,
                 "NDJsonBucket",
-                bucket_name=f"{stack_name}-ndjson",
+                bucket_name=f"{name}-ndjson",
             )
         except:
             ndjson_bucket = s3.Bucket.from_bucket_name(
                 self,
                 "NDJsonBucket",
-                bucket_name=f"{stack_name}-ndjson",
+                bucket_name=f"{name}-ndjson",
             )
 
         ec2_network_access = aws_iam.PolicyStatement(
@@ -52,6 +52,7 @@ class CdkStack(core.Stack):
         )
 
         database_vpc = ec2.Vpc.from_lookup(self, f"{id}-vpc", vpc_id=config.VPC_ID)
+        database_security_group = ec2.SecurityGroup.from_security_group_id(self, "SG", config.SECURITY_GROUP_ID)
 
         ingest_queue = sqs.Queue(
             self,
@@ -86,6 +87,11 @@ class CdkStack(core.Stack):
             description="Allow lambda security group all outbound access",
         )
 
+        database_security_group.add_ingress_rule(
+            lambda_function_security_group,
+            connection=ec2.Port.tcp(5432),
+            description="Allow pgstac database write access to lambda",
+        )
 
         # Discover function
         cmr_discover_lambda = aws_lambda.Function(
@@ -128,15 +134,17 @@ class CdkStack(core.Stack):
         ndjson_dlq = sqs.Queue(
             self,
             "NDJsonDLQ",
+            queue_name=f"{stack}-ndjson-dlq",
             retention_period=core.Duration.days(14),
         )
         ndjson_queue = sqs.Queue(
             self,
             "NDJsonQueue",
+            queue_name=f"{stack}-ndjson-queue",
             visibility_timeout=core.Duration.minutes(15),
             dead_letter_queue=sqs.DeadLetterQueue(
                 max_receive_count=3,
-                queue=ndjson_dlq,
+                queue=ndjson_dlq
             ),
         )
 
@@ -159,7 +167,7 @@ class CdkStack(core.Stack):
             environment={
                 "BUCKET": ndjson_bucket.bucket_name,
                 "QUEUE_URL": ndjson_queue.queue_url,
-                "COLLECTION": "HLSL30.002"
+                "COLLECTION": config.COLLECTION
             },
         )
 
@@ -186,7 +194,7 @@ class CdkStack(core.Stack):
 
         ndjson_bucket.grant_read(pgstac_loader_role)
 
-        pgstac_secret = secretsmanager.Secret.from_secret_name(
+        pgstac_secret = secretsmanager.Secret.from_secret_name_v2(
             self,
             id="PGStacSecret",
             secret_name=SECRET_NAME,
