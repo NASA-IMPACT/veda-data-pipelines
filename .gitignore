@@ -1,7 +1,3 @@
-# Ignore terraform files
-.terraform
-variables.tf
-
 # Ignore files downloaded when installing HDF4 libraries
 HDF-4.2.15-Darwin/
 hdf-4.2.15-osx1013_64-clang.tar.gz
@@ -28,9 +24,11 @@ __pycache__
 *.he5
 sample-files/
 cdk.out/
+cdk.context.json
 
 # Vim
 *.swo
 *cdk.context.json
 
+# Virtual Environments
 *env/
