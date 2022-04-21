@@ -5,3 +5,5 @@ import os
 VPC_ID = os.environ.get("VPC_ID")
 SECURITY_GROUP_ID = os.environ.get("SECURITY_GROUP_ID")
 ENV = os.environ.get("ENV")
+APP_NAME = "SimpleIngest"
+BUCKET_NAME = "climatedashboard-data"
