@@ -1,4 +1,4 @@
-This docker image queries CMR for metadata associated with a granule, creates a STAC Item and then inserts it into a remote database.
+This docker image creates a STAC Item and then inserts it into a remote database. If `granule_id` is passed in the input, the function queries CMR for metadata associated with a granule and uses the CMR metadata in the STAC metadata.
 
 ```bash
 docker build -t stac-gen .
