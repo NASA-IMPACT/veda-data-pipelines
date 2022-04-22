@@ -8,6 +8,7 @@ from cdk.lambda_stack import LambdaStack
 from cdk.iam_policies import IamPolicies
 from cdk.step_function_stack import StepFunctionStack
 from cdk.vpc_stack import VpcStack
+from cdk.queue_stack import QueueStack
 
 import config
 
@@ -40,10 +41,17 @@ lambda_stack = LambdaStack(
 
 vpc_stack.add_rds_write_ingress(lambda_stack.lambda_sg)
 
+queue_stack = QueueStack(
+    app,
+    f"{config.APP_NAME}-queue",
+    lambda_stack,
+    env=env_details
+)
+
 step_function_stack = StepFunctionStack(
     app,
     f"{config.APP_NAME}-stepfunction",
-    **lambda_stack.lambdas,
+    lambda_stack,
     env=env_details
 )
 

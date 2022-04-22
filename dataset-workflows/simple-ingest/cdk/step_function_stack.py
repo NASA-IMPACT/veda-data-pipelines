@@ -10,14 +10,18 @@ class StepFunctionStack(core.Stack):
         self,
         app,
         construct_id,
-        s3_discovery_lambda,
-        cmr_discovery_lambda,
-        cogify_lambda,
-        generate_stac_item_lambda,
-        db_write_lambda,
+        lambda_stack,
         **kwargs
     ):
         super().__init__(app, construct_id, **kwargs)
+
+        lambdas = lambda_stack.lambdas
+        s3_discovery_lambda = lambdas["s3_discovery_lambda"]
+        cmr_discovery_lambda = lambdas["cmr_discovery_lambda"]
+        cogify_lambda = lambdas["cogify_lambda"]
+        generate_stac_item_lambda = lambdas["generate_stac_item_lambda"]
+        db_write_lambda = lambdas["db_write_lambda"]
+
         cmr_discover_task = self._lambda_task("CMR Discover Task", cmr_discovery_lambda)
         s3_discover_task = self._lambda_task("S3 Discover Task", s3_discovery_lambda)
         cogify_task = self._lambda_task("Cogify", cogify_lambda)

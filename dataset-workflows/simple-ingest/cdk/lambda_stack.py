@@ -5,6 +5,8 @@ from aws_cdk import (
     aws_ec2 as ec2,
 )
 
+import config
+
 
 class LambdaStack(core.Stack):
     def __init__(self, app, construct_id, database_vpc, iam_stack, **kwargs) -> None:
@@ -39,17 +41,37 @@ class LambdaStack(core.Stack):
             security_groups=[self._lambda_sg]
         )
 
+        # Builds ndjson
+        build_ndjson_lambda = self._lambda(f"{construct_id}-build-ndjson-fn", "../../lambdas/ndjson-builder",
+            memory_size=8000,
+            timeout=600
+        )
+
+        # PGStac loader
+        pgstac_loader_lambda = self._lambda(f"{construct_id}-loader-fn", "../../lambdas/pgstac-loader",
+            memory_size=8000,
+            timeout=600,
+            env={
+                "SECRET_NAME": config.SECRET_NAME
+            },
+            reserved_concurrent_executions=3,
+            vpc=database_vpc,
+            security_groups=[self._lambda_sg],
+        )
+
         self._lambdas = {
             "s3_discovery_lambda": s3_discovery_lambda,
             "cmr_discovery_lambda": cmr_discovery_lambda,
             "cogify_lambda": cogify_lambda,
             "generate_stac_item_lambda": generate_stac_item_lambda,
             "db_write_lambda": db_write_lambda,
+            "build_ndjson_lambda": build_ndjson_lambda,
+            "pgstac_loader_lambda": pgstac_loader_lambda,
         }
 
         self.give_permissions(iam_stack)
 
-    def _lambda(self, name, dir, memory_size=1024, timeout=30, env=None, vpc=None, security_groups=None):
+    def _lambda(self, name, dir, memory_size=1024, timeout=30, env=None, vpc=None, security_groups=None, reserved_concurrent_executions=None):
         return aws_lambda.Function(
             self,
             name,
@@ -67,6 +89,7 @@ class LambdaStack(core.Stack):
             environment=env,
             vpc=vpc,
             security_groups=security_groups,
+            reserved_concurrent_executions=reserved_concurrent_executions,
         )
 
     def _lambda_sg_for_db(self, construct_id, database_vpc):
