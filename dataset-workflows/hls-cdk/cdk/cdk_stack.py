@@ -1,5 +1,3 @@
-import os
-import queue
 import config
 from aws_cdk import core, aws_iam
 from aws_cdk import aws_secretsmanager as secretsmanager
