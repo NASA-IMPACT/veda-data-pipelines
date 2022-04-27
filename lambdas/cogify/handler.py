@@ -173,8 +173,10 @@ def handler(event, context):
     to_cog_config["filename"] = downloaded_filename
     to_cog_config["collection"] = collection
 
-    return_obj = {"granule_id": event["granule_id"],
-                  "collection": event["collection"]}
+    return_obj = {
+        "granule_id": event["granule_id"],
+        "collection": event["collection"]
+    }
 
     if event["upload"]:
         upload = True

@@ -4,6 +4,7 @@ import os
 import pystac
 import re
 import sys
+import traceback
 
 from cmr import GranuleQuery
 from pathlib import Path
@@ -12,10 +13,7 @@ from pystac.utils import str_to_datetime
 from rio_stac.stac import bbox_to_geom, create_stac_item
 from shapely.geometry import shape
 
-
-s3 = boto3.client(
-    "s3",
-)
+s3 = boto3.client("s3")
 
 ASSET_NAME = "cog_default"
 ASSET_ROLE = ["data", "layer"]
@@ -187,6 +185,33 @@ def create_stac_item_with_regex(event):
     return stac_item
 
 
+def create_stac_item_with_static(event):
+    """
+    Function to create a STAC item using an s3 provided datetime
+    """
+
+    cog_url = event["s3_filename"]
+    cog_datetime = event["s3_datetime"]
+    collection = event["collection"]
+    assets = {}
+    properties = {}
+
+    dt = str_to_datetime(cog_datetime)
+
+    stac_item = create_item(
+        properties=properties,
+        assets=assets,
+        datetime=dt,
+        cog_url=cog_url,
+        collection=collection,
+        asset_name=event.get("asset_name"),
+        asset_roles=event.get("asset_roles"),
+        asset_media_type=event.get("asset_media_type")
+    )
+
+    return stac_item
+
+
 def handler(event, context):
     """
     Lambda handler for STAC Collection Item generation
@@ -211,6 +236,8 @@ def handler(event, context):
         }
 
     """
+    print(event)
+
     try:
         if "granule_id" in event:
             if "datetime_regex" in event:
@@ -231,11 +258,15 @@ def handler(event, context):
                     )
 
                 stac_item = create_stac_item_with_regex(event)
+        elif "s3_datetime" in event:
+            stac_item = create_stac_item_with_static(event)
         else:
             raise Exception("Either granule_id or datetime_regex must be provided")
+
     except Exception as e:
         print(e)
-        return
+        print(traceback.format_exc())
+        return e
 
     try:
         stac_dict = stac_item.to_dict()
@@ -243,12 +274,14 @@ def handler(event, context):
         upload_stac_to_s3(stac_dict)
     except Exception as e:
         print(e)
+        print(traceback.format_exc())
         return e
 
     return {"stac_item": stac_dict}
 
 
 if __name__ == "__main__":
+    """
     sample_event = {
         "collection": "BMHD_Maria",
         # "s3_filename": "s3://climatedashboard-data/OMDOAO3e/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5.tif",
@@ -259,5 +292,8 @@ if __name__ == "__main__":
             "target_group": [3],
         },
     }
+    """
+
+    sample_event = {'s3_filename': 's3://climatedashboard-data/default/GRDI_ConstituentRaster_wz_SHDI.tif', 'collection': 'default', 's3_datetime': '2022-04-18T20:26:32+00:00'} 
 
     handler(sample_event, {})

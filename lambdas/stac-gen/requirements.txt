@@ -2,6 +2,6 @@ python-cmr
 awslambdaric
 pystac
 shapely
-rio-stac
+rio-stac==0.4.1
 pypgstac
 boto3

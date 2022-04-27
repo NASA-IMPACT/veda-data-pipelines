@@ -11,7 +11,7 @@ def list_bucket(bucket, prefix, file_type):
         for obj in bucket.objects.filter(Prefix=prefix):
             if file_type:
                 if obj.key.endswith(file_type):
-                    files.append(obj.key)
+                    files.append(obj)
             else:
                 files.append(obj.key)
         return files
@@ -27,15 +27,20 @@ def handler(event, context):
     )
 
     files_objs = []
-    for f in filenames:
-        files_objs.append(
-            {
-                # Remove trailing back slash used for prefixing
-                "collection": event["prefix"][:-1],
-                "s3_filename": f's3://{event["bucket"]}/{f}',
-                "datetime_regex": event["datetime_regex"],
-            }
-        )
+    for obj in filenames:
+        print(obj);
+
+        res = {
+            # Remove trailing back slash used for prefixing
+            "collection": event["prefix"][:-1],
+            "s3_filename": f's3://{event["bucket"]}/{obj.key}',
+            "s3_datetime": obj.last_modified.isoformat()
+        }
+
+        if event.get('datetime_regex') is not None:
+            res["datetime_regex"] = event["datetime_regex"],
+
+        files_objs.append(res)
 
     return files_objs
 
