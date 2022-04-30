@@ -32,3 +32,4 @@ cdk.out/
 # Vim
 *.swo
 *cdk.context.json
+dataset-workflows/cogify-cdk/deploy
