@@ -2,7 +2,7 @@ INSERT INTO pgstac.collections (content) VALUES('{
     "id": "grdi-v1-built",
     "type": "Collection",
     "title": "GRDI BUILT Constituent Raster",
-    "description": "Global Gridded Relative Deprivation Index (GRDI) BUILT Constituent raster, indexed 0 to 100",
+    "description": "Global Gridded Relative Deprivation Index (GRDI) built-up area (BUILT) Constituent raster, indexed 0 to 100",
     "stac_version": "1.0.0",
     "license": "MIT",
     "links": [],

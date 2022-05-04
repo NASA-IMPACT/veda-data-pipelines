@@ -2,7 +2,7 @@ INSERT INTO pgstac.collections (content) VALUES('{
     "id": "grdi-imr-raster",
     "type": "Collection",
     "title": "GRDI IMR Constituent Raster",
-    "description": "Global Gridded Relative Deprivation Index (GRDI) IMR Constituent raster",
+    "description": "Global Gridded Relative Deprivation Index (GRDI) Infant Mortality Rate (IMR) Constituent raster",
     "stac_version": "1.0.0",
     "license": "MIT",
     "links": [],

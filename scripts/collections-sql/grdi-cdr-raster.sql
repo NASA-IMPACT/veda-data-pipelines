@@ -2,7 +2,7 @@ INSERT INTO pgstac.collections (content) VALUES('{
     "id": "grdi-cdr-raster",
     "type": "Collection",
     "title": "GRDI CDR Constituent Raster",
-    "description": "Global Gridded Relative Deprivation Index (GRDI) CDR Constituent raster",
+    "description": "Global Gridded Relative Deprivation Index (GRDI) Child Dependency Ratio (CDR) Constituent raster",
     "stac_version": "1.0.0",
     "license": "MIT",
     "links": [],

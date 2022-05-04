@@ -2,7 +2,7 @@ INSERT INTO pgstac.collections (content) VALUES('{
     "id": "grdi-shdi-raster",
     "type": "Collection",
     "title": "GRDI SHDI Constituent Raster",
-    "description": "Global Gridded Relative Deprivation Index (GRDI) SHDI Constituent raster",
+    "description": "Global Gridded Relative Deprivation Index (GRDI) Subnational Human Development Index (SHDI) Constituent raster",
     "stac_version": "1.0.0",
     "license": "MIT",
     "links": [],

@@ -2,7 +2,7 @@ INSERT INTO pgstac.collections (content) VALUES('{
     "id": "grdi-vnl-raster",
     "type": "Collection",
     "title": "GRDI VNL Constituent Raster",
-    "description": "Global Gridded Relative Deprivation Index (GRDI) VNL Constituent raster",
+    "description": "Global Gridded Relative Deprivation Index (GRDI) VIIRS Night Lights (VNL) Constituent raster",
     "stac_version": "1.0.0",
     "license": "MIT",
     "links": [],
