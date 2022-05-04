@@ -13,7 +13,7 @@ INSERT INTO pgstac.collections (content) VALUES('{
                     -180.0, 
                     -56.0, 
                     180, 
-                    83.0
+                    82.18
                 ]
             ]
         },
