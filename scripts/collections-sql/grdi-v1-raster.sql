@@ -27,7 +27,7 @@ INSERT INTO pgstac.collections (content) VALUES('{
         }
     },
     "dashboard:is_periodic": false,
-    "dashboard:time_density": "year",
+    "dashboard:time_density": null,
     "item_assets": {
         "cog_default": {
             "type": "image/tiff; application=geotiff; profile=cloud-optimized",
