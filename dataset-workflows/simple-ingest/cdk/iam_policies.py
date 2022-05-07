@@ -1,29 +1,26 @@
 from aws_cdk import aws_iam
 
 class IamPolicies:
-    def __init__(self, bucket_name):
-        self._bucket_name = bucket_name
-
-        # ec2_network_access = aws_iam.PolicyStatement(
-        #     actions=[
-        #         "ec2:CreateNetworkInterface",
-        #         "ec2:DescribeNetworkInterfaces",
-        #         "ec2:DeleteNetworkInterface",
-        #     ],
-        #     resources=["*"],
-        # )
-        # db_write_lambda.add_to_role_policy(ec2_network_access)    
+    def __init__(self):
+        pass
     
-    @property
-    def read_access(self):
+    @staticmethod
+    def bucket_read_access(bucket_name):
         return aws_iam.PolicyStatement(
             actions=["s3:GetObject", "s3:ListBucket"],
-            resources=[f"arn:aws:s3:::{self._bucket_name}*"],
+            resources=[f"arn:aws:s3:::{bucket_name}*"],
         )
 
-    @property
-    def full_access(self):
+    @staticmethod
+    def bucket_full_access(bucket_name):
         return aws_iam.PolicyStatement(
             actions=["s3:GetObject", "s3:PutObject"],
-            resources=[f"arn:aws:s3:::{self._bucket_name}/*"],
+            resources=[f"arn:aws:s3:::{bucket_name}/*"],
+        )
+
+    @staticmethod
+    def stepfunction_start_execution_access(state_machine_arn):
+        return aws_iam.PolicyStatement(
+            actions=["states:StartExecution"],
+            resources=[state_machine_arn],
         )
