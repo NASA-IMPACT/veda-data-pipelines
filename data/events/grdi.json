@@ -1,0 +1,66 @@
+[
+  {
+    "collection": "grdi-v1-raster",
+    "prefix": "GRDI/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)v1_2010(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "grdi-v1-built",
+    "prefix": "GRDI/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)v1_BUILT(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "grdi-imr-raster",
+    "prefix": "GRDI/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)IMR(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "grdi-shdi-raster",
+    "prefix": "GRDI/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)SHDI(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "grdi-vnl-raster",
+    "prefix": "GRDI/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)VNL_(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "grdi-vnl-slope-raster",
+    "prefix": "GRDI/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)_VNL-slope_(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "grdi-cdr-raster",
+    "prefix": "GRDI/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)CDR(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "grdi-filled-missing-values-count",
+    "prefix": "GRDI/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)FilledMissingValues(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  }
+]
