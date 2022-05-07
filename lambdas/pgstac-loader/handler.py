@@ -1,12 +1,13 @@
-import asyncio
 import json
 import os
+from pypgstac import pypgstac
 from typing import Dict
 
 import boto3
-from aws_lambda_powertools.utilities.data_classes import SQSEvent, event_source
-from pypgstac.load import load_ndjson, loadopt
+from pypgstac.load import loadopt
 
+
+s3_client = boto3.client('s3')
 
 def get_secret(secret_name: str):
     """Get Secrets from secret manager."""
@@ -26,27 +27,44 @@ def build_connection_string(connection_params: Dict):
     return connection_string
 
 
-@event_source(data_class=SQSEvent)
-def handler(event: SQSEvent, context):
+def handler(event, context):
     SECRET_NAME = os.environ["SECRET_NAME"]
     connection_params = get_secret(SECRET_NAME)
     connection_string = build_connection_string(connection_params)
-    for record in event.records:
-        print(record.body)
-        asyncio.run(
-            load_ndjson(
-                file=record.body,
-                table="items",
-                method=loadopt.upsert,
-                dsn=connection_string,
-            )
+
+    stac_temp_file_name = "/tmp/stac_item.json"
+    
+    if stac_item := event.get("stac_item"):
+        with open(stac_temp_file_name, "w+") as f:
+            json.dump(stac_item, f)
+    elif file_url := event.get("stac_file_url"):
+        bucket_and_path = file_url.replace("s3://", "").split("/")
+        bucket, filepath = bucket_and_path[0], '/'.join(bucket_and_path[1:])
+        s3_client.download_file(
+            bucket, filepath, stac_temp_file_name
         )
+    else:
+        raise Exception("No stac_item or stac_file_url provided")
+
+    if event.get("dry_run"):
+        print("Dry run, not inserting, would have inserted:")
+        print(open(stac_temp_file_name).read())
+        return
+
+    pypgstac.load(
+        file=stac_temp_file_name,
+        table=event.get("type", "items"),
+        method=loadopt.upsert,
+        dsn=connection_string,
+    )
 
 if __name__ == '__main__':
     filename = "example.ndjson"
-    sample_event = SQSEvent({
-        "Records": [{
-            "Body": filename
-        }]
-    })
+    sample_event = {
+        "stac_file_url": "example.ndjson",
+        # or
+        "stac_item": {
+        },
+        "type": "collections"
+    }
     handler(sample_event, {})
