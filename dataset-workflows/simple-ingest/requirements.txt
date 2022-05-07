@@ -11,3 +11,4 @@ aws_cdk.aws_ec2==1.151.0
 aws_cdk.aws_sqs==1.151.0
 aws_cdk.aws_s3==1.151.0
 aws_cdk.aws_lambda_event_sources==1.151.0
+aws_cdk.aws_lambda_python==1.151.0
