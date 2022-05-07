@@ -9,10 +9,8 @@ from cmr import GranuleQuery
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from pathlib import Path
-from pypgstac import pypgstac
 from pystac.utils import str_to_datetime
-from rio_stac.stac import bbox_to_geom, create_stac_item
-from shapely.geometry import shape
+from rio_stac.stac import create_stac_item
 
 
 s3 = boto3.client(
@@ -284,7 +282,9 @@ if __name__ == "__main__":
       "s3_filename": "s3://climatedashboard-data/delivery/BMHD_Maria_Stages/70001_BeforeMaria_Stage0_2017-07-21.tif",
       "filename_regex": "^.*.tif$",
       "granule_id": None,
-      "datetime_range": None
+      "datetime_range": None,
+      "start_datetime": None,
+      "end_datetime": None,
     }
 
     handler(sample_event, {})

@@ -28,18 +28,24 @@ def handler(event, context):
     )
 
     files_objs = []
-    for f in filenames:
+    cogify = event.pop("key", False)
+    bucket = event.get("bucket")
+    collection = event.get("collection", event["prefix"][:-1])
+    for filename in filenames:
         files_objs.append(
             {
-                # Remove trailing back slash used for prefixing
-                "collection": event.get("collection", event["prefix"][:-1]),
-                "s3_filename": f's3://{event["bucket"]}/{f}',
                 "filename_regex": event.get("filename_regex"),
-                "granule_id": event.get("granule_id"),
-                "datetime_range": event.get("datetime_range")
+                "datetime_range": event.get("datetime_range"),
+                # Remove trailing back slash used for prefixing
+                "collection": collection,
+                "s3_filename": f's3://{bucket}/{filename}',
+                "id": filename,
             }
         )
-    return files_objs
+    return {
+        "cogify": cogify,
+        "objects": files_objs
+    }
 
 
 if __name__ == "__main__":
@@ -48,7 +54,9 @@ if __name__ == "__main__":
         "prefix": "social_vulnerability_index/",
         "file_type": ".tif",
         "filename_regex": "^(.*)_housing_(.*)$",
-        "collection": "social-vulnerability-index-housing"
+        "collection": "social-vulnerability-index-housing",
+        "upload_cog": True,
+        "cogify": False,
     }
 
     handler(sample_event, {})
