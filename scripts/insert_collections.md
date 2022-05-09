@@ -15,22 +15,29 @@ PG STAC credentials are stored in AWS Secrets Manager. The scripts below load th
 Before you run these commands, you will need AWS credentials set in your environment.
 
 ```bash
-export AWS_PGSTAC_SECRET_ID=delta-backend-dev/pgstac/XXX
-export SECRETS=$(aws secretsmanager get-secret-value --secret-id $AWS_PGSTAC_SECRET_ID | jq -c '.SecretString | fromjson')
-export STAC_DB_HOST=$(echo $SECRETS | jq -r .host)
-export STAC_DB_USER=$(echo $SECRETS | jq -r .username)
-export STAC_DB_NAME=$(echo $SECRETS | jq -r .dbname)
+export DEV_SECRET_ID=delta-backend/dev-env
+export DEV_SECRETS=$(aws secretsmanager get-secret-value --secret-id $DEV_SECRET_ID | jq -c '.SecretString | fromjson')
+export PGSTAC_DB_SECRET_NAME=$(echo $DEV_SECRETS | jq -r .PGSTAC_DB_SECRET_NAME)
+export DB_SECRETS=$(aws secretsmanager get-secret-value --secret-id $PGSTAC_DB_SECRET_NAME | jq -c '.SecretString | fromjson')
+export STAC_DB_HOST=$(echo $DB_SECRETS | jq -r .host)
+export STAC_DB_USER=$(echo $DB_SECRETS | jq -r .username)
+export STAC_DB_NAME=$(echo $DB_SECRETS | jq -r .dbname)
 # Setting this environment variable to surpass a psql password prompt
-export PGPASSWORD=$(echo $SECRETS | jq -r .password)
+export PGPASSWORD=$(echo $DB_SECRETS | jq -r .password)
 ```
 
 ### Step 3: Insert a given collection
 
 ```bash
 export COLLECTION_NAME=HLSS30.002
-psql -h $STAC_DB_HOST -U $STAC_DB_USER -d $STAC_DB_NAME -f collections-sql/${COLLECTION_NAME}.sql
+psql -h $STAC_DB_HOST -U $STAC_DB_USER -d $STAC_DB_NAME -f scripts/collections-sql/${COLLECTION_NAME}.sql
 ```
 
 ### Deleting collections
 
-... ADD ME ...
+Example:
+
+```sql
+psql -h $STAC_DB_HOST -U $STAC_DB_USER -d $STAC_DB_NAME
+DELETE FROM collections where id = 'nceo_africa)2017';
+```
