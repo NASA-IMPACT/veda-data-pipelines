@@ -24,7 +24,7 @@ INSERT INTO pgstac.collections (content) VALUES('{
         }
     },
     "license": "MIT",
-    "description": "Ocean NPP",
+    "description": "Ocean Net Primary Production (NPP): https://oceancolor.gsfc.nasa.gov/atbd/npp/",
     "stac_version": "1.0.0",
     "dashboard:is_periodic": true,
     "dashboard:time_density": "month",
