@@ -1,16 +1,18 @@
-import boto3
 import json
 import os
-import pystac
 import re
 
-from cmr import GranuleQuery
+import boto3
+import pystac
+
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from pathlib import Path
+from uuid import uuid4
+
+from cmr import GranuleQuery
 from pystac.utils import str_to_datetime
 from rio_stac.stac import create_stac_item
-from uuid import uuid4
 from smart_open import open
 
 
@@ -29,11 +31,6 @@ DATE_REGEX_DICT = [
 ]
 
 
-STAC_DB_HOST = os.environ.get("STAC_DB_HOST")
-STAC_DB_USER = os.environ.get("STAC_DB_USER")
-PGPASSWORD = os.environ.get("PGPASSWORD")
-
-
 def calculate_year_range(datetime_obj):
     start_datetime = datetime_obj.replace(month=1, day=1)
     end_datetime = datetime_obj.replace(month=12, day=31)
@@ -48,24 +45,6 @@ DATETIME_RANGE_METHODS = {
     "month": calculate_month_range,
     "year": calculate_year_range
 }
-
-
-def upload_stac_to_s3(stac_dict):
-    fname = stac_dict["id"].split(".tif")[0]
-    with open(f"/tmp/{fname}.json", "w+") as f:
-        f.write(json.dumps(stac_dict))
-    try:
-        s3.upload_file(
-            f"/tmp/{fname}.json",
-            "climatedashboard-data",
-            f"stac_item_queue/{fname}.json",
-        )
-        print("File uploaded to s3")
-        return f"s3://climatedashboard-data/stac_item_queue/{fname}.json"
-    except Exception as e:
-        print("Failed to copy to S3 bucket")
-        print(e)
-        return None
 
 
 def create_item(
@@ -274,7 +253,6 @@ def handler(event, context):
                 raise Exception("Either granule_id or filename_regex must be provided")
             try:
                 stac_dict = stac_item.to_dict()
-                # upload_stac_to_s3(stac_dict)
             except Exception as e:
                 return e
             file.write(json.dumps(stac_dict) + "\n")

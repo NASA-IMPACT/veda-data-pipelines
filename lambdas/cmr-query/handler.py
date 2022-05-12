@@ -1,8 +1,11 @@
-import datetime as dt
-from cmr import GranuleQuery
-import re
 import os
+import re
+
+import datetime as dt
+
 import boto3
+
+from cmr import GranuleQuery
 
 
 def handler(event, context):

@@ -1,8 +1,9 @@
-import boto3
 import json
 import os
 
 from typing import Dict
+
+import boto3
 
 from pypgstac import pypgstac
 from pypgstac.load import loadopt

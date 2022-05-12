@@ -1,17 +1,19 @@
-from netCDF4 import Dataset
-from affine import Affine
-from rasterio.crs import CRS
-from rasterio.io import MemoryFile
-from rio_cogeo.cogeo import cog_translate
-from rio_cogeo.profiles import cog_profiles
-from rasterio.warp import calculate_default_transform
-import numpy as np
+import configparser
 import os
 import requests
+
 import boto3
-from typing import Optional
-import configparser
-import sys
+
+import numpy as np
+
+from affine import Affine
+from netCDF4 import Dataset
+from rasterio.crs import CRS
+from rasterio.io import MemoryFile
+from rasterio.warp import calculate_default_transform
+from rio_cogeo.cogeo import cog_translate
+from rio_cogeo.profiles import cog_profiles
+
 
 config = configparser.ConfigParser()
 config.read("example.ini")

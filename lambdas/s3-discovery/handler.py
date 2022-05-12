@@ -1,5 +1,7 @@
-import boto3
 import re
+
+import boto3
+
 
 s3 = boto3.resource(
     "s3",
