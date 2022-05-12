@@ -42,13 +42,13 @@ class LambdaStack(core.Stack):
         trigger_ingest_lambda = self._python_lambda(f"{construct_id}-trigger-ingest-fn", "../../lambdas/proxy")
 
         # Builds ndjson
-        build_ndjson_lambda = self._lambda(f"{construct_id}-build-ndjson-fn", "../../lambdas/ndjson-builder",
+        build_ndjson_lambda = self._lambda(f"{construct_id}-build-ndjson-fn", "../../lambdas/build-ndjson",
             memory_size=8000,
             timeout=600
         )
 
-        # PGStac loader
-        pgstac_loader_lambda = self._lambda(f"{construct_id}-pgstac-loader-fn", "../../lambdas/pgstac-loader",
+        # DB Write lambda
+        db_write_lambda = self._lambda(f"{construct_id}-db-write-fn", "../../lambdas/db-write",
             memory_size=8000,
             timeout=600,
             env={
@@ -60,10 +60,10 @@ class LambdaStack(core.Stack):
 
         ndjson_bucket = self._bucket(f"{construct_id}-ndjson-bucket")
         ndjson_bucket.grant_read_write(build_ndjson_lambda.role)
-        ndjson_bucket.grant_read(pgstac_loader_lambda.role)
+        ndjson_bucket.grant_read(db_write_lambda.role)
 
         build_ndjson_lambda.add_environment("BUCKET", ndjson_bucket.bucket_name)
-        pgstac_loader_lambda.add_environment("BUCKET", ndjson_bucket.bucket_name)
+        db_write_lambda.add_environment("BUCKET", ndjson_bucket.bucket_name)
 
         self._lambdas = {
             "s3_discovery_lambda": s3_discovery_lambda,
@@ -71,7 +71,7 @@ class LambdaStack(core.Stack):
             "cogify_lambda": cogify_lambda,
             "generate_stac_item_lambda": generate_stac_item_lambda,
             "build_ndjson_lambda": build_ndjson_lambda,
-            "pgstac_loader_lambda": pgstac_loader_lambda,
+            "db_write_lambda": db_write_lambda,
             "trigger_cogify_lambda": trigger_cogify_lambda,
             "trigger_ingest_lambda": trigger_ingest_lambda,
             "cogify_or_not_lambda": cogify_or_not_lambda,
@@ -140,7 +140,7 @@ class LambdaStack(core.Stack):
         self._lambdas["build_ndjson_lambda"].add_to_role_policy(IamPolicies.bucket_read_access(config.BUCKET_NAME))
 
         pgstac_secret = secretsmanager.Secret.from_secret_name_v2(self, f"{self.construct_id}-secret", config.SECRET_NAME)
-        pgstac_secret.grant_read(self._lambdas["pgstac_loader_lambda"].role)
+        pgstac_secret.grant_read(self._lambdas["db_write_lambda"].role)
 
     def _bucket(self, name):
         return s3.Bucket.from_bucket_name(

@@ -21,7 +21,7 @@ class StepFunctionStack(core.Stack):
         cmr_discovery_lambda = lambdas["cmr_discovery_lambda"]
         cogify_lambda = lambdas["cogify_lambda"]
         build_ndjson_lambda = lambdas["build_ndjson_lambda"]
-        pgstac_loader_lambda = lambdas["pgstac_loader_lambda"]
+        db_write_lambda = lambdas["db_write_lambda"]
         cogify_or_not_lambda = lambdas["cogify_or_not_lambda"]
 
         cogify_or_not_task = self._lambda_task("Cogify Or Not Task", cogify_or_not_lambda, input_path="$.Payload")
@@ -29,7 +29,7 @@ class StepFunctionStack(core.Stack):
         s3_discover_task = self._lambda_task("S3 Discover Task", s3_discovery_lambda).next(cogify_or_not_task)
         cogify_task = self._lambda_task("Cogify", cogify_lambda)
         build_ndjson_task = self._lambda_task("Build Ndjson Task", build_ndjson_lambda)
-        pgstac_loader_task = self._lambda_task("Write to database Task", pgstac_loader_lambda, input_path="$.Payload")
+        db_write_task = self._lambda_task("Write to database Task", db_write_lambda, input_path="$.Payload")
         discovery_workflow = stepfunctions.Choice(self, "Discovery Choice (CMR or S3)")\
             .when(stepfunctions.Condition.string_equals("$.discovery", "s3"), s3_discover_task)\
             .when(stepfunctions.Condition.string_equals("$.discovery", "cmr"), cmr_discover_task)\
@@ -42,7 +42,7 @@ class StepFunctionStack(core.Stack):
             items_path=stepfunctions.JsonPath.string_at("$.Payload"),
         ).iterator(cogify_task)
 
-        ingest_and_publish_workflow = build_ndjson_task.next(pgstac_loader_task)
+        ingest_and_publish_workflow = build_ndjson_task.next(db_write_task)
 
         self._step_functions = {}
         self._step_functions["discovery"] = stepfunctions.StateMachine(

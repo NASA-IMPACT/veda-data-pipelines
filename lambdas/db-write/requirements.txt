@@ -1,7 +1,4 @@
-python-cmr
 awslambdaric
-pystac
-shapely
-rio-stac
-pypgstac==0.4.5
 boto3
+aws-lambda-powertools
+pypgstac==0.4.5

@@ -21,7 +21,7 @@ def insert_collections(files):
                 "type": "collections"
             })
             response = lambda_client.invoke(
-                FunctionName=f"{os.environ.get('APP_NAME')}-{os.environ.get('ENV')}-lambda-pgstac-loader-fn",
+                FunctionName=f"{os.environ.get('APP_NAME')}-{os.environ.get('ENV')}-lambda-db-write-fn",
                 InvocationType='RequestResponse',
                 Payload=content
             )
