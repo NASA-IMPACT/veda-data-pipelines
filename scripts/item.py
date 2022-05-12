@@ -1,11 +1,10 @@
 import os
 import json
 import boto3
-import time
 
-from .utils import args_handler, data_files
+from .utils import args_handler, data_files, DATA_PATH
 
-items_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'data', 'events')
+items_path = os.path.join(DATA_PATH, 'events')
 sf_client = boto3.client('stepfunctions')
 
 def insert_items(files):
@@ -13,10 +12,11 @@ def insert_items(files):
     for filename in files:
         print(filename)
         events = json.load(open(filename))
+        if type(events) != list:
+            events = [events]
         for event in events:
-            time.sleep(5)
             response = sf_client.start_execution(
-                stateMachineArn="arn:aws:states:us-east-1:853558080719:stateMachine:delta-simple-ingest-dev-stepfunction-discover",
+                stateMachineArn=f"arn:aws:states:us-east-1:853558080719:stateMachine:delta-simple-ingest-{os.environ.get('ENV', 'dev')}-stepfunction-discover",
                 input=json.dumps(event)
             )
             print(response)
@@ -26,8 +26,8 @@ def insert(items):
     files = data_files(items, items_path)
     insert_items(files)
 
-def update():
+def update(items):
     print("Function not implemented")
 
-def delete():
+def delete(items):
     print("Function not implemented")

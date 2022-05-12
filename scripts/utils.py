@@ -3,6 +3,9 @@ import functools
 import glob
 import os
 
+DATA_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'data')
+
+
 def arguments():
     if (len(argv) <= 1):
         print("No collection provided")
