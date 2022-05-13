@@ -134,10 +134,11 @@ class LambdaStack(core.Stack):
         return self._lambda_sg
 
     def give_permissions(self):
-        self._lambdas["s3_discovery_lambda"].add_to_role_policy(IamPolicies.bucket_read_access(config.BUCKET_NAME))
-        self._lambdas["generate_stac_item_lambda"].add_to_role_policy(IamPolicies.bucket_full_access(config.BUCKET_NAME))
-        self._lambdas["cogify_lambda"].add_to_role_policy(IamPolicies.bucket_full_access(config.BUCKET_NAME))
-        self._lambdas["build_ndjson_lambda"].add_to_role_policy(IamPolicies.bucket_read_access(config.BUCKET_NAME))
+        self._read_buckets = [config.VEDA_DATA_BUCKET] + config.VEDA_EXTERNAL_BUCKETS
+        self._lambdas["s3_discovery_lambda"].add_to_role_policy(IamPolicies.bucket_read_access(self._read_buckets))
+        self._lambdas["generate_stac_item_lambda"].add_to_role_policy(IamPolicies.bucket_full_access(config.VEDA_DATA_BUCKET))
+        self._lambdas["cogify_lambda"].add_to_role_policy(IamPolicies.bucket_full_access(config.VEDA_DATA_BUCKET))
+        self._lambdas["build_ndjson_lambda"].add_to_role_policy(IamPolicies.bucket_read_access(self._read_buckets))
 
         pgstac_secret = secretsmanager.Secret.from_secret_name_v2(self, f"{self.construct_id}-secret", config.SECRET_NAME)
         pgstac_secret.grant_read(self._lambdas["db_write_lambda"].role)

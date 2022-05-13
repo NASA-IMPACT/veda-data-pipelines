@@ -8,4 +8,5 @@ ENV = os.environ.get("ENV")
 SECRET_NAME = os.environ.get("SECRET_NAME")
 
 APP_NAME = "delta-simple-ingest"
-BUCKET_NAME = "climatedashboard-data"
+VEDA_DATA_BUCKET = "climatedashboard-data"
+EXTERNAL_VEDA_DATA_BUCKETS = [ "nasa-maap-data-store" ]
