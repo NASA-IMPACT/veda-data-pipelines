@@ -41,7 +41,9 @@ def handler(event, context):
                 # Remove trailing back slash used for prefixing
                 "collection": collection,
                 "s3_filename": f's3://{bucket}/{filename}',
+                "href": f's3://{bucket}/{filename}',
                 "id": filename,
+                "upload_cog": event.get("upload_cog", False),
             }
         )
     return {
@@ -54,7 +56,6 @@ if __name__ == "__main__":
     sample_event = {
         "bucket": "climatedashboard-data",
         "prefix": "social_vulnerability_index/",
-        "file_type": ".tif",
         "filename_regex": "^(.*)_housing_(.*)$",
         "collection": "social-vulnerability-index-housing",
         "upload_cog": True,

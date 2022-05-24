@@ -13,7 +13,6 @@ QUEUE = {
 }
 
 def handler(event, context):
-    print(event)
     client = boto3.client("sqs")
     for item_url in event.get("objects"):
         client.send_message(

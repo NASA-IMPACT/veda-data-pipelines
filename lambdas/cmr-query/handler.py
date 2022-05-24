@@ -30,7 +30,6 @@ def handler(event, context):
     )
 
     urls = []
-    print(granules[0])
     for granule in granules:
         for link in granule["links"]:
             if event.get('mode') == 'stac':
@@ -61,7 +60,7 @@ def handler(event, context):
         QUEUE_URL = os.environ["QUEUE_URL"]
         for item_url in urls:
             # TODO: send item_url instead
-            client.send_message(QueueUrl=QUEUE_URL, MessageBody=item_url['href'])
+            client.send_message(QueueUrl=QUEUE_URL, MessageBody=item_url)
 
     print(f"Returning {len(urls)} urls")
     print(urls[0])

@@ -175,15 +175,9 @@ def handler(event, context):
     to_cog_config["filename"] = downloaded_filename
     to_cog_config["collection"] = collection
 
-    return_obj = {"granule_id": event["granule_id"],
-                  "collection": event["collection"]}
+    return_obj = {"granule_id": event["granule_id"], "collection": event["collection"]}
 
-    if event["upload"]:
-        upload = True
-    else:
-        upload = False
-
-    output_locations = to_cog(upload=upload, **to_cog_config)
+    output_locations = to_cog(upload=event.get("upload_cog", False), **to_cog_config)
 
     return_obj["s3_filename"] = output_locations["s3_filename"]
     return_obj["filename"] = output_locations["filename"]
@@ -197,6 +191,17 @@ if __name__ == "__main__":
         "collection": "OMDOAO3e",
         "href": "https://acdisc.gesdisc.eosdis.nasa.gov/data//Aura_OMI_Level3/OMDOAO3e.003/2022/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5",
         "upload": True,
-        "granule_id":"G2205784904-GES_DISC"
+        "granule_id": "G2205784904-GES_DISC",
     }
+    # sample_event = {
+    #     "filename_regex": event.get("filename_regex"),
+    #     "datetime_range": event.get("datetime_range"),
+    #     "collection": collection,
+    #     "s3_filename": f's3://{bucket}/{filename}',
+    #     "id": filename,
+    #     "upload_cog": True,
+    #     "href": filename,
+    #     "start_datetime": "aafds",
+    #     "end_datetime": "sfad"
+    # }
     handler(sample_event, {})
