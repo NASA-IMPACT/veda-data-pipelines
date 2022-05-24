@@ -9,4 +9,4 @@ SECRET_NAME = os.environ.get("SECRET_NAME")
 
 APP_NAME = "delta-simple-ingest"
 VEDA_DATA_BUCKET = "climatedashboard-data"
-EXTERNAL_VEDA_DATA_BUCKETS = [ "nasa-maap-data-store" ]
+VEDA_EXTERNAL_BUCKETS = [ "nasa-maap-data-store" ]
