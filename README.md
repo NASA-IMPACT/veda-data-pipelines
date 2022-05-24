@@ -45,7 +45,7 @@ APP_NAME="delta-simple-ingest"
 
 ```bash
 chmod +x env.sh
-./env.sh <dev/stage>
+source env.sh <dev/stage>
 ```
 
 > If anything other than dev/stage is provided as the env, the dev credentials are used.

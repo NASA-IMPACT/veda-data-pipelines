@@ -21,7 +21,7 @@ def list_bucket(bucket, prefix, filename_regex):
 
     except Exception as e:
         print(e)
-    return e
+        return e
 
 
 def handler(event, context):
