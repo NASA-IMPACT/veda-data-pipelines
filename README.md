@@ -9,14 +9,22 @@ data products and STAC metadata for interfaces such as https://github.com/NASA-I
 
 See https://docs.docker.com/get-docker/
 
-## CDK
+## AWS CDK
 
-https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html
+See https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html
 
 ```bash
 nvm use 14
 npm install cdk
 pip install aws-cdk.aws-stepfunctions-tasks
+```
+
+## Poetry
+
+See https://pypi.org/project/poetry/
+
+```bash
+pip install poetry
 ```
 
 # What's here?
