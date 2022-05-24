@@ -86,7 +86,15 @@ Should follow the following format:
 }
 ```
 
-## Ingesting a collection
+## Ingestion
+
+Install dependencies:
+
+```bash
+poetry install
+```
+
+### Ingesting a collection
 
 Done by passing the collection json to the `db-write` lambda.
 
@@ -96,7 +104,7 @@ Create a collection json file in the `data/collections/` directory. For format, 
 poetry run insert-collection <collection-name-start-pattern>
 ```
 
-## Ingesting items to a collection
+### Ingesting items to a collection
 
 Done by passing event json to the discovery step function workflow.
 
