@@ -17,38 +17,30 @@ class LambdaStack(core.Stack):
         self.construct_id = construct_id
         # Define all lambdas
         # Discovers files from s3 bucket
-        s3_discovery_lambda = self._lambda(f"{construct_id}-s3-discovery-fn", "../../lambdas/s3-discovery")
+        s3_discovery_lambda = self._lambda(f"{construct_id}-s3-discovery-fn", "../lambdas/s3-discovery")
 
         # Discovers files from cmr
-        cmr_discovery_lambda = self._lambda(f"{construct_id}-cmr-discovery-fn", "../../lambdas/cmr-query")
+        cmr_discovery_lambda = self._lambda(f"{construct_id}-cmr-discovery-fn", "../lambdas/cmr-query")
 
         # Cogify files
-        cogify_lambda = self._lambda(f"{construct_id}-cogify-fn", "../../lambdas/cogify")
-        
-        # Generates stac item from input
-        generate_stac_item_lambda = self._lambda(f"{construct_id}-generate-stac-item-fn", "../../lambdas/stac-gen",
-            memory_size=4096, timeout=60
-        )
+        cogify_lambda = self._lambda(f"{construct_id}-cogify-fn", "../lambdas/cogify")
 
         self._lambda_sg = self._lambda_sg_for_db(construct_id, database_vpc)
 
         # Proxy lambda to trigger cogify step function
-        cogify_or_not_lambda = self._python_lambda(f"{construct_id}-cogify-or-not-fn", "../../lambdas/cogify-or-not",)
-
-        # Proxy lambda to trigger cogify step function
-        trigger_cogify_lambda = self._python_lambda(f"{construct_id}-trigger-cogify-fn", "../../lambdas/proxy",)
+        trigger_cogify_lambda = self._python_lambda(f"{construct_id}-trigger-cogify-fn", "../lambdas/proxy",)
 
         # Proxy lambda to trigger ingest and publish step function
-        trigger_ingest_lambda = self._python_lambda(f"{construct_id}-trigger-ingest-fn", "../../lambdas/proxy")
+        trigger_ingest_lambda = self._python_lambda(f"{construct_id}-trigger-ingest-fn", "../lambdas/proxy")
 
         # Builds ndjson
-        build_ndjson_lambda = self._lambda(f"{construct_id}-build-ndjson-fn", "../../lambdas/build-ndjson",
+        build_ndjson_lambda = self._lambda(f"{construct_id}-build-ndjson-fn", "../lambdas/build-ndjson",
             memory_size=8000,
             timeout=600
         )
 
         # DB Write lambda
-        db_write_lambda = self._lambda(f"{construct_id}-db-write-fn", "../../lambdas/db-write",
+        db_write_lambda = self._lambda(f"{construct_id}-db-write-fn", "../lambdas/db-write",
             memory_size=8000,
             timeout=600,
             env={
@@ -69,12 +61,10 @@ class LambdaStack(core.Stack):
             "s3_discovery_lambda": s3_discovery_lambda,
             "cmr_discovery_lambda": cmr_discovery_lambda,
             "cogify_lambda": cogify_lambda,
-            "generate_stac_item_lambda": generate_stac_item_lambda,
             "build_ndjson_lambda": build_ndjson_lambda,
             "db_write_lambda": db_write_lambda,
             "trigger_cogify_lambda": trigger_cogify_lambda,
             "trigger_ingest_lambda": trigger_ingest_lambda,
-            "cogify_or_not_lambda": cogify_or_not_lambda,
         }
 
         self.give_permissions()
@@ -135,10 +125,10 @@ class LambdaStack(core.Stack):
 
     def give_permissions(self):
         self._read_buckets = [config.VEDA_DATA_BUCKET] + config.VEDA_EXTERNAL_BUCKETS
-        self._lambdas["s3_discovery_lambda"].add_to_role_policy(IamPolicies.bucket_read_access(self._read_buckets))
-        self._lambdas["generate_stac_item_lambda"].add_to_role_policy(IamPolicies.bucket_full_access(config.VEDA_DATA_BUCKET))
+        for bucket in self._read_buckets:
+            self._lambdas["s3_discovery_lambda"].add_to_role_policy(IamPolicies.bucket_read_access(bucket))
+            self._lambdas["build_ndjson_lambda"].add_to_role_policy(IamPolicies.bucket_read_access(bucket))
         self._lambdas["cogify_lambda"].add_to_role_policy(IamPolicies.bucket_full_access(config.VEDA_DATA_BUCKET))
-        self._lambdas["build_ndjson_lambda"].add_to_role_policy(IamPolicies.bucket_read_access(self._read_buckets))
 
         pgstac_secret = secretsmanager.Secret.from_secret_name_v2(self, f"{self.construct_id}-secret", config.SECRET_NAME)
         pgstac_secret.grant_read(self._lambdas["db_write_lambda"].role)

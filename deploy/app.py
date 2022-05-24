@@ -43,10 +43,18 @@ lambda_stack = LambdaStack(
 
 vpc_stack.add_rds_write_ingress(lambda_stack.lambda_sg)
 
+queue_stack = QueueStack(
+    app,
+    f"{config.APP_NAME}-{config.ENV}-queue",
+    lambda_stack,
+    env=env_details
+)
+
 step_function_stack = StepFunctionStack(
     app,
     f"{config.APP_NAME}-{config.ENV}-stepfunction",
     lambda_stack,
+    queue_stack,
     env=env_details
 )
 
@@ -57,13 +65,6 @@ integrate_to_lambdas(
     lambda_stack.lambdas["trigger_ingest_lambda"],
     arns[0],
     arns[1],
-)
-
-queue_stack = QueueStack(
-    app,
-    f"{config.APP_NAME}-{config.ENV}-queue",
-    lambda_stack,
-    env=env_details
 )
 
 
