@@ -23,7 +23,12 @@ class LambdaStack(core.Stack):
         cmr_discovery_lambda = self._lambda(f"{construct_id}-cmr-discovery-fn", "../lambdas/cmr-query")
 
         # Cogify files
-        cogify_lambda = self._lambda(f"{construct_id}-cogify-fn", "../lambdas/cogify")
+        cogify_lambda = self._lambda(f"{construct_id}-cogify-fn", "../lambdas/cogify",
+            env={
+                "EARTHDATA_USERNAME": config.EARTHDATA_USERNAME,
+                "EARTHDATA_PASSWORD": config.EARTHDATA_PASSWORD,
+            },
+        )
 
         self._lambda_sg = self._lambda_sg_for_db(construct_id, database_vpc)
 

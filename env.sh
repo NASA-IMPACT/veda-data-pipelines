@@ -28,6 +28,8 @@ else
         sgId=$devSGid
     fi
 
+    export EARTHDATA_USERNAME=XXXX
+    export EARTHDATA_PASSWORD=XXXX
     export VPC_ID=$vpcId
     export SECURITY_GROUP_ID=$sgId
     export SECRET_NAME=$pgSecret
