@@ -43,7 +43,7 @@ def handler(event, context):
                 "s3_filename": f's3://{bucket}/{filename}',
                 "href": f's3://{bucket}/{filename}',
                 "id": filename,
-                "upload_cog": event.get("upload_cog", False),
+                "upload": event.get("upload", True),
             }
         )
     return {
@@ -58,7 +58,7 @@ if __name__ == "__main__":
         "prefix": "social_vulnerability_index/",
         "filename_regex": "^(.*)_housing_(.*)$",
         "collection": "social-vulnerability-index-housing",
-        "upload_cog": True,
+        "upload": True,
         "cogify": False,
     }
 

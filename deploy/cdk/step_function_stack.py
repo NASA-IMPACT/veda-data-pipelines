@@ -47,7 +47,7 @@ class StepFunctionStack(core.Stack):
         ).iterator(send_to_stac_ready_task)
 
         cogify_or_not_task = stepfunctions.Choice(self, "Cogify?")\
-            .when(stepfunctions.Condition.string_equals("$.Payload.cogify", "true"), send_message_cogify)\
+            .when(stepfunctions.Condition.boolean_equals("$.Payload.cogify", True), send_message_cogify)\
             .otherwise(send_message_stac_ready)
         
         cmr_discover_task = self._lambda_task("CMR Discover Task", cmr_discovery_lambda).next(cogify_or_not_task)
@@ -64,7 +64,7 @@ class StepFunctionStack(core.Stack):
             self,
             "Run concurrent cogifications",
             max_concurrency=100,
-            items_path=stepfunctions.JsonPath.string_at("$.Payload"),
+            items_path=stepfunctions.JsonPath.string_at("$"),
         ).iterator(cogify_task)
 
         ingest_and_publish_workflow = build_ndjson_task.next(db_write_task)

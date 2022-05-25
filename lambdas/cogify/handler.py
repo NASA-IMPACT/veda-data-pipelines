@@ -48,7 +48,8 @@ def upload_file(outfilename, collection):
 
 
 def download_file(file_uri: str):
-    filename = f"/tmp/{os.path.basename(file_uri)}"
+    filename = os.path.splitext(os.path.basename(file_uri))[0]
+    filename = f"/tmp/{filename}"
     if "http" in file_uri:
         # This isn't working for GPMIMERG, need to use .netrc
         username = os.environ.get("EARTHDATA_USERNAME")
@@ -74,7 +75,7 @@ def download_file(file_uri: str):
 def to_cog(upload, **config):
     """HDF5 to COG."""
     # Open existing dataset
-    filename = config["filename"]
+    filename = str(config["filename"])
     variable_name = config["variable_name"]
     x_variable, y_variable = config.get("x_variable"), config.get("y_variable")
     group = config.get("group")
@@ -177,10 +178,9 @@ def handler(event, context):
 
     return_obj = {"granule_id": event["granule_id"], "collection": event["collection"]}
 
-    output_locations = to_cog(upload=event.get("upload_cog", False), **to_cog_config)
+    output_locations = to_cog(upload=event.get("upload", False), **to_cog_config)
 
-    return_obj["s3_filename"] = output_locations["s3_filename"]
-    return_obj["filename"] = output_locations["filename"]
+    return_obj = {**return_obj, **output_locations}
 
     print(f"Returning data: {return_obj}")
     return return_obj
@@ -190,18 +190,7 @@ if __name__ == "__main__":
     sample_event = {
         "collection": "OMDOAO3e",
         "href": "https://acdisc.gesdisc.eosdis.nasa.gov/data//Aura_OMI_Level3/OMDOAO3e.003/2022/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5",
-        "upload": True,
+        "upload": False,
         "granule_id": "G2205784904-GES_DISC",
     }
-    # sample_event = {
-    #     "filename_regex": event.get("filename_regex"),
-    #     "datetime_range": event.get("datetime_range"),
-    #     "collection": collection,
-    #     "s3_filename": f's3://{bucket}/{filename}',
-    #     "id": filename,
-    #     "upload_cog": True,
-    #     "href": filename,
-    #     "start_datetime": "aafds",
-    #     "end_datetime": "sfad"
-    # }
     handler(sample_event, {})
