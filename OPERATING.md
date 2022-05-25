@@ -81,7 +81,7 @@ Should follow the following format:
     
     ### misc
     "cogify": "<true/false>",
-    "upload_cog": "<true/false>",
+    "upload": "<true/false>",
     "dry_run": "<true/false>",
 }
 ```

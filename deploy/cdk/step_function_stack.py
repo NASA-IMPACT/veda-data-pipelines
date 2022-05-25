@@ -26,9 +26,7 @@ class StepFunctionStack(core.Stack):
 
         queues = queue_stack.queues
 
-        send_to_cogify_task = tasks.SqsSendMessage(
-            self, "Send to Cogify queue", queue=queues["cogify_queue"], message_body=stepfunctions.TaskInput.from_json_path_at("$")
-        )
+        send_to_cogify_task = self._sqs_task("Send to Cogify queue", queue=queues["cogify_queue"])
         send_message_cogify = stepfunctions.Map(
             self,
             "Run concurrent queueing to cogify queue",
@@ -36,8 +34,10 @@ class StepFunctionStack(core.Stack):
             items_path=stepfunctions.JsonPath.string_at("$.Payload.objects"),
         ).iterator(send_to_cogify_task)
 
-        send_to_stac_ready_task = tasks.SqsSendMessage(
-            self, "Send to stac ready queue", queue=queues["stac_ready_queue"], message_body=stepfunctions.TaskInput.from_json_path_at("$")
+        send_to_stac_ready_task = self._sqs_task("Send to stac ready queue", queue=queues["stac_ready_queue"])
+        
+        send_to_stac_ready_task_from_cogify = self._sqs_task("Send cogified to queue", queue=queues["stac_ready_queue"],
+            input_path="$.Payload"
         )
         send_message_stac_ready = stepfunctions.Map(
             self,
@@ -52,7 +52,7 @@ class StepFunctionStack(core.Stack):
         
         cmr_discover_task = self._lambda_task("CMR Discover Task", cmr_discovery_lambda).next(cogify_or_not_task)
         s3_discover_task = self._lambda_task("S3 Discover Task", s3_discovery_lambda).next(cogify_or_not_task)
-        cogify_task = self._lambda_task("Cogify", cogify_lambda)
+        cogify_task = self._lambda_task("Cogify", cogify_lambda).next(send_to_stac_ready_task_from_cogify)
         build_ndjson_task = self._lambda_task("Build Ndjson Task", build_ndjson_lambda)
         db_write_task = self._lambda_task("Write to database Task", db_write_lambda, input_path="$.Payload")
         discovery_workflow = stepfunctions.Choice(self, "Discovery Choice (CMR or S3)")\
@@ -82,12 +82,13 @@ class StepFunctionStack(core.Stack):
             self, f"{construct_id}-publication-sf", state_machine_name=f"{construct_id}-publication", definition=ingest_and_publish_workflow
         )
 
-    def _lambda_task(self, name, lambda_function, input_path=None):
+    def _lambda_task(self, name, lambda_function, input_path=None, output_path=None):
         return tasks.LambdaInvoke(
             self,
             name,
             lambda_function=lambda_function,
             input_path=input_path,
+            output_path=output_path
         )
 
     @property
@@ -99,4 +100,9 @@ class StepFunctionStack(core.Stack):
         return (
             f"{base_str}{self.construct_id}-cogify",
             f"{base_str}{self.construct_id}-publication"
+        )
+
+    def _sqs_task(self, name, queue, input_path="$"):
+        return tasks.SqsSendMessage(
+            self, name, queue=queue, message_body=stepfunctions.TaskInput.from_json_path_at(input_path)
         )
