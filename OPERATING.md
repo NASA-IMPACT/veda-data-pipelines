@@ -1,10 +1,12 @@
-# Operating: data transformation and ingest for VEDA
+# Operating Guide: Data Transformation and Ingest for VEDA
+
+This guide provides information on how VEDA runs data ingest, transformation and metadata (STAC) publication workflows via AWS Services, such as step functions.
 
 ## Data
 
 ### `collections/`
 
-Holds collection jsons
+The `collections/` directory holds json files representing the data for VEDA collection metadata (STAC).
 
 Should follow the following format:
 
@@ -57,7 +59,7 @@ Should follow the following format:
 
 ### `events/`
 
-Holds jsons of events passed to the ingestion pipeline.
+The `events/` directory holds json files representing the step function inputs for initiating the discovery, ingest and publication workflows.
 Can either be a single event or a list of events.
 
 Should follow the following format:
@@ -154,8 +156,8 @@ Discovers all the files that need to be ingested either from s3 or cmr.
 
 #### 2. Cogify
 
-Converts the input files to COGs, runs parallely.
+Converts the input files to COGs, runs in parallel.
 
 #### 3. Publication
 
-Publishes the item to the STAC.
+Publishes the item to the STAC database.
