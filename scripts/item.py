@@ -4,7 +4,7 @@ import boto3
 
 from .utils import args_handler, data_files, DATA_PATH
 
-items_path = os.path.join(DATA_PATH, 'events')
+items_path = os.path.join(DATA_PATH, 'step_function_inputs')
 sf_client = boto3.client('stepfunctions')
 
 def insert_items(files):

@@ -57,10 +57,10 @@ Should follow the following format:
 
 ```
 
-### `events/`
+### `step_function_inputs/`
 
-The `events/` directory holds json files representing the step function inputs for initiating the discovery, ingest and publication workflows.
-Can either be a single event or a list of events.
+The `step_function_inputs/` directory holds json files representing the step function inputs for initiating the discovery, ingest and publication workflows.
+Can either be a single input event or a list of input events.
 
 Should follow the following format:
 
@@ -108,9 +108,9 @@ poetry run insert-collection <collection-name-start-pattern>
 
 ### Ingesting items to a collection
 
-Done by passing event json to the discovery step function workflow.
+Done by passing an input json to the discovery step function workflow.
 
-Create an event json file in the `data/events/` directory. For format, check the [data](#data) section.
+Create an input json file in the `data/step_function_inputs/` directory. For format, check the [data](#data) section.
 
 ```bash
 poetry run insert-item <event-json-start-pattern>
