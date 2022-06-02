@@ -37,9 +37,9 @@ class StepFunctionStack(core.Stack):
             items_path=stepfunctions.JsonPath.string_at("$.Payload.objects"),
         ).iterator(send_to_cogify_task)
 
-        send_to_stac_ready_task = self._sqs_task("Send to stac ready queue", queue=queues["stac_ready_queue"])
+        send_to_stac_ready_task = self._sqs_task("Send to stac-ready queue", queue=queues["stac_ready_queue"])
         
-        send_to_stac_ready_task_from_cogify = self._sqs_task("Send cogified to queue", queue=queues["stac_ready_queue"],
+        send_to_stac_ready_task_from_cogify = self._sqs_task("Send cogified to stac-ready queue", queue=queues["stac_ready_queue"],
             input_path="$.Payload"
         )
         send_message_stac_ready = stepfunctions.Map(
