@@ -9,9 +9,11 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from pathlib import Path
 from uuid import uuid4
+from urllib.parse import urlparse
 
 from cmr import GranuleQuery
 from pystac.utils import str_to_datetime
+import requests
 from rio_stac.stac import create_stac_item
 from smart_open import open
 
@@ -46,6 +48,19 @@ DATETIME_RANGE_METHODS = {
     "year": calculate_year_range
 }
 
+def update_href(asset):
+    """Update asset protected http endpoint to the internal S3 endpoint"""
+    href = asset["href"]
+    url_components = urlparse(href)
+    hostname = url_components.hostname
+    scheme = url_components.scheme
+    if url_components.path.split("/")[1] == "lp-prod-protected":
+        s3_href = href.replace(f"{scheme}://{hostname}/", "s3://")
+        updated_asset = asset.copy()
+        updated_asset["href"] = s3_href
+    else:
+        updated_asset = asset
+    return updated_asset
 
 def create_item(
     properties,
@@ -236,25 +251,40 @@ def handler(event, context):
     key = f"s3://{os.environ.get('BUCKET')}/{file_id}.ndjson"
     with open(key, "w") as file:
         for event_object in event:
-            granule_id = event_object.get("granule_id")
-            datetime_holder = event_object.get("filename_regex")
-
-            if granule_id and datetime_holder:
-                raise Exception(
-                    "Either granule_id or filename_regex must be provided, not both."
-                )
-
-            if granule_id:
-                # Only granule_id provided, look up in CMR
-                stac_item = create_stac_item_with_cmr(event_object)
-            elif datetime_holder:
-                stac_item = create_stac_item_with_regex(event_object)
+            collection = event_object.get("collection")
+            if event_object.get("mode") == "stac":
+                url = event_object.get("href")
+                response = requests.get()
+                stac_dict = response.json()
+                url_components = urlparse(url)
+                stac_dict["collection"] = collection if collection else url_components.path.split("/")[2].split(".")[0]
+                assets = {k: update_href(v) for (k, v) in stac_dict["assets"].items()}
+                stac_dict["assets"] = assets
+            
             else:
-                raise Exception("Either granule_id or filename_regex must be provided")
-            try:
-                stac_dict = stac_item.to_dict()
-            except Exception as e:
-                return e
+                granule_id = event_object.get("granule_id")
+                datetime_holder = event_object.get("filename_regex")
+
+                if granule_id and datetime_holder:
+                    raise Exception(
+                        "Either granule_id or filename_regex must be provided, not both."
+                    )
+
+                if granule_id:
+                    # Only granule_id provided, look up in CMR
+                    stac_item = create_stac_item_with_cmr(event_object)
+                elif datetime_holder:
+                    stac_item = create_stac_item_with_regex(event_object)
+                else:
+                    raise Exception("Either granule_id or filename_regex must be provided")
+                try:
+                    stac_dict = stac_item.to_dict()
+                    # TODO: Remove this hack
+                    if s3_url := event_object.get("data_url"):
+                        stac_dict["assets"]["cog_default"]["href"] = s3_url
+                except Exception as e:
+                    print(e)
+                    return e
             file.write(json.dumps(stac_dict) + "\n")
 
     return {

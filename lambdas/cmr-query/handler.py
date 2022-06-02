@@ -40,6 +40,7 @@ def handler(event, context):
                         "href": href,
                         "granule_id": granule["id"],
                         "id": granule["id"],
+                        "mode": event.get('mode'),
                         # "start_datetime": granule["time_start"],
                         # "end_datetime": granule["time_end"]
                     }
