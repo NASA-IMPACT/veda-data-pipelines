@@ -9,11 +9,25 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.8"
 argparse = "^1.4.0"
 boto3 = "^1.21.43"
 
 [tool.poetry.dev-dependencies]
+"aws_cdk.core" = "^1.151.0"
+"aws_cdk.aws_iam" = "^1.151.0"
+"aws_cdk.custom_resources" = "^1.151.0"
+"aws_cdk.aws_stepfunctions" = "^1.151.0"
+"aws_cdk.aws_events" = "^1.151.0"
+"aws_cdk.aws_events_targets" = "^1.151.0"
+"aws_cdk.aws_secretsmanager" = "^1.151.0"
+"aws_cdk.aws_lambda" = "^1.151.0"
+"aws_cdk.aws_stepfunctions_tasks" = "^1.151.0"
+"aws_cdk.aws_ec2" = "^1.151.0"
+"aws_cdk.aws_sqs" = "^1.151.0"
+"aws_cdk.aws_s3" = "^1.151.0"
+"aws_cdk.aws_lambda_event_sources" = "^1.151.0"
+"aws_cdk.aws_lambda_python" = "^1.151.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -26,3 +40,5 @@ update-collection = "scripts.collection:update"
 insert-item = "scripts.item:insert"
 delete-item = "scripts.item:delete"
 update-item = "scripts.item:update"
+deploy = "scripts.cdk:deploy"
+destroy = "scripts.cdk:destroy"
