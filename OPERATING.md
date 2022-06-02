@@ -128,13 +128,13 @@ Discovers all the files in an S3 bucket, based on the prefix and filename regex.
 
 Discovers all the files in a CMR collection, based on the version, temporal, bounding box, and include. Returns objects that follow the specified criteria.
 
-#### 3. cogify-or-not
-
-Based on the `cogify` flag, either writes the objects to a `COGIFY_QUEUE` or `STAC_READY_QUEUE`.
-
-#### 4. cogify
+#### 3. cogify
 
 Converts the input file to a COG file, writes it to S3, and returns the S3 key.
+
+#### 4. data-transfer
+
+Copies the data to the VEDA MCP bucket if necessary.
 
 #### 5. build-ndjson
 
@@ -160,4 +160,4 @@ Converts the input files to COGs, runs in parallel.
 
 #### 3. Publication
 
-Publishes the item to the STAC database.
+Publishes the item to the STAC database (and MCP bucket if necessary).
