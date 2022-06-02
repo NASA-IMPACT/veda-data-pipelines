@@ -12,3 +12,9 @@ EARTHDATA_PASSWORD = os.environ.get("EARTHDATA_PASSWORD")
 APP_NAME = "delta-simple-ingest"
 VEDA_DATA_BUCKET = "climatedashboard-data"
 VEDA_EXTERNAL_BUCKETS = [ "nasa-maap-data-store" ]
+MCP_BUCKETS = {
+    "prod": "veda-data-store",
+    "stage": "veda-data-store-staging",
+}
+
+MCP_ROLE_ARN = os.environ.get("MCP_ROLE_ARN")

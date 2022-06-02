@@ -4,6 +4,7 @@ from aws_cdk import (
     aws_lambda,
     aws_lambda_python,
     aws_ec2 as ec2,
+    aws_iam as iam,
     aws_s3 as s3,
     aws_secretsmanager as secretsmanager
 )
@@ -38,6 +39,30 @@ class LambdaStack(core.Stack):
         # Proxy lambda to trigger ingest and publish step function
         trigger_ingest_lambda = self._python_lambda(f"{construct_id}-trigger-ingest-fn", "../lambdas/proxy")
 
+        # Transfer data to MCP bucket
+        data_transfer_role = iam.Role(
+            self,
+            f"{construct_id}-data-transfer-role",
+            role_name=f"{construct_id}-data-transfer-role",
+            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+            description="Role to write to MCP bucket",
+        )
+        data_transfer_role.add_to_policy(
+            iam.PolicyStatement(
+                resources=[config.MCP_ROLE_ARN],
+                actions=["sts:AssumeRole"],
+            )
+        )
+        data_transfer_lambda = self._python_lambda(
+            f"{construct_id}-data-transfer-fn",
+            "../lambdas/data-transfer",
+            env={
+                "BUCKET": config.MCP_BUCKETS.get(config.ENV, ''),
+                "MCP_ROLE_ARN": config.MCP_ROLE_ARN,
+            },
+            role=data_transfer_role
+        )
+
         # Builds ndjson
         build_ndjson_lambda = self._lambda(f"{construct_id}-build-ndjson-fn", "../lambdas/build-ndjson",
             memory_size=8000,
@@ -66,6 +91,7 @@ class LambdaStack(core.Stack):
             "s3_discovery_lambda": s3_discovery_lambda,
             "cmr_discovery_lambda": cmr_discovery_lambda,
             "cogify_lambda": cogify_lambda,
+            "data_transfer_lambda": data_transfer_lambda,
             "build_ndjson_lambda": build_ndjson_lambda,
             "db_write_lambda": db_write_lambda,
             "trigger_cogify_lambda": trigger_cogify_lambda,
@@ -95,13 +121,17 @@ class LambdaStack(core.Stack):
             reserved_concurrent_executions=reserved_concurrent_executions,
         )
 
-    def _python_lambda(self, name, directory, env=None):
-        return aws_lambda_python.PythonFunction(self, name,
+    def _python_lambda(self, name, directory, env=None, **kwargs):
+        return aws_lambda_python.PythonFunction(
+            self,
+            name,
+            function_name=name,
             entry=directory,
             runtime=aws_lambda.Runtime.PYTHON_3_8,
             index="handler.py",
             handler="handler",
-            environment=env
+            environment=env,
+            **kwargs
         )
 
 
@@ -133,7 +163,9 @@ class LambdaStack(core.Stack):
         for bucket in self._read_buckets:
             self._lambdas["s3_discovery_lambda"].add_to_role_policy(IamPolicies.bucket_read_access(bucket))
             self._lambdas["build_ndjson_lambda"].add_to_role_policy(IamPolicies.bucket_read_access(bucket))
+            self._lambdas["data_transfer_lambda"].add_to_role_policy(IamPolicies.bucket_read_access(bucket))
         self._lambdas["cogify_lambda"].add_to_role_policy(IamPolicies.bucket_full_access(config.VEDA_DATA_BUCKET))
+        self._lambdas["data_transfer_lambda"].add_to_role_policy(IamPolicies.bucket_full_access(config.MCP_BUCKETS.get(config.ENV)))
 
         pgstac_secret = secretsmanager.Secret.from_secret_name_v2(self, f"{self.construct_id}-secret", config.SECRET_NAME)
         pgstac_secret.grant_read(self._lambdas["db_write_lambda"].role)

@@ -14,8 +14,8 @@ class IamPolicies:
     @staticmethod
     def bucket_full_access(bucket_name):
         return aws_iam.PolicyStatement(
-            actions=["s3:GetObject", "s3:PutObject"],
-            resources=[f"arn:aws:s3:::{bucket_name}/*"],
+            actions=["s3:ListBucket", "s3:GetObject", "s3:PutObject"],
+            resources=[f"arn:aws:s3:::{bucket_name}*"],
         )
 
     @staticmethod
