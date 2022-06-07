@@ -39,30 +39,6 @@ class LambdaStack(core.Stack):
         # Proxy lambda to trigger ingest and publish step function
         trigger_ingest_lambda = self._python_lambda(f"{construct_id}-trigger-ingest-fn", "../lambdas/proxy")
 
-        # Transfer data to MCP bucket
-        data_transfer_role = iam.Role(
-            self,
-            f"{construct_id}-data-transfer-role",
-            role_name=f"{construct_id}-data-transfer-role",
-            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
-            description="Role to write to MCP bucket",
-        )
-        data_transfer_role.add_to_policy(
-            iam.PolicyStatement(
-                resources=[config.MCP_ROLE_ARN],
-                actions=["sts:AssumeRole"],
-            )
-        )
-        data_transfer_lambda = self._python_lambda(
-            f"{construct_id}-data-transfer-fn",
-            "../lambdas/data-transfer",
-            env={
-                "BUCKET": config.MCP_BUCKETS.get(config.ENV, ''),
-                "MCP_ROLE_ARN": config.MCP_ROLE_ARN,
-            },
-            role=data_transfer_role
-        )
-
         # Builds ndjson
         build_ndjson_lambda = self._lambda(f"{construct_id}-build-ndjson-fn", "../lambdas/build-ndjson",
             memory_size=8000,
@@ -91,12 +67,37 @@ class LambdaStack(core.Stack):
             "s3_discovery_lambda": s3_discovery_lambda,
             "cmr_discovery_lambda": cmr_discovery_lambda,
             "cogify_lambda": cogify_lambda,
-            "data_transfer_lambda": data_transfer_lambda,
             "build_ndjson_lambda": build_ndjson_lambda,
             "db_write_lambda": db_write_lambda,
             "trigger_cogify_lambda": trigger_cogify_lambda,
             "trigger_ingest_lambda": trigger_ingest_lambda,
         }
+
+        if config.ENV in ["stage", "prod"]:
+            # Transfer data to MCP bucket
+            data_transfer_role = iam.Role(
+                self,
+                f"{construct_id}-data-transfer-role",
+                role_name=f"{construct_id}-data-transfer-role",
+                assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+                description="Role to write to MCP bucket",
+            )
+            data_transfer_role.add_to_policy(
+                iam.PolicyStatement(
+                    resources=[config.MCP_ROLE_ARN],
+                    actions=["sts:AssumeRole"],
+                )
+            )
+            data_transfer_lambda = self._python_lambda(
+                f"{construct_id}-data-transfer-fn",
+                "../lambdas/data-transfer",
+                env={
+                    "BUCKET": config.MCP_BUCKETS.get(config.ENV, ''),
+                    "MCP_ROLE_ARN": config.MCP_ROLE_ARN,
+                },
+                role=data_transfer_role
+            )
+            self._lambdas["data_transfer_lambda"] = data_transfer_lambda
 
         self.give_permissions()
 
@@ -163,9 +164,11 @@ class LambdaStack(core.Stack):
         for bucket in self._read_buckets:
             self._lambdas["s3_discovery_lambda"].add_to_role_policy(IamPolicies.bucket_read_access(bucket))
             self._lambdas["build_ndjson_lambda"].add_to_role_policy(IamPolicies.bucket_read_access(bucket))
-            self._lambdas["data_transfer_lambda"].add_to_role_policy(IamPolicies.bucket_read_access(bucket))
+            if data_transfer_lambda := self._lambdas.get("data_transfer_lambda"):
+                data_transfer_lambda.add_to_role_policy(IamPolicies.bucket_read_access(bucket))
         self._lambdas["cogify_lambda"].add_to_role_policy(IamPolicies.bucket_full_access(config.VEDA_DATA_BUCKET))
-        self._lambdas["data_transfer_lambda"].add_to_role_policy(IamPolicies.bucket_full_access(config.MCP_BUCKETS.get(config.ENV)))
+        if data_transfer_lambda := self._lambdas.get("data_transfer_lambda"):
+            data_transfer_lambda.add_to_role_policy(IamPolicies.bucket_full_access(config.MCP_BUCKETS.get(config.ENV)))
 
         pgstac_secret = secretsmanager.Secret.from_secret_name_v2(self, f"{self.construct_id}-secret", config.SECRET_NAME)
         pgstac_secret.grant_read(self._lambdas["db_write_lambda"].role)
