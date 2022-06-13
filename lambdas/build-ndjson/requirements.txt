@@ -1,0 +1,9 @@
+aws-lambda-powertools
+awslambdaric
+boto3
+click==8.0.4
+pystac==1.4.0
+python-cmr
+rio-stac
+shapely
+smart-open

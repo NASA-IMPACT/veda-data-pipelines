@@ -1,60 +1,70 @@
-from cmr import GranuleQuery
-import os
 import json
-import pystac
-from pystac.utils import str_to_datetime
-from shapely.geometry import shape
-from pypgstac import pypgstac
-from rio_stac.stac import bbox_to_geom, create_stac_item
-import re
-import sys
+import os
+
+from typing import Dict
+
 import boto3
 
-STAC_DB_HOST = os.environ.get("STAC_DB_HOST")
-STAC_DB_USER = os.environ.get("STAC_DB_USER")
-PGPASSWORD = os.environ.get("PGPASSWORD")
+from pypgstac import pypgstac
+from pypgstac.load import loadopt
+
 
 s3_client = boto3.client('s3')
 
+def get_secret(secret_name: str):
+    """Get Secrets from secret manager."""
+    client = boto3.client(service_name="secretsmanager")
+    response = client.get_secret_value(SecretId=secret_name)
+    return json.loads(response["SecretString"])
+
+def build_connection_string(connection_params: Dict):
+    connection_string = (
+        f"postgresql://{connection_params['username']}:"
+        f"{connection_params['password']}@"
+        f"{connection_params['host']}:"
+        f"{connection_params['port']}/"
+        f"{connection_params.get('dbname', 'postgres')}"
+    )
+    return connection_string
+
 def handler(event, context):
-    """
-    Simple Lambda that should belong to the VPC of the STAC_DB_HOST
-    Receive a STAC item in JSON format, connect to database and insert it
-    """
+    SECRET_NAME = os.environ["SECRET_NAME"]
+    connection_params = get_secret(SECRET_NAME)
+    connection_string = build_connection_string(connection_params)
+
     stac_temp_file_name = "/tmp/stac_item.json"
-
-    if "stac_item" in event:
-        stac_json = event["stac_item"]
+    
+    if stac_item := event.get("stac_item"):
         with open(stac_temp_file_name, "w+") as f:
-            f.write(json.dumps(stac_json))
-    elif "stac_file_url" in event:
-        print('download')
+            json.dump(stac_item, f)
+    elif file_url := event.get("stac_file_url"):
+        bucket_and_path = file_url.replace("s3://", "").split("/")
+        bucket, filepath = bucket_and_path[0], '/'.join(bucket_and_path[1:])
         s3_client.download_file(
-            "climatedashboard-data", event["stac_file_url"], stac_temp_file_name
+            bucket, filepath, stac_temp_file_name
         )
+    else:
+        raise Exception("No stac_item or stac_file_url provided")
+
+    if event.get("dry_run"):
+        print("Dry run, not inserting, would have inserted:")
         print(open(stac_temp_file_name).read())
-    # pypgstac requires inserting from a file
+        return
 
-    try:
-        pypgstac.load(
-            table="items",
-            file=stac_temp_file_name,
-            dsn=f"postgres://{STAC_DB_USER}:{PGPASSWORD}@{STAC_DB_HOST}/postgis",
-            # use upsert
-            method="upsert",  # use insert_ignore to avoid overwritting existing items
-        )
-        print("Inserted to database")
-    except Exception as e:
-        print(e)
-        return e
-    os.remove(stac_temp_file_name)
+    pypgstac.load(
+        file=stac_temp_file_name,
+        table=event.get("type", "items"),
+        method=loadopt.upsert,
+        dsn=connection_string,
+    )
 
-
-if __name__ == "__main__":
-    sample_event = (json.loads(open("sample-stac-item.json", "r").read()))
-
-    sample_download = {
-        "stac_file_url": "stac_item_queue/Maria_Stage3.json"
+if __name__ == '__main__':
+    filename = "example.ndjson"
+    sample_event = {
+        "stac_file_url": "example.ndjson",
+        # or
+        "stac_item": {
+        },
+        "type": "collections"
     }
-
     handler(sample_event, {})

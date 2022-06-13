@@ -1,10 +1,8 @@
-import datetime as dt
-from cmr import GranuleQuery
 import re
-import json
-import os
-import boto3
 
+import datetime as dt
+
+from cmr import GranuleQuery
 
 
 def handler(event, context):
@@ -14,8 +12,9 @@ def handler(event, context):
     collection = event["collection"]
     version = event["version"]
 
-    enddate = dt.datetime.strptime(event['end_date'], '%Y-%m-%d %H:%M:%S') if 'end_date' in event else dt.datetime.now()
-    startdate = enddate - dt.timedelta(hours=event["hours"])
+    temporal = event.get("temporal", ["1000-01-01T00:00:00Z","3000-01-01T23:59:59Z"])
+    startdate = dt.datetime.strptime(temporal[0], '%Y-%m-%dT%H:%M:%SZ')
+    enddate = dt.datetime.strptime(temporal[1], '%Y-%m-%dT%H:%M:%SZ')
     print(f"Querying for {collection} granules from {startdate} to {enddate}")
 
     api = GranuleQuery()
@@ -23,13 +22,14 @@ def handler(event, context):
         api.short_name(collection)
         .version(version)
         .temporal(startdate, enddate)
+        .bounding_box(*event.get("bounding_box", [-180, -90, 180, 90]))
         .get_all()
     )
 
     urls = []
     for granule in granules:
         for link in granule["links"]:
-            if event['mode'] == 'stac':
+            if event.get('mode') == 'stac':
                 if link["href"][-9:] == "stac.json" and link["href"][0:5] == "https":
                     urls.append(link)
             else:
@@ -39,7 +39,10 @@ def handler(event, context):
                         "collection": collection,
                         "href": href,
                         "granule_id": granule["id"],
-                        "upload": True,
+                        "id": granule["id"],
+                        "mode": event.get('mode'),
+                        # "start_datetime": granule["time_start"],
+                        # "end_datetime": granule["time_end"]
                     }
                     if event["include"]:
                         pattern = re.compile(event["include"])
@@ -48,24 +51,21 @@ def handler(event, context):
                             urls.append(file_obj)
                     else:
                         urls.append(file_obj)
-    if event["queue_messages"]:
-        client = boto3.client("sqs")
-        QUEUE_URL = os.environ["QUEUE_URL"]
-        for item_url in urls:
-            client.send_message(QueueUrl=QUEUE_URL, MessageBody=item_url['href'])
 
-    print(f"Returning urls {urls}")
-    return urls
+    print(f"Returning {len(urls)} urls")
+    return {
+        "cogify": event.get("cogify", False),
+        "objects": urls
+    }
 
 
 if __name__ == "__main__":
     sample_event = {
-        "hours": 4,
-        "end_date": "2021-07-29 05:00:00",
-        "mode": "stac",
-        "queue_messages": True,
-        "collection": "HLSS30",
-        "version": "2.0",
-        "include": "^.+he5$",
+        # "mode": "stac",
+        "collection": "IS2SITMOGR4",
+        "version": "1",
+        "include": "^.+nc$",
+        "temporal": ["2018-01-21T00:00:00Z","2018-04-20T23:59:59Z"],
+        "bounding_box": [-180, -90, 180, 90]
     }
     handler(sample_event, {})

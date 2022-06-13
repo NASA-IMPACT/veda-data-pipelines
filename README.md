@@ -3,50 +3,70 @@
 This repo houses function code and deployment code for producing cloud-optimized
 data products and STAC metadata for interfaces such as https://github.com/NASA-IMPACT/delta-ui.
 
-# Requirements
+## Requirements
 
-## Docker
+### Docker
 
-See https://docs.docker.com/get-docker/
+See [get-docker](https://docs.docker.com/get-docker/)
 
-## CDK
+### AWS CDK
 
-https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html
+See [cdk-getting-started](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html)
 
 ```bash
-nvm use 14
-npm install cdk
-pip install aws-cdk.aws-stepfunctions-tasks
+nvm install 17.3.0
+nvm use 17.3.0
+npm install -g aws-cdk
 ```
 
-# What's here?
+### Poetry
 
-## Dataset Worfklows
+See [poetry-landing-page](https://pypi.org/project/poetry/)
 
-The `dataset-workflows/` directory includes scripts and cloud deployments for data ingest, processing and publication workflows. Each dataset managed by this repository should have it's own sub-directory within dataset-workflows. Each workflow should be documented and repeatable for other developers. Dataset workflows fall into 2 categories:
+```bash
+pip install poetry
+```
 
-* Manual workflows: Small, one time ingests (100 files or less) may be processed manually. Example: Black Marble Nightlights data for Hurricanes Ida and Maria.
-* Cloud workflows:
-    * Large scale ingests will require cloud resources for monitoring, scaling and long-running processes. Example: HLS.
-    * Small scale ingests which are ongoing or require automation. Example: Facebook COG generation triggered by new data in `s3://dataforgood-fb-data/`
+## Deployment
 
-As noted, each dataset has it's own directory in `dataset-workflows` with documentation and code for data ingest, processing and publish. Not all steps are necessary for all wokflows. Optionally, datasets may have suffixes to indicate the tool used to run the ingest and publish. For example `dataset-workflows/hls-cdk` would include cdk for deploying the HLS pipeline for publishing HLS STAC records.
+This project uses AWS CDK to deploy AWS resources to the cloud.
 
-## Lambdas
+### Make sure the following environment variables are set
 
-The `lambdas/` subdirectory includes lambda code for composing a dataset workflow. Each dataset is expected to have slightly different needs when it comes to data discovery, processing, and publication. These lambda functions should be re-usable across datasets
+```bash
+VPC_ID="<vpc-xxxxxxx>"
+SECURITY_GROUP_ID="sg-xxxxxxxx"
+ENV="<dev/stage/prod>"
+SECRET_NAME="<secret-name-for-pgstac-access>"
+APP_NAME="delta-simple-ingest"
+```
 
-* `cogify` includes code and Dockerfiles for
-  running data conversion to COG, such as NetCDF/HDF5 to COG. 
-  
-* `cmr-query` includes code and Dockerfiles for discovering HDF5 files from NASA CMR.
-  
-* `s3-discovery` includes code and Dockerfiles for discovering arbitrary files from an S3 location.
-  
-* `stac-gen` includes code and Dockerfiles for generating STAC items from a COG using `rio-stac`. Can optionally query CMR for metadata or parse metadata from filenames with provided regex.
+**Note:** You can use the handy `env.sample.sh` script to set these variables. Just rename the file to `env.sh` and populate it with appropriate values. Then run the following commands:
 
-* `pgstac-loader` generates multiple records from a ndjson file.
-  
-See individual directories for more information and run instructions.
+```bash
+chmod +x env.sh
+source env.sh <dev/stage>
+```
 
+> If anything other than dev/stage is provided as the env, the dev credentials are used (for now).
 
+## To deploy
+
+### Using poetry
+
+```bash
+# deploy
+poetry run deploy
+
+# destroy
+poetry run destroy
+```
+
+### Else
+
+1. Go to `deploy/` directory
+2. Create a virtual environment with `python -m venv venv`
+3. Activate the virtual environment with `source venv/bin/activate`
+4. Install the requirements with `pip install -r requirements.txt`
+5. Run `cdk deploy --all`
+6. Useful: `cdk destroy --all` to destroy the infrastructure

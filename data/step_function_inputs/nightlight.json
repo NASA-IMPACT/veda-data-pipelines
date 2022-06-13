@@ -1,0 +1,210 @@
+[
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Barcelona(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Lima(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Paris(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Milan(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Marseille(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Beijing(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Dhaka_Dhaka-city(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Ghent(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Fukuoka_Fukuoka-city(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Tokyo-23Wards(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Aichi_Nagoya-city(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Dunkirk(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Madrid(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Colombo(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Gdynia(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Hamburg(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Osaka_Osaka-city(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Singapore(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Venice(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Auckland(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Genoa(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Kyoto_Kyoto-city(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)London(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Rome(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Amsterdam(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  },
+  {
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)Hokkaido_Sapporo(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+  }
+]
