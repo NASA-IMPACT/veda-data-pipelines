@@ -1,0 +1,16 @@
+[
+    {
+        "collection": "nightlights-hd-1band",
+        "prefix": "delivery/FinalBMHD_Ida2021/",
+        "bucket": "climatedashboard-data",
+        "filename_regex": "^(.*)BMHD_Ida(.*)1band.tif$",
+        "discovery": "s3"
+    },
+    {
+        "collection": "nightlights-hd-1band",
+        "prefix": "delivery/BMHD_Maria_Stages/",
+        "bucket": "climatedashboard-data",
+        "filename_regex": "^(.*)Maria(.*)1band.tif$",
+        "discovery": "s3"
+    }
+]
