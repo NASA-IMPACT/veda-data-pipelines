@@ -1,0 +1,8 @@
+{
+    "collection": "blue-tarp-planetscope",
+    "prefix": "blue-tarp-planetscope/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*).tif$",
+    "discovery": "s3",
+    "upload": true
+}

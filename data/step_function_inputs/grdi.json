@@ -5,7 +5,8 @@
     "bucket": "climatedashboard-data",
     "filename_regex": "^(.*)v1_2010(.*).tif$",
     "discovery": "s3",
-    "datetime_range": "month"
+    "datetime_range": "month",
+    "upload": true
   },
   {
     "collection": "grdi-v1-built",
@@ -13,7 +14,8 @@
     "bucket": "climatedashboard-data",
     "filename_regex": "^(.*)v1_BUILT(.*).tif$",
     "discovery": "s3",
-    "datetime_range": "month"
+    "datetime_range": "month",
+    "upload": true
   },
   {
     "collection": "grdi-imr-raster",
@@ -21,7 +23,8 @@
     "bucket": "climatedashboard-data",
     "filename_regex": "^(.*)IMR(.*).tif$",
     "discovery": "s3",
-    "datetime_range": "month"
+    "datetime_range": "month",
+    "upload": true
   },
   {
     "collection": "grdi-shdi-raster",
@@ -29,7 +32,8 @@
     "bucket": "climatedashboard-data",
     "filename_regex": "^(.*)SHDI(.*).tif$",
     "discovery": "s3",
-    "datetime_range": "month"
+    "datetime_range": "month",
+    "upload": true
   },
   {
     "collection": "grdi-vnl-raster",
@@ -37,7 +41,8 @@
     "bucket": "climatedashboard-data",
     "filename_regex": "^(.*)VNL_(.*).tif$",
     "discovery": "s3",
-    "datetime_range": "month"
+    "datetime_range": "month",
+    "upload": true
   },
   {
     "collection": "grdi-vnl-slope-raster",
@@ -45,7 +50,8 @@
     "bucket": "climatedashboard-data",
     "filename_regex": "^(.*)_VNL-slope_(.*).tif$",
     "discovery": "s3",
-    "datetime_range": "month"
+    "datetime_range": "month",
+    "upload": true
   },
   {
     "collection": "grdi-cdr-raster",
@@ -53,7 +59,8 @@
     "bucket": "climatedashboard-data",
     "filename_regex": "^(.*)CDR(.*).tif$",
     "discovery": "s3",
-    "datetime_range": "month"
+    "datetime_range": "month",
+    "upload": true
   },
   {
     "collection": "grdi-filled-missing-values-count",
@@ -61,6 +68,7 @@
     "bucket": "climatedashboard-data",
     "filename_regex": "^(.*)FilledMissingValues(.*).tif$",
     "discovery": "s3",
-    "datetime_range": "month"
+    "datetime_range": "month",
+    "upload": true
   }
 ]

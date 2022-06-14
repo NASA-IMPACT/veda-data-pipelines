@@ -1,0 +1,9 @@
+{
+    "collection": "geoglam",
+    "prefix": "agriculture-cropmonitor/",
+    "bucket": "covid-eo-data",
+    "filename_regex": "^(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month",
+    "upload": true
+}
