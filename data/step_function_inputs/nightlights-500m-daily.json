@@ -1,0 +1,58 @@
+[
+  {
+    "collection": "nightlights-500m-daily",
+    "prefix": "bm_500m_daily_bkp/",
+    "bucket": "covid-eo-blackmarble",
+    "filename_regex": "^(.*)Beijing_\\d{4}-\\d{2}-\\d{2}(.*).tif$",
+    "discovery": "s3",
+    "upload": true
+  },
+  {
+    "collection": "nightlights-500m-daily",
+    "prefix": "bm_500m_daily_bkp/",
+    "bucket": "covid-eo-blackmarble",
+    "filename_regex": "^(.*)Caracas_\\d{4}-\\d{2}-\\d{2}(.*).tif$",
+    "discovery": "s3",
+    "upload": true
+  },
+  {
+    "collection": "nightlights-500m-daily",
+    "prefix": "bm_500m_daily_bkp/",
+    "bucket": "covid-eo-blackmarble",
+    "filename_regex": "^(.*)LosAngeles_\\d{4}-\\d{2}-\\d{2}(.*).tif$",
+    "discovery": "s3",
+    "upload": true
+  },
+  {
+    "collection": "nightlights-500m-daily",
+    "prefix": "bm_500m_daily_bkp/",
+    "bucket": "covid-eo-blackmarble",
+    "filename_regex": "^(.*)NewYork_\\d{4}-\\d{2}-\\d{2}(.*).tif$",
+    "discovery": "s3",
+    "upload": true
+  },
+  {
+    "collection": "nightlights-500m-daily",
+    "prefix": "bm_500m_daily_bkp/",
+    "bucket": "covid-eo-blackmarble",
+    "filename_regex": "^(.*)SanFrancisco_\\d{4}-\\d{2}-\\d{2}(.*).tif$",
+    "discovery": "s3",
+    "upload": true
+  },
+  {
+    "collection": "nightlights-500m-daily",
+    "prefix": "bm_500m_daily_bkp/",
+    "bucket": "covid-eo-blackmarble",
+    "filename_regex": "^(.*)EUPorts_\\d{4}-\\d{2}-\\d{2}(.*).tif$",
+    "discovery": "s3",
+    "upload": true
+  },
+  {
+    "collection": "nightlights-500m-daily",
+    "prefix": "bm_500m_daily_bkp/",
+    "bucket": "covid-eo-blackmarble",
+    "filename_regex": "^(.*)Tokyo_\\d{4}-\\d{2}-\\d{2}(.*).tif$",
+    "discovery": "s3",
+    "upload": true
+  }
+]
