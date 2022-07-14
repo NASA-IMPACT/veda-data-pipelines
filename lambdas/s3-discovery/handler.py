@@ -7,6 +7,7 @@ s3 = boto3.resource(
     "s3",
 )
 
+
 def list_bucket(bucket, prefix, filename_regex):
     try:
         files = []
@@ -30,7 +31,7 @@ def handler(event, context):
     )
 
     files_objs = []
-    cogify = event.pop("key", False)
+    cogify = event.pop("cogify", False)
     bucket = event.get("bucket")
     collection = event.get("collection", event["prefix"][:-1])
     for filename in filenames:
@@ -38,6 +39,7 @@ def handler(event, context):
             {
                 "filename_regex": event.get("filename_regex"),
                 "datetime_range": event.get("datetime_range"),
+                "properties": event.get("properties"),
                 # Remove trailing back slash used for prefixing
                 "collection": collection,
                 "s3_filename": f's3://{bucket}/{filename}',
