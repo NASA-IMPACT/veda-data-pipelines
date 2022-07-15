@@ -15,7 +15,7 @@ assignees: ''
 
 2. If necessary, create COG or any other conversion / processing code and verify the COG output with a data product expert (for example, someone at the DAAC which hosts the native format) by sharing in a visual interface.
 
-3. Check in with project team if any other tracking system or point of contacted should be updated that this started
+3. Identify the point of contact and ensure someone is providing them updates!
 
 # Design the metadata and publish to the Dev API
 
