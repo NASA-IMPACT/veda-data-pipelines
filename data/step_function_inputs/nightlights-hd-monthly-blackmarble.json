@@ -1,0 +1,8 @@
+{
+    "collection": "nightlights-hd-monthly",
+    "prefix": "bmhd_30m_monthly_bkp/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*)BMHD_VNP46A2(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month"
+}

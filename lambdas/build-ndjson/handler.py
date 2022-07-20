@@ -38,15 +38,18 @@ def calculate_year_range(datetime_obj):
     end_datetime = datetime_obj.replace(month=12, day=31)
     return start_datetime, end_datetime
 
+
 def calculate_month_range(datetime_obj):
     start_datetime = datetime_obj.replace(day=1)
     end_datetime = datetime_obj + relativedelta(day=31)
     return start_datetime, end_datetime
 
+
 DATETIME_RANGE_METHODS = {
     "month": calculate_month_range,
     "year": calculate_year_range
 }
+
 
 def update_href(asset):
     """Update asset protected http endpoint to the internal S3 endpoint"""
@@ -61,6 +64,7 @@ def update_href(asset):
     else:
         updated_asset = asset
     return updated_asset
+
 
 def create_item(
     properties,
@@ -190,7 +194,7 @@ def create_stac_item_with_regex(event):
     collection = event["collection"]
     assets = {}
 
-    properties = event.get("properties", {})
+    properties = event.get("properties") or {}
 
     try:
         datetime_range = event.get("datetime_range", None)

@@ -1,0 +1,9 @@
+{
+    "collection": "IS2SITMOGR4-cog",
+    "prefix": "IS2SITMOGR4/",
+    "bucket": "climatedashboard-data",
+    "filename_regex": "^(.*).tif$",
+    "discovery": "s3",
+    "datetime_range": "month",
+    "upload": true
+}

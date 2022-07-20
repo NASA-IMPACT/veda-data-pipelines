@@ -1,10 +1,12 @@
 import os
 
 import boto3
+from botocore.errorfactory import ClientError
 
 
 TARGET_BUCKET = os.environ["BUCKET"]
 MCP_ROLE_ARN = os.environ.get("MCP_ROLE_ARN")
+
 
 def _parse_s3_object(s3_object):
     split = s3_object.strip("s3://").split("/")
@@ -31,8 +33,22 @@ def handler(event, context):
         if not object.get("upload"):
             continue
         bucket, path, name = _parse_s3_object(object["s3_filename"])
-        source_s3.download_file(bucket, f"{path}/{name}", f"/tmp/{name}")
-        target_s3.upload_file(f"/tmp/{name}", TARGET_BUCKET, f"{object.get('collection')}/{name}")
-        object["data_url"] = f"s3://{TARGET_BUCKET}/{object.get('collection')}/{name}"
+        tmp_filename = f"/tmp/{name}"
+
+        target_key = f"{object.get('collection')}/{name}"
+        target_url = f"s3://{TARGET_BUCKET}/{target_key}"
+
+        # Check if the corresponding object exists in the target bucket
+        try:
+            target_s3.head_object(Bucket=TARGET_BUCKET, Key=target_key)
+        except ClientError:
+            # Not found
+            source_s3.download_file(bucket, f"{path}/{name}", tmp_filename)
+            target_s3.upload_file(tmp_filename, TARGET_BUCKET, target_key)
+            # Clean up the data
+            if os.path.exists(tmp_filename):
+                os.remove(tmp_filename)
+
+        object["data_url"] = target_url
 
     return event

@@ -12,8 +12,9 @@ class QueueStack(core.Stack):
         trigger_cogify_lambda = lambda_stack.lambdas["trigger_cogify_lambda"]
         trigger_ingest_lambda = lambda_stack.lambdas["trigger_ingest_lambda"]
         cogify_lambda = lambda_stack.lambdas["cogify_lambda"]
-        
-        self.cogify_queue = self._queue(f"{construct_id}-cogify-queue",
+
+        self.cogify_queue = self._queue(
+            f"{construct_id}-cogify-queue",
             visibility_timeout=600,
             dead_letter_queue=sqs.DeadLetterQueue(
                 max_receive_count=5,
@@ -24,31 +25,34 @@ class QueueStack(core.Stack):
         trigger_cogify_lambda.add_event_source(
             lambda_event_sources.SqsEventSource(
                 self.cogify_queue,
-                batch_size=100,
+                batch_size=10,
                 max_batching_window=core.Duration.seconds(20),
                 report_batch_item_failures=True,
             )
         )
 
-        self.stac_ready_queue = self._queue(f"{construct_id}-stac-ready-queue",
+        self.stac_ready_queue = self._queue(
+            f"{construct_id}-stac-ready-queue",
             visibility_timeout=600,
             dead_letter_queue=sqs.DeadLetterQueue(
                 max_receive_count=3,
                 queue=self._queue(f"{construct_id}-stac-ready-dlq", retention_days=14),
-            )
+            ),
         )
         self.stac_ready_queue.grant_send_messages(cogify_lambda.role)
 
         trigger_ingest_lambda.add_event_source(
             lambda_event_sources.SqsEventSource(
                 self.stac_ready_queue,
-                batch_size=100,
+                batch_size=10,
                 max_batching_window=core.Duration.seconds(30),
                 report_batch_item_failures=True,
             )
         )
 
-    def _queue(self, name, visibility_timeout=30, dead_letter_queue=None, retention_days=4):
+    def _queue(
+        self, name, visibility_timeout=30, dead_letter_queue=None, retention_days=4
+    ):
         return sqs.Queue(
             self,
             name,
