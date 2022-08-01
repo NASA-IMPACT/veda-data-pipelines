@@ -109,40 +109,6 @@ class StepFunctionStack(core.Stack):
             definition=discovery_workflow,
         )
 
-    def _publication_workflow(
-        self,
-        lambdas: Dict[str, aws_lambda.IFunction],
-    ) -> stepfunctions.StateMachine:
-        publish_task = self._lambda_task(
-            "Build Ndjson Task",
-            lambdas["build_ndjson_lambda"],
-        )
-
-        submit_task = self._lambda_task(
-            "Submit STAC to Ingestor Task",
-            lambdas["submit_stac_lambda"],
-            input_path="$.Payload",
-        )
-
-        transfer_task = self._lambda_task(
-            "Data Transfer",
-            lambdas["data_transfer_lambda"],
-            output_path="$.Payload",
-        )
-
-        publish_workflow = (
-            transfer_task.next(publish_task)
-            if config.ENV in ["stage", "prod"]
-            else publish_task
-        ).next(submit_task)
-
-        return stepfunctions.StateMachine(
-            self,
-            "publication-sf",
-            state_machine_name=f"{self.stack_name}-publication",
-            definition=publish_workflow,
-        )
-
     def _cogify_workflow(
         self,
         lambdas: Dict[str, aws_lambda.IFunction],
@@ -171,4 +137,45 @@ class StepFunctionStack(core.Stack):
             f"cogify-sf",
             state_machine_name=f"{self.stack_name}-cogify",
             definition=cogify_workflow,
+        )
+
+    def _publication_workflow(
+        self,
+        lambdas: Dict[str, aws_lambda.IFunction],
+    ) -> stepfunctions.StateMachine:
+        publish_task = self._lambda_task(
+            "Build Ndjson Task",
+            lambdas["build_ndjson_lambda"],
+        )
+
+        submit_task = self._lambda_task(
+            "Submit to STAC Ingestor Task",
+            lambdas["submit_stac_lambda"],
+            input_path="$.Payload",
+        )
+
+        transfer_task = self._lambda_task(
+            "Data Transfer",
+            lambdas["data_transfer_lambda"],
+            output_path="$.Payload",
+        )
+
+        publish_workflow = (
+            transfer_task.next(publish_task)
+            if config.ENV in ["stage", "prod"]
+            else publish_task
+        ).next(
+            stepfunctions.Map(
+                self,
+                "Submit to STAC Ingestor",
+                max_concurrency=100,
+                items_path=stepfunctions.JsonPath.string_at("$"),
+            ).iterator(submit_task)
+        )
+
+        return stepfunctions.StateMachine(
+            self,
+            "publication-sf",
+            state_machine_name=f"{self.stack_name}-publication",
+            definition=publish_workflow,
         )
