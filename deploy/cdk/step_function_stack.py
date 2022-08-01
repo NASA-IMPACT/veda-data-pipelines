@@ -14,29 +14,16 @@ class StepFunctionStack(core.Stack):
     def __init__(self, app, construct_id, lambda_stack, queue_stack, **kwargs):
         super().__init__(app, construct_id, **kwargs)
 
-        self._step_functions = {
-            "discovery": self._discovery_workflow(
-                lambdas=lambda_stack.lambdas,
-                queues=queue_stack.queues,
-            ),
-            "cogify": self._cogify_workflow(
-                lambdas=lambda_stack.lambdas,
-                queues=queue_stack.queues,
-            ),
-            "publication": self._publication_workflow(
-                lambdas=lambda_stack.lambdas,
-            ),
-        }
-
-    @property
-    def state_machines(self) -> Dict[str, stepfunctions.IStateMachine]:
-        return self._step_functions
-
-    def get_arns(self, env_vars):
-        base_str = f"arn:aws:states:{env_vars.region}:{env_vars.account}:stateMachine:"
-        return (
-            f"{base_str}{self.stack_name}-cogify",
-            f"{base_str}{self.stack_name}-publication",
+        self.cogify_workflow = self._cogify_workflow(
+            lambdas=lambda_stack.lambdas,
+            queues=queue_stack.queues,
+        )
+        self.discovery_workflow = self._discovery_workflow(
+            lambdas=lambda_stack.lambdas,
+            queues=queue_stack.queues,
+        )
+        self.publication_workflow = self._publication_workflow(
+            lambdas=lambda_stack.lambdas,
         )
 
     def _lambda_task(self, name, lambda_function, input_path=None, output_path=None):

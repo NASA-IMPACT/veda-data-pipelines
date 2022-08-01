@@ -6,6 +6,7 @@ from aws_cdk import (
     aws_iam as iam,
     aws_s3 as s3,
     aws_secretsmanager as secretsmanager,
+    aws_stepfunctions as stepfunctions,
 )
 
 import config
@@ -212,3 +213,11 @@ class LambdaStack(core.Stack):
             name,
             bucket_name=name,
         )
+
+    @staticmethod
+    def grant_execution_privileges(
+        lambda_function: aws_lambda.Function,
+        workflow: stepfunctions.StateMachine,
+    ):
+        workflow.grant_start_execution(lambda_function.grant_principal)
+        lambda_function.add_environment("STEP_FUNCTION_ARN", workflow.state_machine_arn)
