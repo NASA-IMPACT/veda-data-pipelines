@@ -14,7 +14,7 @@ REGION = os.environ.get("AWS_REGION", "us-east-1")
 APP_NAME = os.environ.get("APP_NAME")
 ENV = os.environ.get("ENV", "dev")
 
-DB_WRITE_FUNCTION_NAME = f"{APP_NAME}-{ENV}-lambda-db-write-fn"
+SUBMIT_STAC_FUNCTION_NAME = f"{APP_NAME}-{ENV}-lambda-submit-stac-fn"
 INGESTION_STEP_MACHINE_ARN = f"arn:aws:states:{REGION}:{ACCOUNT_ID}:stateMachine:{APP_NAME}-{ENV}-stepfunction-discover"
 
 

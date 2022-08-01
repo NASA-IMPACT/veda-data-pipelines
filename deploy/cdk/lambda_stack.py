@@ -57,10 +57,10 @@ class LambdaStack(core.Stack):
             memory_size=8000,
         )
 
-        # DB Write lambda
-        db_write_lambda = self._lambda(
-            f"{construct_id}-db-write-fn",
-            "../lambdas/db-write",
+        # Submit STAC lambda
+        submit_stac_lambda = self._lambda(
+            f"{construct_id}-submit-stac-fn",
+            "../lambdas/submit-stac",
             memory_size=8000,
             env={"SECRET_NAME": config.SECRET_NAME},
             vpc=database_vpc,
@@ -69,17 +69,17 @@ class LambdaStack(core.Stack):
 
         ndjson_bucket = self._bucket(f"{construct_id}-ndjson-bucket")
         ndjson_bucket.grant_read_write(build_ndjson_lambda.role)
-        ndjson_bucket.grant_read(db_write_lambda.role)
+        ndjson_bucket.grant_read(submit_stac_lambda.role)
 
         build_ndjson_lambda.add_environment("BUCKET", ndjson_bucket.bucket_name)
-        db_write_lambda.add_environment("BUCKET", ndjson_bucket.bucket_name)
+        submit_stac_lambda.add_environment("BUCKET", ndjson_bucket.bucket_name)
 
         self._lambdas = {
             "s3_discovery_lambda": s3_discovery_lambda,
             "cmr_discovery_lambda": cmr_discovery_lambda,
             "cogify_lambda": cogify_lambda,
             "build_ndjson_lambda": build_ndjson_lambda,
-            "db_write_lambda": db_write_lambda,
+            "submit_stac_lambda": submit_stac_lambda,
             "trigger_cogify_lambda": trigger_cogify_lambda,
             "trigger_ingest_lambda": trigger_ingest_lambda,
         }
@@ -158,7 +158,7 @@ class LambdaStack(core.Stack):
         )
 
     def _lambda_sg_for_db(self, construct_id, database_vpc):
-        # Security group for db-write lambda
+        # Security group for submit-stac lambda
         lambda_function_security_group = ec2.SecurityGroup(
             self,
             f"{construct_id}-lambda-sg",
@@ -204,7 +204,7 @@ class LambdaStack(core.Stack):
         pgstac_secret = secretsmanager.Secret.from_secret_name_v2(
             self, f"{self.construct_id}-secret", config.SECRET_NAME
         )
-        pgstac_secret.grant_read(self._lambdas["db_write_lambda"].role)
+        pgstac_secret.grant_read(self._lambdas["submit_stac_lambda"].role)
 
     def _bucket(self, name):
         return s3.Bucket.from_bucket_name(
