@@ -1,4 +1,3 @@
 awslambdaric
 boto3
 aws-lambda-powertools
-pypgstac==0.4.5
