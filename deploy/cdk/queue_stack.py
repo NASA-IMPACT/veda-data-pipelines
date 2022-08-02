@@ -61,10 +61,3 @@ class QueueStack(core.Stack):
             dead_letter_queue=dead_letter_queue,
             retention_period=core.Duration.days(retention_days),
         )
-
-    @property
-    def queues(self):
-        return {
-            "cogify_queue": self.cogify_queue,
-            "stac_ready_queue": self.stac_ready_queue,
-        }

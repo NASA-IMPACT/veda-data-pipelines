@@ -1,13 +1,16 @@
-from typing import Dict
+from typing import Dict, TYPE_CHECKING
 from aws_cdk import (
     core,
     aws_stepfunctions as stepfunctions,
     aws_stepfunctions_tasks as tasks,
     aws_lambda,
-    aws_sqs,
 )
 
 import config
+
+
+if TYPE_CHECKING:
+    from .queue_stack import QueueStack
 
 
 class StepFunctionStack(core.Stack):
@@ -16,11 +19,11 @@ class StepFunctionStack(core.Stack):
 
         self.cogify_workflow = self._cogify_workflow(
             lambdas=lambda_stack.lambdas,
-            queues=queue_stack.queues,
+            queue_stack=queue_stack,
         )
         self.discovery_workflow = self._discovery_workflow(
             lambdas=lambda_stack.lambdas,
-            queues=queue_stack.queues,
+            queue_stack=queue_stack,
         )
         self.publication_workflow = self._publication_workflow(
             lambdas=lambda_stack.lambdas,
@@ -46,7 +49,7 @@ class StepFunctionStack(core.Stack):
     def _discovery_workflow(
         self,
         lambdas: Dict[str, aws_lambda.IFunction],
-        queues: Dict[str, aws_sqs.IQueue],
+        queue_stack: "QueueStack",
     ) -> stepfunctions.StateMachine:
         s3_discovery_task = self._lambda_task(
             "S3 Discover Task",
@@ -60,12 +63,12 @@ class StepFunctionStack(core.Stack):
 
         enqueue_cogify_task = self._sqs_task(
             "Send to Cogify queue",
-            queue=queues["cogify_queue"],
+            queue=queue_stack.cogify_queue,
         )
 
         enqueue_ready_task = self._sqs_task(
             "Send to stac-ready queue",
-            queue=queues["stac_ready_queue"],
+            queue=queue_stack.stac_ready_queue,
         )
 
         maybe_cogify = (
@@ -112,7 +115,7 @@ class StepFunctionStack(core.Stack):
     def _cogify_workflow(
         self,
         lambdas: Dict[str, aws_lambda.IFunction],
-        queues: Dict[str, aws_sqs.IQueue],
+        queue_stack: "QueueStack",
     ) -> stepfunctions.StateMachine:
         cogify_task = self._lambda_task(
             "Cogify",
@@ -121,7 +124,7 @@ class StepFunctionStack(core.Stack):
 
         enqueue_task = self._sqs_task(
             "Send cogified to stac-ready queue",
-            queue=queues["stac_ready_queue"],
+            queue=queue_stack.stac_ready_queue,
             input_path="$.Payload",
         )
 
