@@ -27,14 +27,14 @@ class Creds(TypedDict):
 
 @dataclass
 class IngestionApi:
-    url: str
+    base_url: str
     token: str
 
     @classmethod
-    def from_veda_auth_secret(cls, *, secret_id: str, url: str) -> "IngestionApi":
+    def from_veda_auth_secret(cls, *, secret_id: str, base_url: str) -> "IngestionApi":
         cognito_details = cls._get_cognito_service_details(secret_id)
         credentials = cls._get_app_credentials(**cognito_details)
-        return cls(token=credentials["access_token"], url=url)
+        return cls(token=credentials["access_token"], base_url=base_url)
 
     @staticmethod
     def _get_cognito_service_details(secret_id: str) -> AppConfig:
@@ -67,7 +67,7 @@ class IngestionApi:
 
     def submit(self, stac_item: Dict[str, Any]):
         response = requests.post(
-            self.url,
+            f"{self.base_url.rstrip('/')}/ingestions",
             json=stac_item,
             headers={"Authorization": f"bearer {self.token}"},
         )
@@ -99,7 +99,7 @@ def get_stac_item(event: Dict[str, Any]) -> Dict[str, Any]:
 
 ingestor = IngestionApi.from_veda_auth_secret(
     secret_id=COGNITO_APP_SECRET,
-    url=STAC_INGESTOR_API_URL,
+    base_url=STAC_INGESTOR_API_URL,
 )
 
 
