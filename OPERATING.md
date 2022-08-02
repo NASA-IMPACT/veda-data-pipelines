@@ -136,15 +136,11 @@ Converts the input file to a COG file, writes it to S3, and returns the S3 key.
 
 Copies the data to the VEDA MCP bucket if necessary.
 
-#### 5. build-ndjson
-
-Based on the objects received from the `STAC_READY_QUEUE` in batches, builds a bulk ndjson file, writes it to S3, and returns the S3 key.
-
-#### 6. submit-stac
+#### 5. submit-stac
 
 Submits STAC items to STAC Ingestor system via POST requests.
 
-#### 7. proxy
+#### 6. proxy
 
 Reads objects from the specified queue in batches and invokes the specified step function workflow with the objects from the queue as the input.
 

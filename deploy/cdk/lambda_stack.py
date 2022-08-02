@@ -48,13 +48,6 @@ class LambdaStack(core.Stack):
             f"{construct_id}-trigger-ingest-fn", "../lambdas/proxy"
         )
 
-        # Builds ndjson
-        self.build_ndjson_lambda = self._lambda(
-            f"{construct_id}-build-ndjson-fn",
-            "../lambdas/build-ndjson",
-            memory_size=8000,
-        )
-
         # Submit STAC lambda
         self.submit_stac_lambda = self._lambda(
             f"{construct_id}-submit-stac-fn",
