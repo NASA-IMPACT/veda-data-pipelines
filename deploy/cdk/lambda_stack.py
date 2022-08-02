@@ -9,7 +9,6 @@ from aws_cdk import (
 )
 
 import config
-from cdk.iam_policies import IamPolicies
 
 
 class LambdaStack(core.Stack):
