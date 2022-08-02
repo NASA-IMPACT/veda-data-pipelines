@@ -63,7 +63,10 @@ class LambdaStack(core.Stack):
             f"{construct_id}-submit-stac-fn",
             "../lambdas/submit-stac",
             memory_size=8000,
-            env={"SECRET_NAME": config.SECRET_NAME},
+            env={
+                "COGNITO_APP_SECRET": config.COGNITO_APP_SECRET,
+                "STAC_INGESTOR_API_URL": config.COGNITO_APP_SECRET,
+            },
             vpc=database_vpc,
             security_groups=[self._lambda_sg],
         )
@@ -183,10 +186,10 @@ class LambdaStack(core.Stack):
                 IamPolicies.bucket_full_access(config.MCP_BUCKETS.get(config.ENV))
             )
 
-        pgstac_secret = secretsmanager.Secret.from_secret_name_v2(
-            self, f"{self.construct_id}-secret", config.SECRET_NAME
+        cognito_app_secret = secretsmanager.Secret.from_secret_name_v2(
+            self, f"{self.construct_id}-secret", config.COGNITO_APP_SECRET
         )
-        pgstac_secret.grant_read(self.submit_stac_lambda.role)
+        cognito_app_secret.grant_read(self.submit_stac_lambda.role)
 
     def _bucket(self, name):
         return s3.Bucket.from_bucket_name(

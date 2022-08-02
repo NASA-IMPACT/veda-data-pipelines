@@ -8,6 +8,10 @@ import boto3
 import requests
 
 
+COGNITO_APP_SECRET = os.environ["COGNITO_APP_SECRET"]
+STAC_INGESTOR_API_URL = os.environ["STAC_INGESTOR_API_URL"]
+
+
 class AppConfig(TypedDict):
     cognito_domain: str
     client_id: str
@@ -94,8 +98,8 @@ def get_stac_item(event: Dict[str, Any]) -> Dict[str, Any]:
 
 
 ingestor = IngestionApi.from_veda_auth_secret(
-    secret_id=os.environ["COGNITO_APP_SECRET"],
-    url=os.environ["STAC_INGESTOR_API_URL"],
+    secret_id=COGNITO_APP_SECRET,
+    url=STAC_INGESTOR_API_URL,
 )
 
 
