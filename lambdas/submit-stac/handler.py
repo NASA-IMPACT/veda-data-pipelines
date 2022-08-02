@@ -1,70 +1,122 @@
+from dataclasses import dataclass
 import json
 import os
-
-from typing import Dict
+from urllib.parse import urlparse
+from typing import Any, Dict, TypedDict
 
 import boto3
-
-from pypgstac import pypgstac
-from pypgstac.load import loadopt
+import requests
 
 
-s3_client = boto3.client('s3')
+class AppConfig(TypedDict):
+    cognito_domain: str
+    client_id: str
+    client_secret: str
+    scope: str
 
-def get_secret(secret_name: str):
-    """Get Secrets from secret manager."""
-    client = boto3.client(service_name="secretsmanager")
-    response = client.get_secret_value(SecretId=secret_name)
-    return json.loads(response["SecretString"])
 
-def build_connection_string(connection_params: Dict):
-    connection_string = (
-        f"postgresql://{connection_params['username']}:"
-        f"{connection_params['password']}@"
-        f"{connection_params['host']}:"
-        f"{connection_params['port']}/"
-        f"{connection_params.get('dbname', 'postgres')}"
-    )
-    return connection_string
+class Creds(TypedDict):
+    access_token: str
+    expires_in: int
+    token_type: str
+
+
+@dataclass
+class IngestionApi:
+    url: str
+    token: str
+
+    @classmethod
+    def from_veda_auth_secret(cls, *, secret_id: str, url: str) -> "IngestionApi":
+        cognito_details = cls._get_cognito_service_details(secret_id)
+        credentials = cls._get_app_credentials(**cognito_details)
+        return cls(token=credentials["access_token"], url=url)
+
+    @staticmethod
+    def _get_cognito_service_details(secret_id: str) -> AppConfig:
+        client = boto3.client("secretsmanager")
+        response = client.get_secret_value(SecretId=secret_id)
+        return json.loads(response["SecretString"])
+
+    @staticmethod
+    def _get_app_credentials(
+        cognito_domain: str, client_id: str, client_secret: str, scope: str, **kwargs
+    ) -> Creds:
+        response = requests.post(
+            f"{cognito_domain}/oauth2/token",
+            headers={
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            auth=(client_id, client_secret),
+            data={
+                "grant_type": "client_credentials",
+                # A space-separated list of scopes to request for the generated access token.
+                "scope": scope,
+            },
+        )
+        try:
+            response.raise_for_status()
+        except Exception:
+            print(response.text)
+            raise
+        return response.json()
+
+    def submit(self, stac_item: Dict[str, Any]):
+        response = requests.post(
+            self.url,
+            json=stac_item,
+            headers={"Authorization": f"bearer {self.token}"},
+        )
+
+        try:
+            response.raise_for_status()
+        except:
+            print(response.text)
+            raise
+
+        return response.json()
+
+
+def get_stac_item(event: Dict[str, Any]) -> Dict[str, Any]:
+    if stac_item := event.get("stac_item"):
+        return stac_item
+
+    if file_url := event.get("stac_file_url"):
+        url = urlparse(file_url)
+
+        response = boto3.client("s3").get_object(
+            Bucket=url.hostname,
+            Key=url.path.lstrip("/"),
+        )
+        return json.load(response["Body"])
+
+    raise Exception("No stac_item or stac_file_url provided")
+
+
+ingestor = IngestionApi.from_veda_auth_secret(
+    secret_id=os.environ["COGNITO_APP_SECRET"],
+    url=os.environ["STAC_INGESTOR_API_URL"],
+)
+
 
 def handler(event, context):
-    SECRET_NAME = os.environ["SECRET_NAME"]
-    connection_params = get_secret(SECRET_NAME)
-    connection_string = build_connection_string(connection_params)
-
-    stac_temp_file_name = "/tmp/stac_item.json"
-    
-    if stac_item := event.get("stac_item"):
-        with open(stac_temp_file_name, "w+") as f:
-            json.dump(stac_item, f)
-    elif file_url := event.get("stac_file_url"):
-        bucket_and_path = file_url.replace("s3://", "").split("/")
-        bucket, filepath = bucket_and_path[0], '/'.join(bucket_and_path[1:])
-        s3_client.download_file(
-            bucket, filepath, stac_temp_file_name
-        )
-    else:
-        raise Exception("No stac_item or stac_file_url provided")
+    stac_item = get_stac_item(event)
 
     if event.get("dry_run"):
         print("Dry run, not inserting, would have inserted:")
-        print(open(stac_temp_file_name).read())
+        print(json.dumps(stac_item, indent=2))
         return
 
-    pypgstac.load(
-        file=stac_temp_file_name,
-        table=event.get("type", "items"),
-        method=loadopt.upsert,
-        dsn=connection_string,
-    )
+    ingestor.submit(stac_item)
+    print(f"Successfully submitted STAC item")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     filename = "example.ndjson"
     sample_event = {
         "stac_file_url": "example.ndjson",
         # or
-        "stac_item": {
-        },
-        "type": "collections"
+        "stac_item": {},
+        "type": "collections",
     }
     handler(sample_event, {})
