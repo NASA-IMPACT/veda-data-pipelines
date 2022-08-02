@@ -34,8 +34,6 @@ This project uses AWS CDK to deploy AWS resources to the cloud.
 ### Make sure the following environment variables are set
 
 ```bash
-VPC_ID="<vpc-xxxxxxx>"
-SECURITY_GROUP_ID="sg-xxxxxxxx"
 ENV="<dev/stage/prod>"
 COGNITO_APP_SECRET="<secret-name-for-pgstac-access>"
 APP_NAME="delta-simple-ingest"

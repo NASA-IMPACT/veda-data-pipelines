@@ -2,7 +2,6 @@ from aws_cdk import (
     core,
     aws_lambda,
     aws_lambda_python,
-    aws_ec2 as ec2,
     aws_iam as iam,
     aws_s3 as s3,
     aws_secretsmanager as secretsmanager,
@@ -14,7 +13,7 @@ from cdk.iam_policies import IamPolicies
 
 
 class LambdaStack(core.Stack):
-    def __init__(self, app, construct_id, database_vpc, **kwargs) -> None:
+    def __init__(self, app, construct_id, **kwargs) -> None:
         super().__init__(app, construct_id, **kwargs)
         self.construct_id = construct_id
         # Define all lambdas
@@ -37,8 +36,6 @@ class LambdaStack(core.Stack):
                 "EARTHDATA_PASSWORD": config.EARTHDATA_PASSWORD,
             },
         )
-
-        self.lambda_sg = self._lambda_sg_for_db(construct_id, database_vpc)
 
         # Proxy lambda to trigger cogify step function
         self.trigger_cogify_lambda = self._python_lambda(
@@ -65,10 +62,8 @@ class LambdaStack(core.Stack):
             memory_size=8000,
             env={
                 "COGNITO_APP_SECRET": config.COGNITO_APP_SECRET,
-                "STAC_INGESTOR_API_URL": config.COGNITO_APP_SECRET,
+                "STAC_INGESTOR_API_URL": config.STAC_INGESTOR_URL,
             },
-            vpc=database_vpc,
-            security_groups=[self._lambda_sg],
         )
 
         ndjson_bucket = self._bucket(f"{construct_id}-ndjson-bucket")
@@ -112,8 +107,6 @@ class LambdaStack(core.Stack):
         memory_size=1024,
         timeout_seconds=900,
         env=None,
-        vpc=None,
-        security_groups=None,
         reserved_concurrent_executions=None,
     ):
         return aws_lambda.Function(
@@ -131,8 +124,6 @@ class LambdaStack(core.Stack):
             memory_size=memory_size,
             timeout=core.Duration.seconds(timeout_seconds),
             environment=env,
-            vpc=vpc,
-            security_groups=security_groups,
             reserved_concurrent_executions=reserved_concurrent_executions,
         )
 
@@ -149,21 +140,6 @@ class LambdaStack(core.Stack):
             timeout=core.Duration.seconds(timeout_seconds),
             **kwargs,
         )
-
-    def _lambda_sg_for_db(self, construct_id, database_vpc):
-        # Security group for submit-stac lambda
-        lambda_function_security_group = ec2.SecurityGroup(
-            self,
-            f"{construct_id}-lambda-sg",
-            vpc=database_vpc,
-            description="fromCloudOptimizedPipelineLambdas",
-        )
-        lambda_function_security_group.add_egress_rule(
-            ec2.Peer.any_ipv4(),
-            connection=ec2.Port(protocol=ec2.Protocol("ALL"), string_representation=""),
-            description="Allow lambda security group all outbound access",
-        )
-        return lambda_function_security_group
 
     def give_permissions(self):
         self._read_buckets = [config.VEDA_DATA_BUCKET] + config.VEDA_EXTERNAL_BUCKETS
