@@ -97,6 +97,8 @@ class LambdaStack(core.Stack):
                 },
                 role=data_transfer_role,
             )
+        else:
+            self.data_transfer_lambda = None
 
         self.give_permissions()
 
@@ -142,25 +144,22 @@ class LambdaStack(core.Stack):
         )
 
     def give_permissions(self):
-        self._read_buckets = [config.VEDA_DATA_BUCKET] + config.VEDA_EXTERNAL_BUCKETS
-        for bucket in self._read_buckets:
-            self.s3_discovery_lambda.add_to_role_policy(
-                IamPolicies.bucket_read_access(bucket)
-            )
-            self.build_ndjson_lambda.add_to_role_policy(
-                IamPolicies.bucket_read_access(bucket)
-            )
-            if data_transfer_lambda := getattr(self, "data_transfer_lambda", None):
-                data_transfer_lambda.add_to_role_policy(
-                    IamPolicies.bucket_read_access(bucket)
-                )
-        self.cogify_lambda.add_to_role_policy(
-            IamPolicies.bucket_full_access(config.VEDA_DATA_BUCKET)
-        )
-        if data_transfer_lambda := getattr(self, "data_transfer_lambda", None):
-            data_transfer_lambda.add_to_role_policy(
-                IamPolicies.bucket_full_access(config.MCP_BUCKETS.get(config.ENV))
-            )
+        internal_bucket = self._bucket(config.VEDA_DATA_BUCKET)
+        internal_bucket.grant_read_write(self.cogify_lambda.role)
+
+        external_buckets = [
+            self._bucket(bucket) for bucket in config.VEDA_EXTERNAL_BUCKETS
+        ]
+
+        for bucket in [internal_bucket, *external_buckets]:
+            bucket.grant_read(self.s3_discovery_lambda.role)
+            bucket.grant_read(self.build_ndjson_lambda.role)
+            if self.data_transfer_lambda:
+                bucket.grant_read(self.data_transfer_lambda.role)
+
+        if self.data_transfer_lambda:
+            mcp_bucket_name = config.MCP_BUCKETS.get(config.ENV)
+            self._bucket(mcp_bucket_name).grant_read_write(self.data_transfer_lambda)
 
         cognito_app_secret = secretsmanager.Secret.from_secret_name_v2(
             self, f"{self.construct_id}-secret", config.COGNITO_APP_SECRET
