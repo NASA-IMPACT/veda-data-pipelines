@@ -49,11 +49,11 @@ step_function_stack = StepFunctionStack(
 )
 
 lambda_stack.grant_execution_privileges(
-    lambda_function=lambda_stack.lambdas["trigger_cogify_lambda"],
+    lambda_function=lambda_stack.trigger_cogify_lambda,
     workflow=step_function_stack.cogify_workflow,
 )
 lambda_stack.grant_execution_privileges(
-    lambda_function=lambda_stack.lambdas["trigger_ingest_lambda"],
+    lambda_function=lambda_stack.trigger_ingest_lambda,
     workflow=step_function_stack.publication_workflow,
 )
 

@@ -1,9 +1,8 @@
-from typing import Dict, TYPE_CHECKING
+from typing import TYPE_CHECKING
 from aws_cdk import (
     core,
     aws_stepfunctions as stepfunctions,
     aws_stepfunctions_tasks as tasks,
-    aws_lambda,
 )
 
 import config
@@ -11,22 +10,30 @@ import config
 
 if TYPE_CHECKING:
     from .queue_stack import QueueStack
+    from .lambda_stack import LambdaStack
 
 
 class StepFunctionStack(core.Stack):
-    def __init__(self, app, construct_id, lambda_stack, queue_stack, **kwargs):
+    def __init__(
+        self,
+        app,
+        construct_id: str,
+        lambda_stack: "LambdaStack",
+        queue_stack: "QueueStack",
+        **kwargs,
+    ):
         super().__init__(app, construct_id, **kwargs)
 
         self.cogify_workflow = self._cogify_workflow(
-            lambdas=lambda_stack.lambdas,
+            lambda_stack=lambda_stack,
             queue_stack=queue_stack,
         )
         self.discovery_workflow = self._discovery_workflow(
-            lambdas=lambda_stack.lambdas,
+            lambda_stack=lambda_stack,
             queue_stack=queue_stack,
         )
         self.publication_workflow = self._publication_workflow(
-            lambdas=lambda_stack.lambdas,
+            lambda_stack=lambda_stack,
         )
 
     def _lambda_task(self, name, lambda_function, input_path=None, output_path=None):
@@ -48,17 +55,17 @@ class StepFunctionStack(core.Stack):
 
     def _discovery_workflow(
         self,
-        lambdas: Dict[str, aws_lambda.IFunction],
+        lambda_stack: "LambdaStack",
         queue_stack: "QueueStack",
     ) -> stepfunctions.StateMachine:
         s3_discovery_task = self._lambda_task(
             "S3 Discover Task",
-            lambdas["s3_discovery_lambda"],
+            lambda_stack.s3_discovery_lambda,
         )
 
         cmr_discovery_task = self._lambda_task(
             "CMR Discover Task",
-            lambdas["cmr_discovery_lambda"],
+            lambda_stack.cmr_discovery_lambda,
         )
 
         enqueue_cogify_task = self._sqs_task(
@@ -114,12 +121,12 @@ class StepFunctionStack(core.Stack):
 
     def _cogify_workflow(
         self,
-        lambdas: Dict[str, aws_lambda.IFunction],
+        lambda_stack: "LambdaStack",
         queue_stack: "QueueStack",
     ) -> stepfunctions.StateMachine:
         cogify_task = self._lambda_task(
             "Cogify",
-            lambdas["cogify_lambda"],
+            lambda_stack.cogify_lambda,
         )
 
         enqueue_task = self._sqs_task(
@@ -144,22 +151,22 @@ class StepFunctionStack(core.Stack):
 
     def _publication_workflow(
         self,
-        lambdas: Dict[str, aws_lambda.IFunction],
+        lambda_stack: "LambdaStack",
     ) -> stepfunctions.StateMachine:
         publish_task = self._lambda_task(
             "Build Ndjson Task",
-            lambdas["build_ndjson_lambda"],
+            lambda_stack.build_ndjson_lambda,
         )
 
         submit_task = self._lambda_task(
             "Submit to STAC Ingestor Task",
-            lambdas["submit_stac_lambda"],
+            lambda_stack.submit_stac_lambda,
             input_path="$.Payload",
         )
 
         transfer_task = self._lambda_task(
             "Data Transfer",
-            lambdas["data_transfer_lambda"],
+            lambda_stack.data_transfer_lambda,
             output_path="$.Payload",
         )
 
