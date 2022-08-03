@@ -47,6 +47,13 @@ class LambdaStack(core.Stack):
             f"{construct_id}-trigger-ingest-fn", "../lambdas/proxy"
         )
 
+        # Builds stac
+        self.build_stac_lambda = self._lambda(
+            f"{construct_id}-build-stac-fn",
+            "../lambdas/build-stac",
+            memory_size=8000,
+        )
+
         # Submit STAC lambda
         self.submit_stac_lambda = self._lambda(
             f"{construct_id}-submit-stac-fn",
@@ -59,10 +66,10 @@ class LambdaStack(core.Stack):
         )
 
         ndjson_bucket = self._bucket(f"{construct_id}-ndjson-bucket")
-        ndjson_bucket.grant_read_write(self.build_ndjson_lambda.role)
+        ndjson_bucket.grant_read_write(self.build_stac_lambda.role)
         ndjson_bucket.grant_read(self.submit_stac_lambda.role)
 
-        self.build_ndjson_lambda.add_environment("BUCKET", ndjson_bucket.bucket_name)
+        self.build_stac_lambda.add_environment("BUCKET", ndjson_bucket.bucket_name)
         self.submit_stac_lambda.add_environment("BUCKET", ndjson_bucket.bucket_name)
 
         if config.ENV in ["stage", "prod"]:
@@ -145,7 +152,7 @@ class LambdaStack(core.Stack):
 
         for bucket in [internal_bucket, *external_buckets]:
             bucket.grant_read(self.s3_discovery_lambda.role)
-            bucket.grant_read(self.build_ndjson_lambda.role)
+            bucket.grant_read(self.build_stac_lambda.role)
             if self.data_transfer_lambda:
                 bucket.grant_read(self.data_transfer_lambda.role)
 

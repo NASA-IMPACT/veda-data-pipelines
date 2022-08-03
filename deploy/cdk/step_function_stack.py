@@ -160,23 +160,28 @@ class StepFunctionStack(core.Stack):
             output_path="$.Payload",
         )
 
-        submit_task = stepfunctions.Map(
+        build_stac_item_task = self._lambda_task(
+            "Build STAC Task",
+            lambda_stack.build_stac_lambda,
+        )
+
+        submit_stac_item_task = self._lambda_task(
+            "Submit to STAC Ingestor Task",
+            lambda_stack.submit_stac_lambda,
+            input_path="$.Payload",
+        )
+
+        build_and_submit_stac_items = stepfunctions.Map(
             self,
             "Submit to STAC Ingestor",
             max_concurrency=100,
             items_path=stepfunctions.JsonPath.string_at("$"),
-        ).iterator(
-            self._lambda_task(
-                "Submit to STAC Ingestor Task",
-                lambda_stack.submit_stac_lambda,
-                input_path="$.Payload",
-            )
-        )
+        ).iterator(build_stac_item_task.next(submit_stac_item_task))
 
         publish_workflow = (
-            transfer_task.next(submit_task)
+            transfer_task.next(build_and_submit_stac_items)
             if config.ENV in ["stage", "prod"]
-            else submit_task
+            else build_and_submit_stac_items
         )
 
         return stepfunctions.StateMachine(
