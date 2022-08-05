@@ -17,3 +17,4 @@ RUN rm -rdf ./docutils*
 
 COPY handler.py handler.py
 COPY utils.py utils.py
+COPY stac.py stac.py

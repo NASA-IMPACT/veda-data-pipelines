@@ -2,7 +2,7 @@ import pytest
 
 from datetime import datetime
 
-from src import utils
+from src import regex
 
 
 @pytest.mark.parametrize(
@@ -89,4 +89,4 @@ def test_date_extraction(test_input, expected):
     """
     Ensure dateranges are properly extracted from filenames.
     """
-    assert utils.extract_dates(*test_input) == expected
+    assert regex.extract_dates(*test_input) == expected
