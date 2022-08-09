@@ -1,8 +1,8 @@
-from contextlib import contextmanager
+import contextlib
 import json
 from typing import TYPE_CHECKING, Any, Type
 from mypy_boto3_s3 import S3ServiceResource
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, Mock, patch
 from urllib.parse import urlparse
 from pydantic import ValidationError
 
@@ -16,9 +16,9 @@ if TYPE_CHECKING:
     from functools import _SingleDispatchCallable
 
 
-@contextmanager
+@contextlib.contextmanager
 def override_registry(
-    dispatch_callable: "_SingleDispatchCallable[Any]", cls: Type, mock
+    dispatch_callable: "_SingleDispatchCallable[Any]", cls: Type, mock: Mock
 ):
     """
     Helper to override a singledispatch function with a mock for testing.

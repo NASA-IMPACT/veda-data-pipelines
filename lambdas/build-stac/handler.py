@@ -8,7 +8,7 @@ from pydantic.tools import parse_obj_as
 
 import smart_open
 
-from . import stac, events
+from utils import stac, events
 
 
 class S3LinkOutput(TypedDict):
@@ -64,11 +64,11 @@ def handler(event: Dict[str, Any], context) -> Union[S3LinkOutput, StacItemOutpu
 if __name__ == "__main__":
     sample_event = {
         "collection": "nightlights-hd-monthly",
-        "s3_filename": "s3://climatedashboard-data/delivery/BMHD_Maria_Stages/70001_BeforeMaria_Stage0_2017-07-21.tif",
+        "s3_filename": "s3://climatedashboard-data/delivery/BMHD_Maria_Stages/BeforeMaria_Stage0_2017-07-21_2017-09-19.tif",
         "filename_regex": "^.*.tif$",
         "granule_id": None,
         "datetime_range": None,
         "start_datetime": None,
         "end_datetime": None,
     }
-    handler(sample_event, {})
+    print(json.dumps(handler(sample_event, {}), indent=2))
