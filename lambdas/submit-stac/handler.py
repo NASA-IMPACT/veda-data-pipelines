@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import json
 import os
 from urllib.parse import urlparse
-from typing import Any, Dict, TypedDict
+from typing import Any, Dict, Optional, TypedDict, Union
 
 import boto3
 import requests
@@ -10,6 +10,18 @@ import requests
 
 COGNITO_APP_SECRET = os.environ["COGNITO_APP_SECRET"]
 STAC_INGESTOR_API_URL = os.environ["STAC_INGESTOR_API_URL"]
+
+
+class InputBase(TypedDict):
+    dry_run: Optional[Any]
+
+
+class S3LinkInput(InputBase):
+    stac_file_url: str
+
+
+class StacItemInput(InputBase):
+    stac_item: Dict[str, Any]
 
 
 class AppConfig(TypedDict):
@@ -103,7 +115,7 @@ ingestor = IngestionApi.from_veda_auth_secret(
 )
 
 
-def handler(event, context):
+def handler(event: Union[S3LinkInput, StacItemInput], context) -> None:
     stac_item = get_stac_item(event)
 
     if event.get("dry_run"):

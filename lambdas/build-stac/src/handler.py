@@ -1,6 +1,7 @@
 import json
 import os
-from typing import Any, Dict
+from sys import getsizeof
+from typing import Any, Dict, TypedDict, Union
 from uuid import uuid4
 
 from pydantic.tools import parse_obj_as
@@ -10,7 +11,15 @@ import smart_open
 from . import stac, events
 
 
-def handler(event: Dict[str, Any], context):
+class S3LinkOutput(TypedDict):
+    stac_file_url: str
+
+
+class StacItemOutput(TypedDict):
+    stac_item: Dict[str, Any]
+
+
+def handler(event: Dict[str, Any], context) -> Union[S3LinkOutput, StacItemOutput]:
     """
     Lambda handler for STAC Collection Item generation
 
@@ -32,15 +41,22 @@ def handler(event: Dict[str, Any], context):
     """
 
     parsed_event = parse_obj_as(events.SupportedEvent, event)
-    stac_item = stac.generate_stac(parsed_event)
+    stac_item = stac.generate_stac(parsed_event).to_dict()
 
     # TODO: Remove this hack
     if s3_url := event.get("data_url"):
-        stac_item.assets["cog_default"]["href"] = s3_url
+        stac_item["assets"]["cog_default"]["href"] = s3_url
 
+    output: StacItemOutput = {"stac_item": stac_item}
+
+    # Return STAC Item Directly
+    if getsizeof(json.dumps(output)) < (256 * 1024):
+        return output
+
+    # Return link to STAC Item
     key = f"s3://{os.environ['BUCKET']}/{uuid4()}.json"
     with smart_open.open(key, "w") as file:
-        file.write(json.dumps(stac_item.to_dict()))
+        file.write(json.dumps(stac_item))
 
     return {"stac_file_url": key}
 
