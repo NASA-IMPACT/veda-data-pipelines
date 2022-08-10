@@ -2,7 +2,7 @@ import pytest
 
 from datetime import datetime
 
-from src import regex
+from utils import regex
 
 
 @pytest.mark.parametrize(

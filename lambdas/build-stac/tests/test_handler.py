@@ -10,7 +10,8 @@ import pytest
 from pystac import Item
 from mypy_boto3_s3.service_resource import Bucket
 
-from src import handler, stac, events
+import handler
+from utils import stac, events
 
 if TYPE_CHECKING:
     from functools import _SingleDispatchCallable
