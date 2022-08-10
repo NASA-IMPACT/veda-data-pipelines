@@ -1,4 +1,4 @@
-name: build_push_to_ecr
+name: CI/CD
 
 on:
   push:
