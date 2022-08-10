@@ -23,7 +23,7 @@ jobs:
             ${{ inputs.path_to_lambda }}/requirements**.txt
 
       - name: Install requirements
-        run: >-
+        run: |
           poetry install
           xargs poetry add < ${{ inputs.path_to_lambda }}/requirements**.txt
 
