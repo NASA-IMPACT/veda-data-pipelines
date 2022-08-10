@@ -3,7 +3,7 @@ import glob
 import json
 import boto3
 
-from .utils import args_handler, data_files, DATA_PATH, DB_WRITE_FUNCTION_NAME
+from .utils import args_handler, data_files, DATA_PATH, SUBMIT_STAC_FUNCTION_NAME
 
 collections_path = os.path.join(DATA_PATH, 'collections')
 
@@ -22,7 +22,7 @@ def insert_collections(files):
                 "type": "collections"
             })
             response = lambda_client.invoke(
-                FunctionName=DB_WRITE_FUNCTION_NAME,
+                FunctionName=SUBMIT_STAC_FUNCTION_NAME,
                 InvocationType='RequestResponse',
                 Payload=content
             )

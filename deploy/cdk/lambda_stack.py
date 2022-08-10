@@ -2,33 +2,32 @@ from aws_cdk import (
     core,
     aws_lambda,
     aws_lambda_python,
-    aws_ec2 as ec2,
     aws_iam as iam,
     aws_s3 as s3,
     aws_secretsmanager as secretsmanager,
+    aws_stepfunctions as stepfunctions,
 )
 
 import config
-from cdk.iam_policies import IamPolicies
 
 
 class LambdaStack(core.Stack):
-    def __init__(self, app, construct_id, database_vpc, **kwargs) -> None:
+    def __init__(self, app, construct_id, **kwargs) -> None:
         super().__init__(app, construct_id, **kwargs)
         self.construct_id = construct_id
         # Define all lambdas
         # Discovers files from s3 bucket
-        s3_discovery_lambda = self._lambda(
+        self.s3_discovery_lambda = self._lambda(
             f"{construct_id}-s3-discovery-fn", "../lambdas/s3-discovery"
         )
 
         # Discovers files from cmr
-        cmr_discovery_lambda = self._lambda(
+        self.cmr_discovery_lambda = self._lambda(
             f"{construct_id}-cmr-discovery-fn", "../lambdas/cmr-query"
         )
 
         # Cogify files
-        cogify_lambda = self._lambda(
+        self.cogify_lambda = self._lambda(
             f"{construct_id}-cogify-fn",
             "../lambdas/cogify",
             env={
@@ -37,52 +36,41 @@ class LambdaStack(core.Stack):
             },
         )
 
-        self._lambda_sg = self._lambda_sg_for_db(construct_id, database_vpc)
-
         # Proxy lambda to trigger cogify step function
-        trigger_cogify_lambda = self._python_lambda(
+        self.trigger_cogify_lambda = self._python_lambda(
             f"{construct_id}-trigger-cogify-fn",
             "../lambdas/proxy",
         )
 
         # Proxy lambda to trigger ingest and publish step function
-        trigger_ingest_lambda = self._python_lambda(
+        self.trigger_ingest_lambda = self._python_lambda(
             f"{construct_id}-trigger-ingest-fn", "../lambdas/proxy"
         )
 
-        # Builds ndjson
-        build_ndjson_lambda = self._lambda(
-            f"{construct_id}-build-ndjson-fn",
-            "../lambdas/build-ndjson",
+        # Builds stac
+        self.build_stac_lambda = self._lambda(
+            f"{construct_id}-build-stac-fn",
+            "../lambdas/build-stac",
             memory_size=8000,
         )
 
-        # DB Write lambda
-        db_write_lambda = self._lambda(
-            f"{construct_id}-db-write-fn",
-            "../lambdas/db-write",
+        # Submit STAC lambda
+        self.submit_stac_lambda = self._lambda(
+            f"{construct_id}-submit-stac-fn",
+            "../lambdas/submit-stac",
             memory_size=8000,
-            env={"SECRET_NAME": config.SECRET_NAME},
-            vpc=database_vpc,
-            security_groups=[self._lambda_sg],
+            env={
+                "COGNITO_APP_SECRET": config.COGNITO_APP_SECRET,
+                "STAC_INGESTOR_API_URL": config.STAC_INGESTOR_URL,
+            },
         )
 
         ndjson_bucket = self._bucket(f"{construct_id}-ndjson-bucket")
-        ndjson_bucket.grant_read_write(build_ndjson_lambda.role)
-        ndjson_bucket.grant_read(db_write_lambda.role)
+        ndjson_bucket.grant_read_write(self.build_stac_lambda.role)
+        ndjson_bucket.grant_read(self.submit_stac_lambda.role)
 
-        build_ndjson_lambda.add_environment("BUCKET", ndjson_bucket.bucket_name)
-        db_write_lambda.add_environment("BUCKET", ndjson_bucket.bucket_name)
-
-        self._lambdas = {
-            "s3_discovery_lambda": s3_discovery_lambda,
-            "cmr_discovery_lambda": cmr_discovery_lambda,
-            "cogify_lambda": cogify_lambda,
-            "build_ndjson_lambda": build_ndjson_lambda,
-            "db_write_lambda": db_write_lambda,
-            "trigger_cogify_lambda": trigger_cogify_lambda,
-            "trigger_ingest_lambda": trigger_ingest_lambda,
-        }
+        self.build_stac_lambda.add_environment("BUCKET", ndjson_bucket.bucket_name)
+        self.submit_stac_lambda.add_environment("BUCKET", ndjson_bucket.bucket_name)
 
         if config.ENV in ["stage", "prod"]:
             # Transfer data to MCP bucket
@@ -99,7 +87,7 @@ class LambdaStack(core.Stack):
                     actions=["sts:AssumeRole"],
                 )
             )
-            data_transfer_lambda = self._python_lambda(
+            self.data_transfer_lambda = self._python_lambda(
                 f"{construct_id}-data-transfer-fn",
                 "../lambdas/data-transfer",
                 env={
@@ -108,7 +96,8 @@ class LambdaStack(core.Stack):
                 },
                 role=data_transfer_role,
             )
-            self._lambdas["data_transfer_lambda"] = data_transfer_lambda
+        else:
+            self.data_transfer_lambda = None
 
         self.give_permissions()
 
@@ -119,8 +108,6 @@ class LambdaStack(core.Stack):
         memory_size=1024,
         timeout_seconds=900,
         env=None,
-        vpc=None,
-        security_groups=None,
         reserved_concurrent_executions=None,
     ):
         return aws_lambda.Function(
@@ -138,8 +125,6 @@ class LambdaStack(core.Stack):
             memory_size=memory_size,
             timeout=core.Duration.seconds(timeout_seconds),
             environment=env,
-            vpc=vpc,
-            security_groups=security_groups,
             reserved_concurrent_executions=reserved_concurrent_executions,
         )
 
@@ -157,54 +142,28 @@ class LambdaStack(core.Stack):
             **kwargs,
         )
 
-    def _lambda_sg_for_db(self, construct_id, database_vpc):
-        # Security group for db-write lambda
-        lambda_function_security_group = ec2.SecurityGroup(
-            self,
-            f"{construct_id}-lambda-sg",
-            vpc=database_vpc,
-            description="fromCloudOptimizedPipelineLambdas",
-        )
-        lambda_function_security_group.add_egress_rule(
-            ec2.Peer.any_ipv4(),
-            connection=ec2.Port(protocol=ec2.Protocol("ALL"), string_representation=""),
-            description="Allow lambda security group all outbound access",
-        )
-        return lambda_function_security_group
-
-    @property
-    def lambdas(self):
-        return self._lambdas
-
-    @property
-    def lambda_sg(self):
-        return self._lambda_sg
-
     def give_permissions(self):
-        self._read_buckets = [config.VEDA_DATA_BUCKET] + config.VEDA_EXTERNAL_BUCKETS
-        for bucket in self._read_buckets:
-            self._lambdas["s3_discovery_lambda"].add_to_role_policy(
-                IamPolicies.bucket_read_access(bucket)
-            )
-            self._lambdas["build_ndjson_lambda"].add_to_role_policy(
-                IamPolicies.bucket_read_access(bucket)
-            )
-            if data_transfer_lambda := self._lambdas.get("data_transfer_lambda"):
-                data_transfer_lambda.add_to_role_policy(
-                    IamPolicies.bucket_read_access(bucket)
-                )
-        self._lambdas["cogify_lambda"].add_to_role_policy(
-            IamPolicies.bucket_full_access(config.VEDA_DATA_BUCKET)
-        )
-        if data_transfer_lambda := self._lambdas.get("data_transfer_lambda"):
-            data_transfer_lambda.add_to_role_policy(
-                IamPolicies.bucket_full_access(config.MCP_BUCKETS.get(config.ENV))
-            )
+        internal_bucket = self._bucket(config.VEDA_DATA_BUCKET)
+        internal_bucket.grant_read_write(self.cogify_lambda.role)
 
-        pgstac_secret = secretsmanager.Secret.from_secret_name_v2(
-            self, f"{self.construct_id}-secret", config.SECRET_NAME
+        external_buckets = [
+            self._bucket(bucket) for bucket in config.VEDA_EXTERNAL_BUCKETS
+        ]
+
+        for bucket in [internal_bucket, *external_buckets]:
+            bucket.grant_read(self.s3_discovery_lambda.role)
+            bucket.grant_read(self.build_stac_lambda.role)
+            if self.data_transfer_lambda:
+                bucket.grant_read(self.data_transfer_lambda.role)
+
+        if self.data_transfer_lambda:
+            mcp_bucket_name = config.MCP_BUCKETS.get(config.ENV)
+            self._bucket(mcp_bucket_name).grant_read_write(self.data_transfer_lambda)
+
+        cognito_app_secret = secretsmanager.Secret.from_secret_name_v2(
+            self, f"{self.construct_id}-secret", config.COGNITO_APP_SECRET
         )
-        pgstac_secret.grant_read(self._lambdas["db_write_lambda"].role)
+        cognito_app_secret.grant_read(self.submit_stac_lambda.role)
 
     def _bucket(self, name):
         return s3.Bucket.from_bucket_name(
@@ -212,3 +171,11 @@ class LambdaStack(core.Stack):
             name,
             bucket_name=name,
         )
+
+    @staticmethod
+    def grant_execution_privileges(
+        lambda_function: aws_lambda.Function,
+        workflow: stepfunctions.StateMachine,
+    ):
+        workflow.grant_start_execution(lambda_function.grant_principal)
+        lambda_function.add_environment("STEP_FUNCTION_ARN", workflow.state_machine_arn)

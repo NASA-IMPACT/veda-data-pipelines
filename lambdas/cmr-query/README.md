@@ -3,7 +3,7 @@ Docker to query CMR for granules associated with a given collection and temporal
 ```bash
 docker build -t cmr-query .
 # Currently runs an example for OMI Ozone
-docker run --env QUEUE_URL=XXX cmr-query python -m handler
+docker run cmr-query python -m handler
 ```
 
 Example input:

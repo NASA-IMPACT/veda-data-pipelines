@@ -1,17 +1,23 @@
+from typing import TYPE_CHECKING
 from aws_cdk import (
     core,
     aws_sqs as sqs,
     aws_lambda_event_sources as lambda_event_sources,
 )
 
+if TYPE_CHECKING:
+    from .lambda_stack import LambdaStack
+
 
 class QueueStack(core.Stack):
-    def __init__(self, app, construct_id, lambda_stack, **kwargs) -> None:
+    def __init__(
+        self,
+        app,
+        construct_id: str,
+        lambda_stack: "LambdaStack",
+        **kwargs,
+    ) -> None:
         super().__init__(app, construct_id, **kwargs)
-
-        trigger_cogify_lambda = lambda_stack.lambdas["trigger_cogify_lambda"]
-        trigger_ingest_lambda = lambda_stack.lambdas["trigger_ingest_lambda"]
-        cogify_lambda = lambda_stack.lambdas["cogify_lambda"]
 
         self.cogify_queue = self._queue(
             f"{construct_id}-cogify-queue",
@@ -22,7 +28,7 @@ class QueueStack(core.Stack):
             ),
         )
 
-        trigger_cogify_lambda.add_event_source(
+        lambda_stack.trigger_cogify_lambda.add_event_source(
             lambda_event_sources.SqsEventSource(
                 self.cogify_queue,
                 batch_size=10,
@@ -39,9 +45,9 @@ class QueueStack(core.Stack):
                 queue=self._queue(f"{construct_id}-stac-ready-dlq", retention_days=14),
             ),
         )
-        self.stac_ready_queue.grant_send_messages(cogify_lambda.role)
+        self.stac_ready_queue.grant_send_messages(lambda_stack.cogify_lambda.role)
 
-        trigger_ingest_lambda.add_event_source(
+        lambda_stack.trigger_ingest_lambda.add_event_source(
             lambda_event_sources.SqsEventSource(
                 self.stac_ready_queue,
                 batch_size=10,
@@ -61,10 +67,3 @@ class QueueStack(core.Stack):
             dead_letter_queue=dead_letter_queue,
             retention_period=core.Duration.days(retention_days),
         )
-
-    @property
-    def queues(self):
-        return {
-            "cogify_queue": self.cogify_queue,
-            "stac_ready_queue": self.stac_ready_queue,
-        }

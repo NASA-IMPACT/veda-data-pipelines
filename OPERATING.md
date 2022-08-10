@@ -98,7 +98,7 @@ poetry install
 
 ### Ingesting a collection
 
-Done by passing the collection json to the `db-write` lambda.
+Done by passing the collection json to the `submit-stac` lambda.
 
 Create a collection json file in the `data/collections/` directory. For format, check the [data](#data) section.
 
@@ -136,13 +136,13 @@ Converts the input file to a COG file, writes it to S3, and returns the S3 key.
 
 Copies the data to the VEDA MCP bucket if necessary.
 
-#### 5. build-ndjson
+#### 5. build-stac
 
-Based on the objects received from the `STAC_READY_QUEUE` in batches, builds a bulk ndjson file, writes it to S3, and returns the S3 key.
+Given an object received from the `STAC_READY_QUEUE`, builds a STAC Item, writes it to S3, and returns the S3 key.
 
-#### 6. db-write
+#### 6. submit-stac
 
-Loads either the bulk ndjson file (from s3) or a json collection file into the pgstac database.
+Submits STAC items to STAC Ingestor system via POST requests.
 
 #### 7. proxy
 
