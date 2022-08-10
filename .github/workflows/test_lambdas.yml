@@ -1,0 +1,10 @@
+name: Test lambda functions
+
+on:
+  push:
+
+jobs:
+  test_build-stac:
+    uses: ./.github/workflows/test-single-lambda.yml
+    with:
+      path_to_lambda: lambdas/build-stac
