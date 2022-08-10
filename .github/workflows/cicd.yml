@@ -19,39 +19,3 @@ jobs:
     uses: ./.github/workflows/test_single_lambda.yml
     with:
       path_to_lambda: lambdas/build-stac
-
-  build_push_to_ecr:
-    name: Build & deploy to ECR
-    needs: [lint, test_build-stac]
-    if: github.ref_name == 'main'
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-
-      - name: Build image
-        run: >-
-          docker build docker/hdf5-to-cog --tag hdf5-to-cog
-
-      - name: Push to latest ECR
-        id: push-latest-ecr
-        uses: jwalton/gh-ecr-push@v1
-        with:
-          access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          region: us-east-1
-          local-image: hdf5-to-cog
-          image: hdf5-to-cog
