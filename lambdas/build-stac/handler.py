@@ -43,10 +43,6 @@ def handler(event: Dict[str, Any], context) -> Union[S3LinkOutput, StacItemOutpu
     parsed_event = parse_obj_as(events.SupportedEvent, event)
     stac_item = stac.generate_stac(parsed_event).to_dict()
 
-    # TODO: Remove this hack
-    if s3_url := event.get("data_url"):
-        stac_item["assets"]["cog_default"]["href"] = s3_url
-
     output: StacItemOutput = {"stac_item": stac_item}
 
     # Return STAC Item Directly
