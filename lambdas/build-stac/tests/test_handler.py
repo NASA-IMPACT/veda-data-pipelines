@@ -62,10 +62,10 @@ def test_routing_regex_event(
         )
 
     mock_stac_item.to_dict.assert_called_once_with()
-    assert "stac_file_url" in output
+    assert "stac_item" in output
     obj = s3_resource.Object(
         bucket_name=s3_created_bucket.name,
-        key=urlparse(output["stac_file_url"]).path.lstrip("/"),
+        key=urlparse(output["stac_item"]).path.lstrip("/"),
     )
     created_stac_item = json.load(obj.get()["Body"])
     assert created_stac_item == mock_stac_dict
@@ -98,10 +98,10 @@ def test_routing_cmr_event(
         )
 
     mock_stac_item.to_dict.assert_called_once_with()
-    assert "stac_file_url" in output
+    assert "stac_item" in output
     obj = s3_resource.Object(
         bucket_name=s3_created_bucket.name,
-        key=urlparse(output["stac_file_url"]).path.lstrip("/"),
+        key=urlparse(output["stac_item"]).path.lstrip("/"),
     )
     created_stac_item = json.load(obj.get()["Body"])
     assert created_stac_item == mock_stac_dict
