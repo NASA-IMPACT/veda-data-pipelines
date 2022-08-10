@@ -2,10 +2,29 @@ name: build_push_to_ecr
 
 on:
   push:
-    branches: [ main ]
 
 jobs:
+  lint:
+    name: Lint shell scripts
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: ShellCheck
+        uses: ludeeus/action-shellcheck@master
+
+  test_build-stac:
+    name: Test lambdas/build-stac
+    uses: ./.github/workflows/test_single_lambda.yml
+    with:
+      path_to_lambda: lambdas/build-stac
+
   build_push_to_ecr:
+    name: Build & deploy to ECR
+    needs: [lint, test_build-stac]
+    if: github.ref_name == 'main'
+
     runs-on: ubuntu-latest
 
     steps:
@@ -21,11 +40,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-      
-      # Lint shell scripts
-      - name: ShellCheck
-        uses: ludeeus/action-shellcheck@master
+      - uses: actions/checkout@v3
 
       - name: Build image
         run: >-
