@@ -19,7 +19,9 @@ export AWS_SECRET_ACCESS_KEY=XXX
 
 docker build -t cogify .
 # Runs an example in handler.py
-docker run --env EARTHDATA_USERNAME --env EARTHDATA_PASSWORD cogify python -m handler 
+docker run -it \
+  --env EARTHDATA_USERNAME --env EARTHDATA_PASSWORD \
+  cogify python -m handler 
 ```
 
 
@@ -48,9 +50,16 @@ Example Output
 
 ## Other supported collections
 
-### GPM IMERG Example
+### GPM IMERG HHE Example
 
-[Update me]
+```python
+sample_event = {
+    "collection": "GPM_3IMERGHHE",
+    "href": "https://gpm1.gesdisc.eosdis.nasa.gov/data/GPM_L3/GPM_3IMERGHHE.06/2022/001/3B-HHR-E.MS.MRG.3IMERG.20220101-S000000-E002959.0000.V06B.HDF5",
+    "upload": False
+}
+```
+Compare with https://giovanni.gsfc.nasa.gov/giovanni/#service=TmAvMp&starttime=2022-01-01T00:00:00Z&endtime=2022-01-01T00:29:59Z&data=GPM_3IMERGHHE_06_precipitationCal
 
 ### ERA5 Cloud Base Height Example
 

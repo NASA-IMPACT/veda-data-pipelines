@@ -88,8 +88,8 @@ def to_cog(upload, **config):
         variable = src.groups[group][variable_name]
         nodata_value = variable._FillValue
     # This may be just what we need for IMERG
-    if config["collection"] == "GPM_3IMERGM":
-        variable = np.transpose(variable[0])
+    if config["collection"] == "GPM_3IMERGHHE":
+        variable = np.flipud(np.transpose(variable[0]))
     if config["collection"] == "OMDOAO3e":
         variable = np.flipud(variable)
 
@@ -109,7 +109,7 @@ def to_cog(upload, **config):
     else:
         src_crs = CRS.from_epsg(4326)
 
-    dst_crs = CRS.from_epsg(3857)
+    dst_crs = CRS.from_epsg(4326)
 
     # calculate dst transform
     dst_transform, dst_width, dst_height = calculate_default_transform(
@@ -176,7 +176,7 @@ def handler(event, context):
     to_cog_config["filename"] = downloaded_filename
     to_cog_config["collection"] = collection
 
-    return_obj = {"granule_id": event["granule_id"], "collection": event["collection"]}
+    return_obj = {"granule_id": event.get("granule_id"), "collection": event["collection"]}
 
     output_locations = to_cog(upload=event.get("upload", False), **to_cog_config)
 
@@ -188,9 +188,9 @@ def handler(event, context):
 
 if __name__ == "__main__":
     sample_event = {
-        "collection": "OMDOAO3e",
-        "href": "https://acdisc.gesdisc.eosdis.nasa.gov/data//Aura_OMI_Level3/OMDOAO3e.003/2022/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5",
-        "upload": False,
-        "granule_id": "G2205784904-GES_DISC",
+        "collection": "GPM_3IMERGHHE",
+        "href": "https://gpm1.gesdisc.eosdis.nasa.gov/data/GPM_L3/GPM_3IMERGHHE.06/2022/001/3B-HHR-E.MS.MRG.3IMERG.20220101-S000000-E002959.0000.V06B.HDF5",
+        "upload": False
+        #"granule_id": "G2205784904-GES_DISC",
     }
     handler(sample_event, {})
