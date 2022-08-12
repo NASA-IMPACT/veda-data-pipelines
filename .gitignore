@@ -32,3 +32,7 @@ cdk.context.json
 
 # Virtual Environments
 *env/
+
+# All environment files
+*env*
+!env.sample.sh

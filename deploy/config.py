@@ -9,7 +9,7 @@ SECRET_NAME = os.environ.get("SECRET_NAME")
 EARTHDATA_USERNAME = os.environ.get("EARTHDATA_USERNAME")
 EARTHDATA_PASSWORD = os.environ.get("EARTHDATA_PASSWORD")
 
-APP_NAME = "delta-simple-ingest"
+APP_NAME = os.environ.get("APP_NAME") or "delta-simple-ingest"
 VEDA_DATA_BUCKET = "climatedashboard-data"
 VEDA_EXTERNAL_BUCKETS = ["nasa-maap-data-store", "covid-eo-blackmarble"]
 MCP_BUCKETS = {
