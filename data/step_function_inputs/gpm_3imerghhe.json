@@ -1,0 +1,11 @@
+{
+    "collection": "GPM_3IMERGHHE",
+    "discovery": "cmr",
+    "version": "06",
+    "temporal": ["2021-01-01T00:00:00Z","2021-01-01T00:29:59Z"],
+    "bounding_box": [-180, -90, 180, 90],
+    "include":  "^.+HDF5$",
+    "cogify": true,
+    "upload": true,
+    "dry_run": true
+}
