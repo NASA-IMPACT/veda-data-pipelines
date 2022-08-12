@@ -61,11 +61,10 @@ def handler(event, context):
 
 if __name__ == "__main__":
     sample_event = {
-        # "mode": "stac",
-        "collection": "IS2SITMOGR4",
-        "version": "1",
-        "include": "^.+nc$",
-        "temporal": ["2018-01-21T00:00:00Z","2018-04-20T23:59:59Z"],
+        "collection": "GPM_3IMERGHHE",
+        "version": "06",
+        "include": "^.+HDF5$",
+        "temporal": ["2021-01-01T00:00:00Z","2021-01-01T00:29:59Z"],
         "bounding_box": [-180, -90, 180, 90]
     }
     handler(sample_event, {})

@@ -1,0 +1,42 @@
+{
+    "id": "GPM_3IMERGHHE",
+    "type": "Collection",
+    "links":[
+    ],
+    "title":"GPM_3IMERGHHE",
+    "extent":{
+        "spatial":{
+            "bbox":[
+                [
+                    "-180",
+                    "-90",
+                    "180",
+                    "90"
+                ]
+            ]
+        },
+        "temporal":{
+            "interval":[
+                [
+                    "2000-06-01T00:00:00.000Z"
+                ]
+            ]
+        }
+    },
+    "license":"MIT",
+    "description": "GPM IMERG Early Precipitation L3 Half Hourly 0.1 degree x 0.1 degree V06",
+    "stac_version": "1.0.0",
+    "dashboard:is_periodic": "true",
+    "dashboard:time_density": "half-hourly",
+    "item_assets": {
+        "cog_default": {
+            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+            "roles": [
+                "data",
+                "layer"
+            ],
+            "title": "Default COG Layer",
+            "description": "Cloud optimized default layer to display on map"
+        }
+    }
+}
