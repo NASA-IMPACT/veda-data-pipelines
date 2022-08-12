@@ -189,6 +189,5 @@ if __name__ == "__main__":
         "collection": "GPM_3IMERGHHE",
         "href": "https://gpm1.gesdisc.eosdis.nasa.gov/data/GPM_L3/GPM_3IMERGHHE.06/2022/001/3B-HHR-E.MS.MRG.3IMERG.20220101-S000000-E002959.0000.V06B.HDF5",
         "upload": True
-        #"granule_id": "G2205784904-GES_DISC",
     }
     handler(sample_event, {})
