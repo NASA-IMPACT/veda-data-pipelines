@@ -160,7 +160,7 @@ def to_cog(upload, **config):
     return_obj = {
         "filename": outfilename,
     }
-    if upload:
+    if upload != False:
         s3location = upload_file(outfilename, config["collection"])
         return_obj["s3_filename"] = s3location
 

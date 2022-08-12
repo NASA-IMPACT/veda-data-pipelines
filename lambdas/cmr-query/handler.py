@@ -41,8 +41,7 @@ def handler(event, context):
                         "granule_id": granule["id"],
                         "id": granule["id"],
                         "mode": event.get('mode'),
-                        # "start_datetime": granule["time_start"],
-                        # "end_datetime": granule["time_end"]
+                        "upload": event.get('upload')
                     }
                     if event["include"]:
                         pattern = re.compile(event["include"])
