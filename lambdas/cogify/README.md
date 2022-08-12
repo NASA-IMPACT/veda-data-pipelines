@@ -11,16 +11,14 @@ Before running the commands below, make sure you `cd cogify/`.
 `handler.py` by default is using an example with OMI OAO3 dataset.
 
 ```bash
-export EARTHDATA_USERNAME=xxx
-export EARTHDATA_PASSWORD=XXX
-# OR export AWS_PROFILE=xxx
-export AWS_ACCESS_KEY_ID=XXX
-export AWS_SECRET_ACCESS_KEY=XXX
+source ../../env.sh
 
 docker build -t cogify .
 # Runs an example in handler.py
+# can skip AWS creds if upload: False in default handler code
 docker run -it \
   --env EARTHDATA_USERNAME --env EARTHDATA_PASSWORD \
+  --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY \
   cogify python -m handler 
 ```
 
