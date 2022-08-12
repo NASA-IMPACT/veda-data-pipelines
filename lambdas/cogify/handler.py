@@ -50,7 +50,6 @@ def download_file(file_uri: str):
     filename = os.path.splitext(os.path.basename(file_uri))[0]
     filename = f"/tmp/{filename}"
     if "http" in file_uri:
-        # This isn't working for GPMIMERG, need to use .netrc
         username = os.environ.get("EARTHDATA_USERNAME")
         password = os.environ.get("EARTHDATA_PASSWORD")
         with requests.Session() as session:
