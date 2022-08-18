@@ -1,16 +1,13 @@
 import contextlib
-import json
 from typing import TYPE_CHECKING, Any, Type
-from mypy_boto3_s3 import S3ServiceResource
-from unittest.mock import MagicMock, Mock, patch
-from urllib.parse import urlparse
+from unittest.mock import MagicMock, Mock
 from pydantic import ValidationError
 
 import pytest
 from pystac import Item
-from mypy_boto3_s3.service_resource import Bucket
 
-from src import handler, stac, events
+import handler
+from utils import stac, events
 
 if TYPE_CHECKING:
     from functools import _SingleDispatchCallable
@@ -31,10 +28,7 @@ def override_registry(
         dispatch_callable.register(cls, original)
 
 
-def test_routing_regex_event(
-    s3_created_bucket: Bucket,
-    s3_resource: S3ServiceResource,
-):
+def test_routing_regex_event():
     """
     Ensure that the system properly calls the generate_stac_regexevent when regex-style
     events are provided.
@@ -61,20 +55,13 @@ def test_routing_regex_event(
         )
 
     mock_stac_item.to_dict.assert_called_once_with()
-    assert "stac_file_url" in output
-    obj = s3_resource.Object(
-        bucket_name=s3_created_bucket.name,
-        key=urlparse(output["stac_file_url"]).path.lstrip("/"),
-    )
-    created_stac_item = json.load(obj.get()["Body"])
+    assert "stac_item" in output
+    created_stac_item = output["stac_item"]
     assert created_stac_item == mock_stac_dict
     assert not not_called_mock.call_count
 
 
-def test_routing_cmr_event(
-    s3_created_bucket: Bucket,
-    s3_resource: S3ServiceResource,
-):
+def test_routing_cmr_event():
     """
     Ensure that the system properly calls the generate_stac_cmrevent when CMR-style
     events are provided.
@@ -97,12 +84,8 @@ def test_routing_cmr_event(
         )
 
     mock_stac_item.to_dict.assert_called_once_with()
-    assert "stac_file_url" in output
-    obj = s3_resource.Object(
-        bucket_name=s3_created_bucket.name,
-        key=urlparse(output["stac_file_url"]).path.lstrip("/"),
-    )
-    created_stac_item = json.load(obj.get()["Body"])
+    assert "stac_item" in output
+    created_stac_item = output["stac_item"]
     assert created_stac_item == mock_stac_dict
     assert not not_called_mock.call_count
 

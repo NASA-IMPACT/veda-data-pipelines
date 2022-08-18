@@ -1,3 +1,4 @@
+#!/bin/bash
 # Script to populate the environment variables for CDK deployment/pgstac database ingestion
 
 # Usage: source env.sh <env>

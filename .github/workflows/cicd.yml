@@ -1,0 +1,21 @@
+name: CI/CD
+
+on:
+  push:
+
+jobs:
+  lint:
+    name: Lint shell scripts
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: ShellCheck
+        uses: ludeeus/action-shellcheck@master
+
+  test_build-stac:
+    name: Test lambdas/build-stac
+    uses: ./.github/workflows/test_single_lambda.yml
+    with:
+      path_to_lambda: lambdas/build-stac
