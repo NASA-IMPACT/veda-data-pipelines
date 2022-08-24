@@ -15,7 +15,7 @@ else
     if [[ $1 = 'stage' ]]
     then
         cognitoAppSecret=$stageCognitoAppSecret
-        export MCP_ROLE_ARN="arn:aws:iam::xxxxxx:role/xxxxx"
+        export EXTERNAL_ROLE_ARN="arn:aws:iam::xxxxxx:role/xxxxx"
     else
         cognitoAppSecret=$devCognitoAppSecret
     fi
