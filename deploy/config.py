@@ -18,4 +18,4 @@ MCP_BUCKETS = {
     "stage": "veda-data-store-staging",
 }
 
-MCP_ROLE_ARN = os.environ.get("MCP_ROLE_ARN")
+EXTERNAL_ROLE_ARN = os.environ.get("EXTERNAL_ROLE_ARN")
