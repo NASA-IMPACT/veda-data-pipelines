@@ -5,7 +5,7 @@ from botocore.errorfactory import ClientError
 
 
 TARGET_BUCKET = os.environ["BUCKET"]
-MCP_ROLE_ARN = os.environ.get("MCP_ROLE_ARN")
+EXTERNAL_ROLE_ARN = os.environ.get("EXTERNAL_ROLE_ARN")
 
 
 def _parse_s3_object(s3_object):
@@ -13,15 +13,15 @@ def _parse_s3_object(s3_object):
     bucket, path, key = split[0], "/".join(split[1:-1]), split[-1]
     return bucket, path, key
 
-def assume_role():
+def assume_role(session_name):
     sts = boto3.client("sts")
     creds = sts.assume_role(
-        RoleArn=os.environ.get("MCP_ROLE_ARN"), RoleSessionName="delta-simple-ingest",
+        RoleArn=os.environ.get("EXTERNAL_ROLE_ARN"), RoleSessionName=session_name,
     )
     return creds["Credentials"]
 
 def handler(event, context):
-    creds = assume_role()
+    creds = assume_role("delta-simple-ingest")
     source_s3 = boto3.client("s3")
     target_s3 = boto3.client(
         "s3",
