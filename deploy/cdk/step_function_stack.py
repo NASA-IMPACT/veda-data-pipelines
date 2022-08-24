@@ -23,6 +23,7 @@ class StepFunctionStack(core.Stack):
         **kwargs,
     ):
         super().__init__(app, construct_id, **kwargs)
+        self.construct_id = construct_id
 
         self.cogify_workflow = self._cogify_workflow(
             lambda_stack=lambda_stack,
@@ -178,15 +179,18 @@ class StepFunctionStack(core.Stack):
             items_path=stepfunctions.JsonPath.string_at("$"),
         ).iterator(build_stac_item_task.next(submit_stac_item_task))
 
-        publish_workflow = (
-            transfer_task.next(build_and_submit_stac_items)
-            if config.ENV in ["stage", "prod"]
-            else build_and_submit_stac_items
-        )
+        publish_workflow = transfer_task.next(build_and_submit_stac_items)
 
         return stepfunctions.StateMachine(
             self,
             "publication-sf",
             state_machine_name=f"{self.stack_name}-publication",
             definition=publish_workflow,
+        )
+
+    def get_arns(self, env_vars):
+        base_str = f"arn:aws:states:{env_vars.region}:{env_vars.account}:stateMachine:"
+        return (
+            f"{base_str}{self.construct_id}-cogify",
+            f"{base_str}{self.construct_id}-publication"
         )

@@ -37,13 +37,18 @@ step_function_stack = StepFunctionStack(
     env=env_details,
 )
 
+# Need to build arn manually otherwise it'll result in cyclic dependency
+# because stepfunction dpeends on lambda
+# and this will cause lambda to depend on stepfunction
+cogify_arn, pub_arn = step_function_stack.get_arns(env_details)
+
 lambda_stack.grant_execution_privileges(
     lambda_function=lambda_stack.trigger_cogify_lambda,
-    workflow=step_function_stack.cogify_workflow,
+    workflow_arn=cogify_arn,
 )
 lambda_stack.grant_execution_privileges(
     lambda_function=lambda_stack.trigger_ingest_lambda,
-    workflow=step_function_stack.publication_workflow,
+    workflow_arn=pub_arn,
 )
 
 app.synth()
