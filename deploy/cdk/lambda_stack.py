@@ -5,7 +5,6 @@ from aws_cdk import (
     aws_iam as iam,
     aws_s3 as s3,
     aws_secretsmanager as secretsmanager,
-    aws_stepfunctions as stepfunctions,
 )
 
 import config
@@ -92,7 +91,7 @@ class LambdaStack(core.Stack):
         )
 
         # Transfer data to MCP bucket
-        data_transfer_lambda = self._python_lambda(
+        self.data_transfer_lambda = self._python_lambda(
             f"{construct_id}-data-transfer-fn",
             "../lambdas/data-transfer",
             env={
@@ -119,6 +118,7 @@ class LambdaStack(core.Stack):
         timeout_seconds=900,
         env=None,
         reserved_concurrent_executions=None,
+        **kwargs,
     ):
         return aws_lambda.Function(
             self,
@@ -136,6 +136,7 @@ class LambdaStack(core.Stack):
             timeout=core.Duration.seconds(timeout_seconds),
             environment=env,
             reserved_concurrent_executions=reserved_concurrent_executions,
+            **kwargs
         )
 
     def _python_lambda(self, name, directory, env=None, timeout_seconds=900, **kwargs):
@@ -188,7 +189,12 @@ class LambdaStack(core.Stack):
     @staticmethod
     def grant_execution_privileges(
         lambda_function: aws_lambda.Function,
-        workflow: stepfunctions.StateMachine,
+        workflow_arn: str,
     ):
-        workflow.grant_start_execution(lambda_function.grant_principal)
-        lambda_function.add_environment("STEP_FUNCTION_ARN", workflow.state_machine_arn)
+        lambda_function.add_to_role_policy(
+            iam.PolicyStatement(
+                actions=["states:StartExecution"],
+                resources=[workflow_arn],
+            )
+        )
+        lambda_function.add_environment("STEP_FUNCTION_ARN", workflow_arn)
