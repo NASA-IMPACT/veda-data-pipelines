@@ -1,14 +1,26 @@
+import os
 import re
 
 import boto3
 
 
-s3 = boto3.resource(
-    "s3",
-)
+def assume_role(session_name):
+    sts = boto3.client("sts")
+    creds = sts.assume_role(
+        RoleArn=os.environ.get("MCP_ROLE_ARN"),
+        RoleSessionName=session_name,
+    )
+    return creds["Credentials"]
 
 
 def list_bucket(bucket, prefix, filename_regex):
+    creds = assume_role("delta-s3-discovery")
+    s3 = boto3.resource(
+        "s3",
+        aws_access_key_id=creds["AccessKeyId"],
+        aws_secret_access_key=creds["SecretAccessKey"],
+        aws_session_token=creds["SessionToken"],
+    )
     try:
         files = []
         bucket = s3.Bucket(bucket)
