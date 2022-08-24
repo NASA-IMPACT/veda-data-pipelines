@@ -7,7 +7,7 @@ import boto3
 def assume_role(session_name):
     sts = boto3.client("sts")
     creds = sts.assume_role(
-        RoleArn=os.environ.get("MCP_ROLE_ARN"),
+        RoleArn=os.environ.get("EXTERNAL_ROLE_ARN"),
         RoleSessionName=session_name,
     )
     return creds["Credentials"]
@@ -51,13 +51,18 @@ def handler(event, context):
             {
                 "filename_regex": event.get("filename_regex"),
                 "datetime_range": event.get("datetime_range"),
+
+                "single_datetime": event.get("single_datetime"),
+                "start_datetime": event.get("start_datetime"),
+                "end_datetime": event.get("end_datetime"),
+
                 "properties": event.get("properties"),
-                # Remove trailing back slash used for prefixing
+
                 "collection": collection,
                 "s3_filename": f's3://{bucket}/{filename}',
                 "href": f's3://{bucket}/{filename}',
                 "id": filename,
-                "upload": event.get("upload", True),
+                "upload": event.get("upload", False),
             }
         )
     return {

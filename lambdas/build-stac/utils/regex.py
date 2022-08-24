@@ -1,6 +1,7 @@
 import re
 from typing import Callable, Dict, Tuple, Union
 from datetime import datetime
+from dateutil.parser import parse
 from dateutil.relativedelta import relativedelta
 
 from . import events
@@ -28,11 +29,16 @@ DATETIME_RANGE_METHODS: Dict[events.INTERVAL, Callable[[datetime], DATERANGE]] =
 
 
 def extract_dates(
-    filename: str, datetime_range: events.INTERVAL
+    item: events.RegexEvent
 ) -> Union[Tuple[datetime, datetime, None], Tuple[None, None, datetime]]:
     """
     Extracts start & end or single date string from filename.
     """
+
+    if (start := item.start_datetime) and (end := item.end_datetime):
+        return parse(start), parse(end), None
+    elif single := item.single_datetime:
+        return None, None, parse(single)
 
     DATE_REGEX_STRATEGIES = [
         (r"_(\d{4}-\d{2}-\d{2})", "%Y-%m-%d"),
@@ -44,7 +50,7 @@ def extract_dates(
     # Find dates in filename
     dates = []
     for (pattern, dateformat) in DATE_REGEX_STRATEGIES:
-        dates_found = re.compile(pattern).findall(filename)
+        dates_found = re.compile(pattern).findall(item.filename)
         if not dates_found:
             continue
 
@@ -58,7 +64,7 @@ def extract_dates(
     # No dates found
     if not num_dates_found:
         raise Exception(
-            f"No dates provided in {filename=}. "
+            f"No dates provided in {item.filename=}. "
             "At least one date in format yyyy-mm-dd is required."
         )
 
@@ -72,8 +78,8 @@ def extract_dates(
     single_datetime = dates[0]
 
     # Convert single date to range
-    if datetime_range:
-        start_datetime, end_datetime = DATETIME_RANGE_METHODS[datetime_range](
+    if item.datetime_range:
+        start_datetime, end_datetime = DATETIME_RANGE_METHODS[item.datetime_range](
             single_datetime
         )
         return start_datetime, end_datetime, None
