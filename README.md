@@ -1,4 +1,4 @@
-# cloud-optimized-data-pipelines
+# veda-data-pipelines
 
 This repo houses function code and deployment code for producing cloud-optimized
 data products and STAC metadata for interfaces such as https://github.com/NASA-IMPACT/delta-ui.
