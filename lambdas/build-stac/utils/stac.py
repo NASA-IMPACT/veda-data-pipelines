@@ -1,13 +1,15 @@
 from pathlib import Path
 from functools import singledispatch
 
-from cmr import GranuleQuery
 import pystac
+import rasterio
+
+from cmr import GranuleQuery
 from pystac.utils import str_to_datetime
-
 from rio_stac import stac
+from rasterio.session import AWSSession
 
-from . import regex, events
+from . import regex, events, role
 
 
 def create_item(
@@ -23,25 +25,29 @@ def create_item(
     """
     Function to create a stac item from a COG using rio_stac
     """
-    return stac.create_stac_item(
-        id=Path(cog_url).stem,
-        source=cog_url,
-        collection=collection,
-        input_datetime=datetime,
-        properties=properties,
-        with_proj=True,
-        with_raster=True,
-        assets=assets,
-        # TODO (aimee):
-        # If we want to have multiple assets _and_ the raster stats from get_raster_info we need to make this conditional more flexible:
-        # https://github.com/developmentseed/rio-stac/blob/0.3.2/rio_stac/stac.py#L315-L330
-        asset_name=asset_name or "cog_default",
-        asset_roles=asset_roles or ["data", "layer"],
-        asset_media_type=(
-            asset_media_type
-            or "image/tiff; application=geotiff; profile=cloud-optimized"
-        ),
-    )
+
+    creds = role.assume_role("veda-data-pipelines_build-stac")
+    with rasterio.Env(session=AWSSession(
+        aws_access_key_id=creds["AccessKeyId"],
+        aws_secret_access_key=creds["SecretAccessKey"],
+        aws_session_token=creds["SessionToken"],
+    )):
+        return stac.create_stac_item(
+            id=Path(cog_url).stem,
+            source=cog_url,
+            collection=collection,
+            input_datetime=datetime,
+            properties=properties,
+            with_proj=True,
+            with_raster=True,
+            assets=assets,
+            asset_name=asset_name or "cog_default",
+            asset_roles=asset_roles or ["data", "layer"],
+            asset_media_type=(
+                asset_media_type
+                or "image/tiff; application=geotiff; profile=cloud-optimized"
+            ),
+        )
 
 
 @singledispatch
