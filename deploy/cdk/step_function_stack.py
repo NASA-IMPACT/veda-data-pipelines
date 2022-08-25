@@ -5,8 +5,6 @@ from aws_cdk import (
     aws_stepfunctions_tasks as tasks,
 )
 
-import config
-
 
 if TYPE_CHECKING:
     from .queue_stack import QueueStack
@@ -164,12 +162,13 @@ class StepFunctionStack(core.Stack):
         build_stac_item_task = self._lambda_task(
             "Build STAC Task",
             lambda_stack.build_stac_lambda,
+            output_path="$.Payload",
         )
 
         submit_stac_item_task = self._lambda_task(
             "Submit to STAC Ingestor Task",
             lambda_stack.submit_stac_lambda,
-            input_path="$.Payload",
+            input_path="$",
         )
 
         build_and_submit_stac_items = stepfunctions.Map(
@@ -188,9 +187,6 @@ class StepFunctionStack(core.Stack):
             definition=publish_workflow,
         )
 
-    def get_arns(self, env_vars):
+    def build_arn(self, env_vars, key):
         base_str = f"arn:aws:states:{env_vars.region}:{env_vars.account}:stateMachine:"
-        return (
-            f"{base_str}{self.construct_id}-cogify",
-            f"{base_str}{self.construct_id}-publication"
-        )
+        return f"{base_str}{self.construct_id}-{key}"
