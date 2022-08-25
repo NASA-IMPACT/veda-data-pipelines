@@ -24,7 +24,7 @@ else
     export EARTHDATA_PASSWORD=XXXX
     export COGNITO_APP_SECRET=$cognitoAppSecret
     export ENV=$1
-    export APP_NAME="delta-simple-ingest"
+    export APP_NAME="veda-data-pipelines"
 
     echo "$1 environment set"
 fi

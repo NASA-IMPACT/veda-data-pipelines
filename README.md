@@ -36,7 +36,7 @@ This project uses AWS CDK to deploy AWS resources to the cloud.
 ```bash
 ENV="<dev/stage/prod>"
 COGNITO_APP_SECRET="<secret-name-for-pgstac-access>"
-APP_NAME="delta-simple-ingest"
+APP_NAME="veda-data-pipelines"
 ```
 
 **Note:** You can use the handy `env.sample.sh` script to set these variables. Just rename the file to `env.sh` and populate it with appropriate values. Then run the following commands:
