@@ -14,7 +14,7 @@ def assume_role(session_name):
 
 
 def list_bucket(bucket, prefix, filename_regex):
-    creds = assume_role("delta-s3-discovery")
+    creds = assume_role("veda-data-pipelines_s3-discovery")
     s3 = boto3.resource(
         "s3",
         aws_access_key_id=creds["AccessKeyId"],

@@ -23,7 +23,7 @@ def assume_role(session_name):
 
 
 def handler(event, context):
-    creds = assume_role("delta-simple-ingest")
+    creds = assume_role("veda-data-pipelines_data-transfer")
     source_s3 = boto3.client("s3")
     target_s3 = boto3.client(
         "s3",
