@@ -59,8 +59,8 @@ def generate_stac_regexevent(item: events.RegexEvent) -> pystac.Item:
     )
 
     if start_datetime and end_datetime:
-        item.properties["start_datetime"] = f"{start_datetime.isoformat()}Z"
-        item.properties["end_datetime"] = f"{end_datetime.isoformat()}Z"
+        item.properties["start_datetime"] = start_datetime.isoformat()
+        item.properties["end_datetime"] = end_datetime.isoformat()
         single_datetime = None
 
     return create_item(
