@@ -21,7 +21,7 @@ class CmrEvent(BaseEvent):
 
 
 class RegexEvent(BaseEvent):
-    filename_regex: str
+    filename_regex: Optional[str]
 
     start_datetime: Optional[constr(regex=r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")] = None
     end_datetime: Optional[constr(regex=r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")] = None

@@ -50,7 +50,7 @@ def extract_dates(
     # Find dates in filename
     dates = []
     for (pattern, dateformat) in DATE_REGEX_STRATEGIES:
-        dates_found = re.compile(pattern).findall(item.filename)
+        dates_found = re.compile(pattern).findall(item.s3_filename)
         if not dates_found:
             continue
 
@@ -64,7 +64,7 @@ def extract_dates(
     # No dates found
     if not num_dates_found:
         raise Exception(
-            f"No dates provided in {item.filename=}. "
+            f"No dates provided in {item.s3_filename=}. "
             "At least one date in format yyyy-mm-dd is required."
         )
 
