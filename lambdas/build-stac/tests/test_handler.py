@@ -105,3 +105,24 @@ def test_routing_unexpected_event(bad_event):
     """
     with pytest.raises(ValidationError):
         handler.handler(bad_event, None)
+
+
+def test_foo():
+    event = handler.handler(
+        {
+            "filename_regex": "^(.*)Combustion_Mobile.tif$",
+            "datetime_range": None,
+            "single_datetime": None,
+            "start_datetime": "2012-01-01T00:00:00Z",
+            "end_datetime": "2012-12-31T23:59:59Z",
+            "properties": None,
+            "collection": "EPA-annual-emissions_1A_Combustion_Mobile",
+            "s3_filename": "s3://veda-data-store-staging/EIS/cog/EPA-inventory-2012/annual/EPA-annual-emissions_1A_Combustion_Mobile.tif",
+            "href": "s3://veda-data-store-staging/EIS/cog/EPA-inventory-2012/annual/EPA-annual-emissions_1A_Combustion_Mobile.tif",
+            "id": "EIS/cog/EPA-inventory-2012/annual/EPA-annual-emissions_1A_Combustion_Mobile.tif",
+            "upload": False,
+        },
+        None,
+    )
+    output = stac.generate_stac(event)
+    print(output)
