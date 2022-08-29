@@ -1,4 +1,4 @@
-FROM python:3.9-slim-bullseye
+FROM python:3.9-slim-bullseye as production
 
 WORKDIR /app
 
@@ -13,3 +13,11 @@ COPY utils ./utils
 
 # Precompile
 RUN python -m compileall .
+
+# Test target
+FROM production AS test
+
+RUN pip install pytest
+
+COPY tests ./tests
+CMD ["pytest", "tests"]

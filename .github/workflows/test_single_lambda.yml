@@ -11,21 +11,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install poetry
-        run: pipx install poetry
-
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.8" # NOTE: Should match Lambda runtime specified in CDK code
-          cache: "poetry"
-          cache-dependency-path: |
-            poetry.lock
-            ${{ inputs.path_to_lambda }}/requirements**.txt
-
-      - name: Install requirements
-        run: |
-          poetry install
-          xargs poetry add < ${{ inputs.path_to_lambda }}/requirements**.txt
+      - name: Build docker images
+        run: docker build \
+          --platform=linux/amd64 \
+          -f ${{ inputs.path_to_lambda }}/Dockerfile \
+          --target test
+          -t local
 
       - name: Run tests
-        run: poetry run pytest ${{ inputs.path_to_lambda }}
+        run: docker run -it local
