@@ -63,7 +63,7 @@ def generate_stac_regexevent(item: events.RegexEvent) -> pystac.Item:
     start_datetime, end_datetime, single_datetime = regex.extract_dates(
         item
     )
-    properties = {}
+    properties = item.properties or {}
     if start_datetime and end_datetime:
         properties["start_datetime"] = f"{start_datetime.isoformat()}Z"
         properties["end_datetime"] = f"{end_datetime.isoformat()}Z"
