@@ -15,6 +15,10 @@ class BaseEvent(BaseModel, frozen=True):
     asset_roles: Optional[List[str]] = None
     asset_media_type: Optional[Union[str, pystac.MediaType]] = None
 
+    start_datetime: Optional[constr(regex=r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z?$")] = None
+    end_datetime: Optional[constr(regex=r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z?$")] = None
+    single_datetime: Optional[constr(regex=r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z?$")] = None
+
 
 class CmrEvent(BaseEvent):
     granule_id: str
@@ -22,10 +26,6 @@ class CmrEvent(BaseEvent):
 
 class RegexEvent(BaseEvent):
     filename_regex: Optional[str]
-
-    start_datetime: Optional[constr(regex=r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")] = None
-    end_datetime: Optional[constr(regex=r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")] = None
-    single_datetime: Optional[constr(regex=r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")] = None
 
     properties: Optional[Dict] = Field(default_factory=dict)
     datetime_range: Optional[INTERVAL] = None
