@@ -4,22 +4,27 @@ import re
 import boto3
 
 
-def assume_role(session_name):
+def assume_role(role_arn, session_name):
     sts = boto3.client("sts")
     creds = sts.assume_role(
-        RoleArn=os.environ.get("EXTERNAL_ROLE_ARN"),
+        RoleArn=role_arn,
         RoleSessionName=session_name,
     )
     return creds["Credentials"]
 
 
 def list_bucket(bucket, prefix, filename_regex):
-    creds = assume_role("veda-data-pipelines_s3-discovery")
+    kwargs = {}
+    if role_arn := os.environ.get("EXTERNAL_ROLE_ARN"):
+        creds = assume_role(role_arn, "veda-data-pipelines_s3-discovery")
+        kwargs = {
+            "aws_access_key_id": creds["AccessKeyId"],
+            "aws_secret_access_key": creds["SecretAccessKey"],
+            "aws_session_token": creds["SessionToken"],
+        }
     s3 = boto3.resource(
         "s3",
-        aws_access_key_id=creds["AccessKeyId"],
-        aws_secret_access_key=creds["SecretAccessKey"],
-        aws_session_token=creds["SessionToken"],
+        **kwargs
     )
     try:
         files = []

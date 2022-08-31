@@ -5,7 +5,6 @@ from botocore.errorfactory import ClientError
 
 
 TARGET_BUCKET = os.environ["BUCKET"]
-EXTERNAL_ROLE_ARN = os.environ.get("EXTERNAL_ROLE_ARN")
 
 
 def _parse_s3_object(s3_object):
@@ -14,22 +13,27 @@ def _parse_s3_object(s3_object):
     return bucket, path, key
 
 
-def assume_role(session_name):
+def assume_role(role_arn, session_name):
     sts = boto3.client("sts")
     creds = sts.assume_role(
-        RoleArn=os.environ.get("EXTERNAL_ROLE_ARN"), RoleSessionName=session_name,
+        RoleArn=role_arn, RoleSessionName=session_name,
     )
     return creds["Credentials"]
 
 
 def handler(event, context):
-    creds = assume_role("veda-data-pipelines_data-transfer")
+    kwargs = {}
+    if role_arn := os.environ.get("EXTERNAL_ROLE_ARN"):
+        creds = assume_role(role_arn, "veda-data-pipelines_data-transfer")
+        kwargs = {
+            "aws_access_key_id": creds["AccessKeyId"],
+            "aws_secret_access_key": creds["SecretAccessKey"],
+            "aws_session_token": creds["SessionToken"],
+        }
     source_s3 = boto3.client("s3")
     target_s3 = boto3.client(
         "s3",
-        aws_access_key_id=creds["AccessKeyId"],
-        aws_secret_access_key=creds["SecretAccessKey"],
-        aws_session_token=creds["SessionToken"],
+        **kwargs
     )
     for object in event:
         if not object.get("upload"):
