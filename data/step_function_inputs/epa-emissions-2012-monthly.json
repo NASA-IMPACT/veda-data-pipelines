@@ -3,60 +3,48 @@
         "collection": "EPA-monthly-emissions_1A_Combustion_Stationary",
         "prefix": "EIS/cog/EPA-inventory-2012/monthly/",
         "bucket": "veda-data-store-staging",
-        "filename_regex": "^(.*)Combustion_Stationary.tif$",
+        "filename_regex": "^(.*)Combustion_Stationary_(.*).tif$",
         "discovery": "s3",
-        "start_datetime": "2012-01-01T00:00:00Z",
-        "end_datetime": "2012-12-31T23:59:59Z",
         "upload": false
     },
     {
         "collection": "EPA-monthly-emissions_1B2a_Petroleum",
         "prefix": "EIS/cog/EPA-inventory-2012/monthly/",
         "bucket": "veda-data-store-staging",
-        "filename_regex": "^(.*)Petroleum.tif$",
+        "filename_regex": "^(.*)Petroleum_(.*).tif$",
         "discovery": "s3",
-        "start_datetime": "2012-01-01T00:00:00Z",
-        "end_datetime": "2012-12-31T23:59:59Z",
         "upload": false
     },
     {
         "collection": "EPA-monthly-emissions_1B2b_Natural_Gas_Production",
         "prefix": "EIS/cog/EPA-inventory-2012/monthly/",
         "bucket": "veda-data-store-staging",
-        "filename_regex": "^(.*)Natural_Gas_Production.tif$",
+        "filename_regex": "^(.*)Natural_Gas_Production_(.*).tif$",
         "discovery": "s3",
-        "start_datetime": "2012-01-01T00:00:00Z",
-        "end_datetime": "2012-12-31T23:59:59Z",
         "upload": false
     },
     {
         "collection": "EPA-monthly-emissions_4C_Rice_Cultivation",
         "prefix": "EIS/cog/EPA-inventory-2012/monthly/",
         "bucket": "veda-data-store-staging",
-        "filename_regex": "^(.*)Rice_Cultivation.tif$",
+        "filename_regex": "^(.*)Rice_Cultivation_(.*).tif$",
         "discovery": "s3",
-        "start_datetime": "2012-01-01T00:00:00Z",
-        "end_datetime": "2012-12-31T23:59:59Z",
         "upload": false
     },
     {
         "collection": "EPA-monthly-emissions_4F_Field_Burning",
         "prefix": "EIS/cog/EPA-inventory-2012/monthly/",
         "bucket": "veda-data-store-staging",
-        "filename_regex": "^(.*)Field_Burning.tif$",
+        "filename_regex": "^(.*)Field_Burning_(.*).tif$",
         "discovery": "s3",
-        "start_datetime": "2012-01-01T00:00:00Z",
-        "end_datetime": "2012-12-31T23:59:59Z",
         "upload": false
     },
     {
         "collection": "EPA-monthly-emissions_4B_Manure_Management",
         "prefix": "EIS/cog/EPA-inventory-2012/monthly/",
         "bucket": "veda-data-store-staging",
-        "filename_regex": "^(.*)Manure_Management.tif$",
+        "filename_regex": "^(.*)Manure_Management_(.*).tif$",
         "discovery": "s3",
-        "start_datetime": "2012-01-01T00:00:00Z",
-        "end_datetime": "2012-12-31T23:59:59Z",
         "upload": false
     }
 ]
