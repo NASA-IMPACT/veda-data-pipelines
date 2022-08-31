@@ -17,7 +17,8 @@ RUN python -m compileall .
 # Test target
 FROM production AS test
 
-RUN pip install pytest
+COPY requirements-test.txt requirements-test.txt
+RUN pip install -r requirements-test.txt
 
 COPY tests ./tests
 CMD ["pytest", "tests"]
