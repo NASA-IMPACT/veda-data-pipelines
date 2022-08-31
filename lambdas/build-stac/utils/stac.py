@@ -1,3 +1,5 @@
+import os
+
 from pathlib import Path
 from functools import singledispatch
 
@@ -25,14 +27,8 @@ def create_item(
     """
     Function to create a stac item from a COG using rio_stac
     """
-
-    creds = role.assume_role("veda-data-pipelines_build-stac")
-    with rasterio.Env(session=AWSSession(
-        aws_access_key_id=creds["AccessKeyId"],
-        aws_secret_access_key=creds["SecretAccessKey"],
-        aws_session_token=creds["SessionToken"],
-    )):
-        return stac.create_stac_item(
+    def create_stac_item():
+        stac.create_stac_item(
             id=Path(cog_url).stem,
             source=cog_url,
             collection=collection,
@@ -48,6 +44,17 @@ def create_item(
                 or "image/tiff; application=geotiff; profile=cloud-optimized"
             ),
         )
+
+    if role_arn := os.environ.get("EXTERNAL_ROLE_ARN"):
+        creds = role.assume_role(role_arn, "veda-data-pipelines_build-stac")
+        with rasterio.Env(session=AWSSession(
+            aws_access_key_id=creds["AccessKeyId"],
+            aws_secret_access_key=creds["SecretAccessKey"],
+            aws_session_token=creds["SessionToken"],
+        )):
+            return create_stac_item()
+
+    return create_stac_item()
 
 
 @singledispatch
