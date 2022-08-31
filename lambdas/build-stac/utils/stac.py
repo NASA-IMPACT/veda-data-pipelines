@@ -69,7 +69,7 @@ def generate_stac_regexevent(item: events.RegexEvent) -> pystac.Item:
         single_datetime = single_datetime
     else:
         start_datetime, end_datetime, single_datetime = regex.extract_dates(
-            item
+            item.s3_filename, item.datetime_range
         )
     properties = item.properties or {}
     if start_datetime and end_datetime:
