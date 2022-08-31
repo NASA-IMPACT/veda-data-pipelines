@@ -28,7 +28,7 @@ def create_item(
     Function to create a stac item from a COG using rio_stac
     """
     def create_stac_item():
-        stac.create_stac_item(
+        return stac.create_stac_item(
             id=Path(cog_url).stem,
             source=cog_url,
             collection=collection,
