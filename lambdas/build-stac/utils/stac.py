@@ -1,8 +1,6 @@
 from pathlib import Path
 from functools import singledispatch
 
-from dateutil.parser import parse
-
 import pystac
 import rasterio
 
@@ -63,12 +61,12 @@ def generate_stac_regexevent(item: events.RegexEvent) -> pystac.Item:
     Generate STAC item from user provided datetime range or regex & filename
     """
     if item.start_datetime and item.end_datetime:
-        start_datetime = parse(item.start_datetime)
-        end_datetime = parse(item.end_datetime)
+        start_datetime = item.start_datetime
+        end_datetime = item.end_datetime
         single_datetime = None
     elif single_datetime := item.single_datetime:
         start_datetime = end_datetime = None
-        single_datetime = parse(single_datetime)
+        single_datetime = single_datetime
     else:
         start_datetime, end_datetime, single_datetime = regex.extract_dates(
             item

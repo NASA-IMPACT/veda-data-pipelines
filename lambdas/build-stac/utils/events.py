@@ -1,6 +1,7 @@
+from datetime import datetime
 from typing import Dict, List, Literal, Optional, Union
 
-from pydantic import BaseModel, constr, Field
+from pydantic import BaseModel Field
 import pystac
 
 
@@ -15,9 +16,9 @@ class BaseEvent(BaseModel, frozen=True):
     asset_roles: Optional[List[str]] = None
     asset_media_type: Optional[Union[str, pystac.MediaType]] = None
 
-    start_datetime: Optional[constr(regex=r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z?$")] = None
-    end_datetime: Optional[constr(regex=r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z?$")] = None
-    single_datetime: Optional[constr(regex=r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z?$")] = None
+    start_datetime: Optional[datetime] = None
+    end_datetime: Optional[datetime] = None
+    single_datetime: Optional[datetime] = None
 
 
 class CmrEvent(BaseEvent):
