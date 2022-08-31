@@ -1262,15 +1262,26 @@ publication = ">=0.0.3"
 typeguard = ">=2.13.3,<2.14.0"
 
 [[package]]
+name = "backports.zoneinfo"
+version = "0.2.1"
+description = "Backport of the standard library zoneinfo module"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+tzdata = ["tzdata"]
+
+[[package]]
 name = "boto3"
-version = "1.24.61"
+version = "1.24.62"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.27.61,<1.28.0"
+botocore = ">=1.27.62,<1.28.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -1279,8 +1290,8 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "boto3-stubs"
-version = "1.24.61"
-description = "Type annotations for boto3 1.24.61 generated with mypy-boto3-builder 7.11.8"
+version = "1.24.62"
+description = "Type annotations for boto3 1.24.62 generated with mypy-boto3-builder 7.11.8"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
@@ -1611,7 +1622,7 @@ xray = ["mypy-boto3-xray (>=1.24.0,<1.25.0)"]
 
 [[package]]
 name = "botocore"
-version = "1.27.61"
+version = "1.27.62"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
@@ -1627,7 +1638,7 @@ crt = ["awscrt (==0.14.0)"]
 
 [[package]]
 name = "botocore-stubs"
-version = "1.27.61"
+version = "1.27.62"
 description = "Type annotations and code completion for botocore"
 category = "dev"
 optional = false
@@ -1727,14 +1738,14 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "constructs"
-version = "3.4.83"
+version = "3.4.84"
 description = "A programming model for composable configuration"
 category = "dev"
 optional = false
 python-versions = "~=3.7"
 
 [package.dependencies]
-jsii = ">=1.65.0,<2.0.0"
+jsii = ">=1.65.1,<2.0.0"
 publication = ">=0.0.3"
 typeguard = ">=2.13.3,<2.14.0"
 
@@ -1761,12 +1772,24 @@ test = ["pytest (>=6.2.0)", "pytest-benchmark", "pytest-cov", "pytest-subtests",
 name = "exceptiongroup"
 version = "1.0.0rc9"
 description = "Backport of PEP 654 (exception groups)"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
 [package.extras]
 test = ["pytest (>=6)"]
+
+[[package]]
+name = "fire"
+version = "0.4.0"
+description = "A library for automatically generating command line interfaces."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+six = "*"
+termcolor = "*"
 
 [[package]]
 name = "idna"
@@ -1808,7 +1831,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "jsii"
-version = "1.65.0"
+version = "1.66.0"
 description = "Python client for jsii runtime"
 category = "dev"
 optional = false
@@ -1896,6 +1919,14 @@ optional = false
 python-versions = ">=3.8"
 
 [[package]]
+name = "orjson"
+version = "3.8.0"
+description = "Fast, correct Python JSON library supporting dataclasses, datetimes, and numpy"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
 name = "packaging"
 version = "21.3"
 description = "Core utilities for Python packages"
@@ -1905,6 +1936,17 @@ python-versions = ">=3.6"
 
 [package.dependencies]
 pyparsing = ">=2.0.2,<3.0.5 || >3.0.5"
+
+[[package]]
+name = "plpygis"
+version = "0.2.0"
+description = "PostGIS Python tools"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+shapely_support = ["Shapely (>=1.5.0)"]
 
 [[package]]
 name = "pluggy"
@@ -1917,6 +1959,35 @@ python-versions = ">=3.6"
 [package.extras]
 testing = ["pytest-benchmark", "pytest"]
 dev = ["tox", "pre-commit"]
+
+[[package]]
+name = "psycopg"
+version = "3.1"
+description = "PostgreSQL database adapter for Python"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+"backports.zoneinfo" = {version = ">=0.2.0", markers = "python_version < \"3.9\""}
+typing-extensions = {version = ">=4.1", markers = "python_version < \"3.11\""}
+tzdata = {version = "*", markers = "sys_platform == \"win32\""}
+
+[package.extras]
+binary = ["psycopg-binary (==3.1)"]
+c = ["psycopg-c (==3.1)"]
+dev = ["black (>=22.3.0)", "dnspython (>=2.1)", "flake8 (>=4.0)", "mypy (>=0.940)", "types-setuptools (>=57.4)", "wheel (>=0.37)"]
+docs = ["Sphinx (>=5.0)", "furo (==2022.6.21)", "sphinx-autobuild (>=2021.3.14)", "sphinx-autodoc-typehints (>=1.12)"]
+pool = ["psycopg-pool"]
+test = ["mypy (>=0.940)", "pproxy (>=2.7)", "pytest (>=6.2.5)", "pytest-asyncio (>=0.17)", "pytest-cov (>=3.0)", "pytest-randomly (>=3.10)"]
+
+[[package]]
+name = "psycopg-pool"
+version = "3.1.1"
+description = "Connection Pool for Psycopg"
+category = "main"
+optional = false
+python-versions = ">=3.7"
 
 [[package]]
 name = "publication"
@@ -1951,6 +2022,7 @@ optional = false
 python-versions = ">=3.6.1"
 
 [package.dependencies]
+python-dotenv = {version = ">=0.10.4", optional = true, markers = "extra == \"dotenv\""}
 typing-extensions = ">=3.7.4.3"
 
 [package.extras]
@@ -1967,6 +2039,27 @@ python-versions = ">=3.6.8"
 
 [package.extras]
 diagrams = ["railroad-diagrams", "jinja2"]
+
+[[package]]
+name = "pypgstac"
+version = "0.6.6"
+description = "Schema, functions and a python library for storing and accessing STAC collections and items in PostgreSQL"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+fire = ">=0.4.0,<0.5.0"
+orjson = ">=3.5.2"
+plpygis = ">=0.2.0,<0.3.0"
+pydantic = {version = ">=1.9.0,<1.10.0", extras = ["dotenv"]}
+python-dateutil = ">=2.8.0,<2.9.0"
+smart-open = ">=4.2.0,<4.3.0"
+tenacity = ">=8.0.0,<8.1.0"
+
+[package.extras]
+dev = ["pytest (>=5.0.0,<6.0.0)", "flake8 (>=3.9.0,<3.10.0)", "black (>=21.7b0)", "mypy (>=0.910)", "types-orjson (==0.1.1)", "pystac[validation] (>=1.0.0,<2.0.0)"]
+psycopg = ["psycopg[binary] (>=3.0.0,<3.1.0)", "psycopg-pool (>=3.1.0,<3.2.0)"]
 
 [[package]]
 name = "pystac"
@@ -2025,6 +2118,17 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 
 [package.dependencies]
 six = ">=1.5"
+
+[[package]]
+name = "python-dotenv"
+version = "0.20.0"
+description = "Read key-value pairs from a .env file and set them as environment variables"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.extras]
+cli = ["click (>=5.0)"]
 
 [[package]]
 name = "pytz"
@@ -2155,19 +2259,19 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "smart-open"
-version = "6.1.0"
+version = "4.2.0"
 description = "Utils for streaming large files (S3, HDFS, GCS, Azure Blob Storage, gzip, bz2...)"
 category = "main"
 optional = false
-python-versions = ">=3.6,<4.0"
+python-versions = ">=3.6.*"
 
 [package.extras]
-all = ["boto3", "google-cloud-storage (>=1.31.0)", "azure-storage-blob", "azure-common", "azure-core", "requests"]
+all = ["boto3", "google-cloud-storage", "azure-storage-blob", "azure-common", "azure-core", "requests"]
 azure = ["azure-storage-blob", "azure-common", "azure-core"]
-gcs = ["google-cloud-storage (>=1.31.0)"]
+gcp = ["google-cloud-storage"]
 http = ["requests"]
 s3 = ["boto3"]
-test = ["boto3", "google-cloud-storage (>=1.31.0)", "azure-storage-blob", "azure-common", "azure-core", "requests", "moto", "pathlib2", "responses", "paramiko", "pytest", "pytest-rerunfailures"]
+test = ["boto3", "google-cloud-storage", "azure-storage-blob", "azure-common", "azure-core", "requests", "mock", "moto[server] (==1.3.14)", "pathlib2", "responses", "boto3", "paramiko", "parameterizedtestcase", "pytest", "pytest-rerunfailures"]
 webhdfs = ["requests"]
 
 [[package]]
@@ -2184,6 +2288,25 @@ pyparsing = ">=2.1.6"
 
 [package.extras]
 test = ["pytest", "hypothesis"]
+
+[[package]]
+name = "tenacity"
+version = "8.0.1"
+description = "Retry code until it succeeds"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+doc = ["reno", "sphinx", "tornado (>=4.5)"]
+
+[[package]]
+name = "termcolor"
+version = "1.1.0"
+description = "ANSII Color formatting for output in terminal."
+category = "main"
+optional = false
+python-versions = "*"
 
 [[package]]
 name = "tomli"
@@ -2207,7 +2330,7 @@ test = ["pytest", "typing-extensions", "mypy"]
 
 [[package]]
 name = "types-awscrt"
-version = "0.14.0"
+version = "0.14.3"
 description = "Type annotations and code completion for awscrt"
 category = "dev"
 optional = false
@@ -2228,6 +2351,14 @@ description = "Backported and Experimental Type Hints for Python 3.7+"
 category = "main"
 optional = false
 python-versions = ">=3.7"
+
+[[package]]
+name = "tzdata"
+version = "2022.2"
+description = "Provider of IANA time zone data"
+category = "main"
+optional = false
+python-versions = ">=2"
 
 [[package]]
 name = "urllib3"
@@ -2264,7 +2395,7 @@ python-versions = ">=3.4"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "0f837e3741b05c85ded7c4dcfaed10c1158189f3df64f6054100c48e182edcf5"
+content-hash = "9bb2d0b2f6637620b324c24c3a5b1db73b96edca1cabe303f6a76c37670e79a2"
 
 [metadata.files]
 affine = []
@@ -2334,6 +2465,7 @@ attrs = []
 "aws-cdk.lambda-layer-kubectl" = []
 "aws-cdk.lambda-layer-node-proxy-agent" = []
 "aws-cdk.region-info" = []
+"backports.zoneinfo" = []
 boto3 = []
 boto3-stubs = []
 botocore = []
@@ -2352,6 +2484,7 @@ colorama = []
 constructs = []
 cryptography = []
 exceptiongroup = []
+fire = []
 idna = [
     {file = "idna-3.3-py3-none-any.whl", hash = "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff"},
     {file = "idna-3.3.tar.gz", hash = "sha256:9d643ff0a55b762d5cdb124b8eaa99c66322e2157b69160bc32796e824360e6d"},
@@ -2364,8 +2497,12 @@ markupsafe = []
 moto = []
 mypy-boto3-s3 = []
 numpy = []
+orjson = []
 packaging = []
+plpygis = []
 pluggy = []
+psycopg = []
+psycopg-pool = []
 publication = [
     {file = "publication-0.0.3-py2.py3-none-any.whl", hash = "sha256:0248885351febc11d8a1098d5c8e3ab2dabcf3e8c0c96db1e17ecd12b53afbe6"},
     {file = "publication-0.0.3.tar.gz", hash = "sha256:68416a0de76dddcdd2930d1c8ef853a743cc96c82416c4e4d3b5d901c6276dc4"},
@@ -2374,6 +2511,7 @@ py = []
 pycparser = []
 pydantic = []
 pyparsing = []
+pypgstac = []
 pystac = []
 pytest = []
 python-cmr = []
@@ -2381,6 +2519,7 @@ python-dateutil = [
     {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},
     {file = "python_dateutil-2.8.2-py2.py3-none-any.whl", hash = "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"},
 ]
+python-dotenv = []
 pytz = []
 pyyaml = []
 rasterio = []
@@ -2398,6 +2537,8 @@ six = [
 ]
 smart-open = []
 snuggs = []
+tenacity = []
+termcolor = []
 tomli = [
     {file = "tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},
     {file = "tomli-2.0.1.tar.gz", hash = "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"},
@@ -2406,6 +2547,7 @@ typeguard = []
 types-awscrt = []
 types-s3transfer = []
 typing-extensions = []
+tzdata = []
 urllib3 = []
 werkzeug = []
 xmltodict = []
