@@ -1,0 +1,8 @@
+{
+    "collection": "lis-tws-trend",
+    "prefix": "EIS/COG/LIS_TWS_TREND/",
+    "bucket": "veda-data-store-staging",
+    "filename_regex": "^(.*).tif$",
+    "discovery": "s3",
+    "upload": false
+}
