@@ -1,9 +1,8 @@
 {
     "collection": "no2-monthly-diff",
-    "prefix": "OMNO2d_HRMDifference/",
-    "bucket": "covid-eo-data",
+    "prefix": "no2-monthly-diff/",
+    "bucket": "veda-data-store-staging",
     "filename_regex": "^(.*).tif$",
     "discovery": "s3",
-    "datetime_range": "month",
-    "upload": true
+    "datetime_range": "month"
 }

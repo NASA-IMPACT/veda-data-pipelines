@@ -1,9 +1,9 @@
 {
     "collection": "geoglam",
-    "prefix": "agriculture-cropmonitor/",
-    "bucket": "covid-eo-data",
+    "prefix": "geoglam/",
+    "bucket": "veda-data-store-staging",
     "filename_regex": "^(.*).tif$",
     "discovery": "s3",
     "datetime_range": "month",
-    "upload": true
+    "upload": false
 }
