@@ -1,6 +1,7 @@
 import configparser
 import os
 import requests
+import traceback
 
 import boto3
 
@@ -43,8 +44,8 @@ def upload_file(outfilename, collection):
         return f"s3://{output_bucket}/{collection}/{filename}"
     except Exception as e:
         print("Failed to copy to S3 bucket")
-        print(e)
-        return None
+        traceback.print_exception(e)
+        raise e
 
 
 def download_file(file_uri: str):
