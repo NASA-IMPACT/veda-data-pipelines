@@ -1,5 +1,6 @@
 import os
 import re
+import traceback
 
 import boto3
 
@@ -38,8 +39,9 @@ def list_bucket(bucket, prefix, filename_regex):
         return files
 
     except Exception as e:
-        print(e)
-        return e
+        print("Failed during s3 item/asset discovery")
+        traceback.print_exception(e)
+        raise e
 
 
 def handler(event, context):

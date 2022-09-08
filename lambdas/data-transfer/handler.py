@@ -1,4 +1,5 @@
 import os
+import traceback
 
 import boto3
 from botocore.errorfactory import ClientError
@@ -47,13 +48,18 @@ def handler(event, context):
         # Check if the corresponding object exists in the target bucket
         try:
             target_s3.head_object(Bucket=TARGET_BUCKET, Key=target_key)
-        except ClientError:
-            # Not found
-            source_s3.download_file(bucket, f"{path}/{name}", tmp_filename)
-            target_s3.upload_file(tmp_filename, TARGET_BUCKET, target_key)
-            # Clean up the data
-            if os.path.exists(tmp_filename):
-                os.remove(tmp_filename)
+        except ClientError as ce:
+            try:
+                # Not found
+                source_s3.download_file(bucket, f"{path}/{name}", tmp_filename)
+                target_s3.upload_file(tmp_filename, TARGET_BUCKET, target_key)
+                # Clean up the data
+                if os.path.exists(tmp_filename):
+                    os.remove(tmp_filename)
+            except Exception as internal_exception:
+                print(f"Failed while trying to upload missing file at s3://{bucket}/{target_key}.")
+                traceback.print_exception(ce)
+                raise Exception(ce, internal_exception)
 
         object["s3_filename"] = target_url
 

@@ -1,4 +1,5 @@
 import os
+import traceback
 
 from pypgstac.load import Loader, Methods
 from pypgstac.db import PgstacDB
@@ -29,6 +30,7 @@ def get_dsn_string(secret: dict, localhost: bool = False) -> str:
         return f"postgres://{secret['username']}:{secret['password']}@{host}:{port}/{secret.get('dbname', 'postgis')}"
 
     except Exception as e:
+        traceback.print_exception(e)
         raise e
 
 
@@ -50,7 +52,9 @@ def insert_collections(files):
             insert_collection(file)
             print("Inserted")
         except Exception as e:
-            print("Error inserting collection.", str(e))
+            print("Error inserting collection.")
+            traceback.print_exception(e)
+            raise e
 
 
 @args_handler
