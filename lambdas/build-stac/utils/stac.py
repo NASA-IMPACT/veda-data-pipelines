@@ -27,6 +27,14 @@ def create_item(
     """
     Function to create a stac item from a COG using rio_stac
     """
+    gdal_env = {
+        "GDAL_MAX_DATASET_POOL_SIZE": 1024,
+        "GDAL_DISABLE_READDIR_ON_OPEN": False,
+        'GDAL_CACHEMAX': 1024000000,
+        'GDAL_HTTP_MAX_RETRY': 4,
+        'GDAL_HTTP_RETRY_DELAY': 1
+    }
+
     def create_stac_item():
         return stac.create_stac_item(
             id=Path(cog_url).stem,
@@ -47,14 +55,14 @@ def create_item(
 
     if role_arn := os.environ.get("EXTERNAL_ROLE_ARN"):
         creds = role.assume_role(role_arn, "veda-data-pipelines_build-stac")
-        with rasterio.Env(session=AWSSession(
+        gdal_env["session"] = AWSSession(
             aws_access_key_id=creds["AccessKeyId"],
             aws_secret_access_key=creds["SecretAccessKey"],
             aws_session_token=creds["SessionToken"],
-        )):
-            return create_stac_item()
+        )
 
-    return create_stac_item()
+    with rasterio.Env(**gdal_env):
+        return create_stac_item()
 
 
 @singledispatch
