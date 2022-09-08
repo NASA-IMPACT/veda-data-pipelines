@@ -55,6 +55,6 @@ def handler(event, context):
             if os.path.exists(tmp_filename):
                 os.remove(tmp_filename)
 
-        object["data_url"] = target_url
+        object["s3_filename"] = target_url
 
     return event
