@@ -30,7 +30,7 @@ def get_dsn_string(secret: dict, localhost: bool = False) -> str:
         return f"postgres://{secret['username']}:{secret['password']}@{host}:{port}/{secret.get('dbname', 'postgis')}"
 
     except Exception as e:
-        traceback.print_exception(e)
+        traceback.print_exception(type(e), e, e.__traceback__)
         raise e
 
 
@@ -53,7 +53,7 @@ def insert_collections(files):
             print("Inserted")
         except Exception as e:
             print("Error inserting collection.")
-            traceback.print_exception(e)
+            traceback.print_exception(type(e), e, e.__traceback__)
             raise e
 
 

@@ -40,7 +40,7 @@ def list_bucket(bucket, prefix, filename_regex):
 
     except Exception as e:
         print("Failed during s3 item/asset discovery")
-        traceback.print_exception(e)
+        traceback.print_exception(type(e), e, e.__traceback__)
         raise e
 
 
