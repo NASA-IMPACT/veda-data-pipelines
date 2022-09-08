@@ -95,7 +95,7 @@ class LambdaStack(core.Stack):
             f"{construct_id}-data-transfer-fn",
             "../lambdas/data-transfer",
             env={
-                "BUCKET": config.MCP_BUCKETS.get(config.ENV, ""),
+                "BUCKET": config.MCP_BUCKETS.get(config.ENV, config.MCP_BUCKETS.get("stage")),
                 "EXTERNAL_ROLE_ARN": config.EXTERNAL_ROLE_ARN,
             },
             role=external_role,
