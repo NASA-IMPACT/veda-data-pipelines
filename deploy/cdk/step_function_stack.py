@@ -165,6 +165,12 @@ class StepFunctionStack(core.Stack):
             output_path="$.Payload",
         )
 
+        build_stac_item_task.add_retry(
+            errors=["RasterioIOError"],
+            interval=core.Duration.seconds(2),
+            max_attempts=5
+        )
+
         submit_stac_item_task = self._lambda_task(
             "Submit to STAC Ingestor Task",
             lambda_stack.submit_stac_lambda,
