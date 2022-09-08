@@ -75,7 +75,7 @@ class IngestionApi:
             response.raise_for_status()
         except Exception as e:
             print(response.text)
-            traceback.print_exception(e)
+            traceback.print_exception(type(e), e, e.__traceback__)
             raise e
         return response.json()
 
@@ -90,7 +90,7 @@ class IngestionApi:
             response.raise_for_status()
         except Exception as e:
             print(response.text)
-            traceback.print_exception(e)
+            traceback.print_exception(type(e), e, e.__traceback__)
             raise e
 
         return response.json()

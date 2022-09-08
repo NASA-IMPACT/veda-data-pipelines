@@ -44,7 +44,7 @@ def upload_file(outfilename, collection):
         return f"s3://{output_bucket}/{collection}/{filename}"
     except Exception as e:
         print("Failed to copy to S3 bucket")
-        traceback.print_exception(e)
+        traceback.print_exception(type(e), e, e.__traceback__)
         raise e
 
 

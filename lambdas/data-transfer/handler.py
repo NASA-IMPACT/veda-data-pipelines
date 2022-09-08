@@ -58,7 +58,7 @@ def handler(event, context):
                     os.remove(tmp_filename)
             except Exception as internal_exception:
                 print(f"Failed while trying to upload missing file at s3://{bucket}/{target_key}.")
-                traceback.print_exception(ce)
+                traceback.print_exception(type(ce), ce, ce.__traceback__)
                 raise Exception(ce, internal_exception)
 
         object["s3_filename"] = target_url
