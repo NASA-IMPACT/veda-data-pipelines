@@ -1,5 +1,4 @@
 import os
-import traceback
 
 from pypgstac.load import Loader, Methods
 from pypgstac.db import PgstacDB
@@ -19,19 +18,14 @@ def get_dsn_string(secret: dict, localhost: bool = False) -> str:
     Returns:
         dsn (str): full database data source name
     """
-    try:
-        if localhost:
-            host = "localhost"
-            port = 9999
-        else:
-            host = secret["host"]
-            port = secret["port"]
+    if localhost:
+        host = "localhost"
+        port = 9999
+    else:
+        host = secret["host"]
+        port = secret["port"]
 
-        return f"postgres://{secret['username']}:{secret['password']}@{host}:{port}/{secret.get('dbname', 'postgis')}"
-
-    except Exception as e:
-        traceback.print_exception(type(e), e, e.__traceback__)
-        raise e
+    return f"postgres://{secret['username']}:{secret['password']}@{host}:{port}/{secret.get('dbname', 'postgis')}"
 
 
 def insert_collection(collection_ndjson):
@@ -51,10 +45,9 @@ def insert_collections(files):
         try:
             insert_collection(file)
             print("Inserted")
-        except Exception as e:
+        except:
             print("Error inserting collection.")
-            traceback.print_exception(type(e), e, e.__traceback__)
-            raise e
+            raise
 
 
 @args_handler

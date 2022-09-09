@@ -2,7 +2,6 @@ from dataclasses import dataclass
 import json
 import os
 from urllib.parse import urlparse
-import traceback
 from typing import Any, Dict, Optional, TypedDict, Union
 
 import boto3
@@ -73,10 +72,9 @@ class IngestionApi:
         )
         try:
             response.raise_for_status()
-        except Exception as e:
+        except:
             print(response.text)
-            traceback.print_exception(type(e), e, e.__traceback__)
-            raise e
+            raise
         return response.json()
 
     def submit(self, stac_item: Dict[str, Any]):
@@ -88,9 +86,8 @@ class IngestionApi:
 
         try:
             response.raise_for_status()
-        except Exception as e:
+        except:
             print(response.text)
-            traceback.print_exception(type(e), e, e.__traceback__)
             raise e
 
         return response.json()
