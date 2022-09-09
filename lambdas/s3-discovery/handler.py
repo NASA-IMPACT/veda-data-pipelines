@@ -43,36 +43,28 @@ def list_bucket(bucket, prefix, filename_regex):
 
 
 def handler(event, context):
+    bucket = event.pop("bucket")
+    prefix = event.pop("prefix", "")
+
     filenames = list_bucket(
-        bucket=event["bucket"], prefix=event.get("prefix"), filename_regex=event.get("filename_regex")
+        bucket=bucket, prefix=prefix, filename_regex=event.pop("filename_regex", None)
     )
 
     files_objs = []
     cogify = event.pop("cogify", False)
-    bucket = event.get("bucket")
-    collection = event.get("collection", event["prefix"][:-1])
+    collection = event.get("collection", prefix.rstrip("/"))
     for filename in filenames:
         files_objs.append(
             {
-                "filename_regex": event.get("filename_regex"),
-                "datetime_range": event.get("datetime_range"),
-
-                "single_datetime": event.get("single_datetime"),
-                "start_datetime": event.get("start_datetime"),
-                "end_datetime": event.get("end_datetime"),
-
-                "properties": event.get("properties"),
-
+                **event,
                 "collection": collection,
                 "s3_filename": f's3://{bucket}/{filename}',
-                "href": f's3://{bucket}/{filename}',
-                "id": filename,
                 "upload": event.get("upload", False),
             }
         )
     return {
         "cogify": cogify,
-        "objects": files_objs
+        "objects": files_objs,
     }
 
 

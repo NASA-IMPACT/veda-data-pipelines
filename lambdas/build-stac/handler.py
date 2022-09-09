@@ -59,7 +59,6 @@ if __name__ == "__main__":
     sample_event = {
         "collection": "nightlights-hd-monthly",
         "s3_filename": "s3://climatedashboard-data/delivery/BMHD_Maria_Stages/BeforeMaria_Stage0_2017-07-21_2017-09-19.tif",
-        "filename_regex": "^.*.tif$",
         "granule_id": None,
         "datetime_range": None,
         "start_datetime": None,
