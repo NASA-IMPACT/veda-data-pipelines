@@ -2,11 +2,18 @@ on:
   workflow_call:
     inputs:
       path_to_lambda:
+        description: Path to lambda directory, relative to root of repo
         required: true
         type: string
+      docker:
+        description: Perform build & tests via a Dockerfile
+        required: false
+        type: boolean
+        default: false
 
 jobs:
-  test:
+  test_via_docker:
+    if: ${{ inputs.docker }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -24,3 +31,28 @@ jobs:
 
       - name: Run tests
         run: docker run local
+
+  test_via_poetry:
+    if: ${{ !inputs.docker }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install poetry
+        run: pipx install poetry
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.8" # NOTE: Should match Lambda runtime specified in CDK code
+          cache: "poetry"
+          cache-dependency-path: |
+            poetry.lock
+            ${{ inputs.path_to_lambda }}/requirements**.txt
+
+      - name: Install requirements
+        run: |
+          poetry install
+          xargs poetry add < ${{ inputs.path_to_lambda }}/requirements**.txt
+
+      - name: Run tests
+        run: poetry run pytest ${{ inputs.path_to_lambda }}
