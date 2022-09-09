@@ -1,0 +1,8 @@
+version: "3.4"
+
+services:
+  build-stac:
+    platform: linux/amd64
+    build:
+      context: lambdas/build-stac
+      target: test

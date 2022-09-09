@@ -68,3 +68,11 @@ poetry run destroy
 4. Install the requirements with `pip install -r requirements.txt`
 5. Run `cdk deploy --all`
 6. Useful: `cdk destroy --all` to destroy the infrastructure
+
+## Testing
+
+All lambdas can be tested simultaneously with the following command:
+
+```sh
+docker compose -f docker-compose-test.yaml up --build --abort-on-container-exit
+```
