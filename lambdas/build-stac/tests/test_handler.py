@@ -92,12 +92,7 @@ def test_routing_cmr_event():
 
 @pytest.mark.parametrize(
     "bad_event",
-    [
-        {
-            "collection": "test-collection",
-            "s3_filename": "s3://test-bucket/delivery/BMHD_Maria_Stages/70001_BeforeMaria_Stage0_2017-07-21.tif",
-        }
-    ],
+    [{"collection": "test-collection"}],
 )
 def test_routing_unexpected_event(bad_event):
     """
