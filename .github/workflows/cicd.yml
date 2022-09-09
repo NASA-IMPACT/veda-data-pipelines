@@ -16,13 +16,12 @@ jobs:
 
   test_build-stac:
     name: Test lambdas/build-stac
-    uses: ./.github/workflows/test_single_lambda.yml
+    uses: ./.github/workflows/test_docker_lambda.yml
     with:
       path_to_lambda: lambdas/build-stac
-      docker: true
 
   test_data-transfer:
     name: Test lambdas/data-transfer
-    uses: ./.github/workflows/test_single_lambda.yml
+    uses: ./.github/workflows/test_python_lambda.yml
     with:
       path_to_lambda: lambdas/data-transfer

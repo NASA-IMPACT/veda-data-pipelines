@@ -5,35 +5,9 @@ on:
         description: Path to lambda directory, relative to root of repo
         required: true
         type: string
-      docker:
-        description: Perform build & tests via a Dockerfile
-        required: false
-        type: boolean
-        default: false
 
 jobs:
-  test_via_docker:
-    if: ${{ inputs.docker }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: satackey/action-docker-layer-caching@v0.0.11
-        continue-on-error: true
-
-      - name: Build docker images
-        run: |
-          docker build \
-            --platform=linux/amd64 \
-            --target test \
-            -t local \
-            ${{ inputs.path_to_lambda }}
-
-      - name: Run tests
-        run: docker run local
-
-  test_via_poetry:
-    if: ${{ !inputs.docker }}
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

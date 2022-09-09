@@ -1,0 +1,27 @@
+on:
+  workflow_call:
+    inputs:
+      path_to_lambda:
+        description: Path to lambda directory, relative to root of repo
+        required: true
+        type: string
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
+
+      - name: Build docker images
+        run: |
+          docker build \
+            --platform=linux/amd64 \
+            --target test \
+            -t local \
+            ${{ inputs.path_to_lambda }}
+
+      - name: Run tests
+        run: docker run local
