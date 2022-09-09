@@ -26,8 +26,6 @@ class CmrEvent(BaseEvent):
 
 
 class RegexEvent(BaseEvent):
-    filename_regex: Optional[str]
-
     properties: Optional[Dict] = Field(default_factory=dict)
     datetime_range: Optional[INTERVAL] = None
 

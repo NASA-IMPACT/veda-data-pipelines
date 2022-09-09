@@ -35,7 +35,6 @@ def handler(event: Dict[str, Any], context) -> Union[S3LinkOutput, StacItemOutpu
         {
             "collection": "OMDOAO3e",
             "s3_filename": "s3://climatedashboard-data/OMSO2PCA/OMSO2PCA_LUT_SCD_2005.tif",
-            "filename_regex": "^(.*?)(_)([0-9][0-9][0-9][0-9])(.*?)(.tif)$",
         }
 
     """
@@ -61,7 +60,6 @@ if __name__ == "__main__":
     sample_event = {
         "collection": "nightlights-hd-monthly",
         "s3_filename": "s3://climatedashboard-data/delivery/BMHD_Maria_Stages/BeforeMaria_Stage0_2017-07-21_2017-09-19.tif",
-        "filename_regex": "^.*.tif$",
         "granule_id": None,
         "datetime_range": None,
         "start_datetime": None,
