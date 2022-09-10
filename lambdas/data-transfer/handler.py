@@ -4,9 +4,6 @@ import boto3
 from botocore.errorfactory import ClientError
 
 
-TARGET_BUCKET = os.environ["BUCKET"]
-
-
 def _parse_s3_object(s3_object):
     split = s3_object.strip("s3://").split("/")
     bucket, path, key = split[0], "/".join(split[1:-1]), split[-1]
@@ -22,6 +19,8 @@ def assume_role(role_arn, session_name):
 
 
 def handler(event, context):
+    TARGET_BUCKET = os.environ["BUCKET"]
+
     kwargs = {}
     if role_arn := os.environ.get("EXTERNAL_ROLE_ARN"):
         creds = assume_role(role_arn, "veda-data-pipelines_data-transfer")
