@@ -1,4 +1,6 @@
 import os
+import urllib.parse
+import tempfile
 
 import boto3
 from botocore.errorfactory import ClientError
@@ -7,7 +9,8 @@ from botocore.errorfactory import ClientError
 def assume_role(role_arn, session_name):
     sts = boto3.client("sts")
     creds = sts.assume_role(
-        RoleArn=role_arn, RoleSessionName=session_name,
+        RoleArn=role_arn,
+        RoleSessionName=session_name,
     )
     return creds["Credentials"]
 
@@ -24,13 +27,12 @@ def handler(event, context):
             "aws_session_token": creds["SessionToken"],
         }
     source_s3 = boto3.client("s3")
-    target_s3 = boto3.client(
-        "s3",
-        **kwargs
-    )
+    target_s3 = boto3.client("s3", **kwargs)
+
     for object in event:
         if not object.get("upload"):
             continue
+
         url = urllib.parse.urlparse(object["s3_filename"])
         src_bucket = url.hostname
         src_key = url.path.strip("/")
@@ -50,7 +52,10 @@ def handler(event, context):
                     source_s3.download_file(src_bucket, src_key, tmp_filename)
                     target_s3.upload_file(tmp_filename, TARGET_BUCKET, target_key)
             except:
-                print(f"Failed while trying to upload missing file at s3://{bucket}/{target_key}.")
+                print(
+                    "Failed while trying to upload file from "
+                    f"s3://{src_bucket}/{src_key} to s3://{TARGET_BUCKET}/{target_key}."
+                )
                 raise
 
         object["s3_filename"] = target_url
