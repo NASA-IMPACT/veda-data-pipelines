@@ -33,3 +33,29 @@ jobs:
     uses: ./.github/workflows/test_python_lambda.yml
     with:
       path_to_lambda: lambdas/data-transfer
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Deploy to staging environment
+    uses: ./.github/workflows/deploy.yml
+    with:
+      deploy_env: stage
+      cognito_app_secret: veda-auth-stack-alukach/veda-workflows
+      app_name: veda-data-pipelines
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  deploy:
+    name: Deploy to dev environment
+    uses: ./.github/workflows/deploy.yml
+    with:
+      deploy_env: dev
+      cognito_app_secret: veda-auth-stack-alukach/veda-workflows
+      app_name: veda-data-pipelines

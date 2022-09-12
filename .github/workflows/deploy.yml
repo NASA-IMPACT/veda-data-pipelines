@@ -1,0 +1,52 @@
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      cognito_app_secret:
+        required: true
+        type: string
+      app_name:
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - name: Install Poetry
+        env:
+          POETRY_VIRTUALENVS_CREATE: false
+      - run: |
+          pip install -U pip
+          pip install poetry
+          poetry install
+
+      - name: Install node and related deps
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 17.3.0
+      - run: npm install -g aws-cdk
+
+      - name: Configure awscli
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: deploy
+        env:
+          ENV: ${{ inputs.environment }}
+          COGNITO_APP_SECRET: ${{ inputs.cognito_app_secret }}
+          APP_NAME: ${{ inputs.app_name }}
+      - run: poetry run deploy

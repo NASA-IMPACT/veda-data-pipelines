@@ -1,0 +1,30 @@
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deploy environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+        - dev
+        - stage
+        - prod
+      cognito_app_secret:
+        description: 'AWS Cognito secret store'
+        type: string
+        required: false
+        default: veda-auth-stack-alukach/veda-workflows
+      app_name:
+        description: 'Application name'
+        type: string
+        required: false
+        default: veda-data-pipelines
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/deploy.yml
+    with:
+      deploy_env: ${{ inputs.environment }}
+      cognito_app_secret: ${{ inputs.cognito_app_secret }}
+      app_name: ${{ inputs.app_name }}
