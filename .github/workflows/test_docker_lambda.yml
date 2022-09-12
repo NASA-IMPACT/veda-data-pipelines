@@ -2,6 +2,7 @@ on:
   workflow_call:
     inputs:
       path_to_lambda:
+        description: Path to lambda directory, relative to root of repo
         required: true
         type: string
 

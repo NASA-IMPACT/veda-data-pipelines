@@ -45,16 +45,24 @@ def create_item(
             ),
         )
 
+    rasterio_kwargs = {}
     if role_arn := os.environ.get("EXTERNAL_ROLE_ARN"):
         creds = role.assume_role(role_arn, "veda-data-pipelines_build-stac")
-        with rasterio.Env(session=AWSSession(
+        rasterio_kwargs["session"] = AWSSession(
             aws_access_key_id=creds["AccessKeyId"],
             aws_secret_access_key=creds["SecretAccessKey"],
             aws_session_token=creds["SessionToken"],
-        )):
-            return create_stac_item()
+        )
 
-    return create_stac_item()
+    with rasterio.Env({
+        **rasterio_kwargs,
+        'GDAL_MAX_DATASET_POOL_SIZE': 1024,
+        'GDAL_DISABLE_READDIR_ON_OPEN': False,
+        'GDAL_CACHEMAX': 1024000000,
+        'GDAL_HTTP_MAX_RETRY': 4,
+        'GDAL_HTTP_RETRY_DELAY': 1
+    }):
+        return create_stac_item()
 
 
 @singledispatch
@@ -83,8 +91,6 @@ def generate_stac_regexevent(item: events.RegexEvent) -> pystac.Item:
         properties["start_datetime"] = start_datetime.isoformat()
         properties["end_datetime"] = end_datetime.isoformat()
         single_datetime = None
-    else:
-        single_datetime = single_datetime.isoformat()
 
     return create_item(
         properties=properties,

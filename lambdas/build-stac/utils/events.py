@@ -16,18 +16,18 @@ class BaseEvent(BaseModel, frozen=True):
     asset_roles: Optional[List[str]] = None
     asset_media_type: Optional[Union[str, pystac.MediaType]] = None
 
-    start_datetime: Optional[datetime] = None
-    end_datetime: Optional[datetime] = None
-    single_datetime: Optional[datetime] = None
-
-
 class CmrEvent(BaseEvent):
     granule_id: str
 
 
 class RegexEvent(BaseEvent):
+    filename_regex: Optional[str]
+
+    start_datetime: Optional[datetime] = None
+    end_datetime: Optional[datetime] = None
+    single_datetime: Optional[datetime] = None
+
     properties: Optional[Dict] = Field(default_factory=dict)
     datetime_range: Optional[INTERVAL] = None
-
 
 SupportedEvent = Union[RegexEvent, CmrEvent]

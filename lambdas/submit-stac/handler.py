@@ -72,7 +72,7 @@ class IngestionApi:
         )
         try:
             response.raise_for_status()
-        except Exception:
+        except:
             print(response.text)
             raise
         return response.json()
@@ -88,7 +88,7 @@ class IngestionApi:
             response.raise_for_status()
         except:
             print(response.text)
-            raise
+            raise e
 
         return response.json()
 

@@ -1,8 +1,8 @@
 {
     "collection": "blue-tarp-planetscope",
     "prefix": "blue-tarp-planetscope/",
-    "bucket": "climatedashboard-data",
+    "bucket": "veda-data-store-staging",
     "filename_regex": "^(.*).tif$",
     "discovery": "s3",
-    "upload": true
+    "upload": false
 }

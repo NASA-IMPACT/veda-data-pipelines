@@ -19,6 +19,7 @@ FROM production AS test
 
 COPY requirements-test.txt requirements-test.txt
 RUN pip install -r requirements-test.txt
+RUN rm requirements-test.txt
 
 COPY tests ./tests
 CMD ["pytest", "tests"]

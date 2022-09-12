@@ -37,9 +37,9 @@ def list_bucket(bucket, prefix, filename_regex):
                 files.append(obj.key)
         return files
 
-    except Exception as e:
-        print(e)
-        return e
+    except:
+        print("Failed during s3 item/asset discovery")
+        raise
 
 
 def handler(event, context):
