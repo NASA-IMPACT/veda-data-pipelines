@@ -15,16 +15,20 @@ on:
         type: string
         required: false
         default: veda-auth-stack-alukach/veda-workflows
-      app_name:
-        description: 'Application name'
+      stac_ingestor_url:
+        description: 'URL for the stac ingestor API. (A deployment of https://github.com/NASA-IMPACT/veda-stac-ingestor)'
+        required: true
         type: string
-        required: false
-        default: veda-data-pipelines
+      external_role_arn:
+        description: 'ARN refering to the external IAM role which is assumed during ingests.'
+        required: true
+        type: string
 
 jobs:
   deploy:
     uses: ./.github/workflows/deploy.yml
     with:
-      deploy_env: ${{ inputs.environment }}
+      environment: ${{ inputs.environment }}
       cognito_app_secret: ${{ inputs.cognito_app_secret }}
-      app_name: ${{ inputs.app_name }}
+      stac_ingestor_url: ${{ inputs.stac_ingestor_url }}
+      external_role_arn: ${{ inputs.external_role_arn }}

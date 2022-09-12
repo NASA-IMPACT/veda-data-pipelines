@@ -37,6 +37,8 @@ This project uses AWS CDK to deploy AWS resources to the cloud.
 ENV="<dev/stage/prod>"
 COGNITO_APP_SECRET="<secret-name-for-pgstac-access>"
 APP_NAME="veda-data-pipelines"
+STAC_INGESTOR_URL="<url-for-ingestor-api>"
+EXTERNAL_ROLE_ARN="<arn-for-external-role-permissions>"
 ```
 
 **Note:** You can use the handy `env.sample.sh` script to set these variables. Just rename the file to `env.sh` and populate it with appropriate values. Then run the following commands:

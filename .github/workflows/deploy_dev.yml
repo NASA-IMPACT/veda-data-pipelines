@@ -1,0 +1,12 @@
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  deploy:
+    name: Deploy to dev environment
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: dev
+      cognito_app_secret: veda-auth-stack-alukach/veda-workflows
+

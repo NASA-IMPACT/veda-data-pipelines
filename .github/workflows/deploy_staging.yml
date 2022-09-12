@@ -1,0 +1,11 @@
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Deploy to staging environment
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: stage
+      cognito_app_secret: veda-auth-stack-alukach/veda-workflows
