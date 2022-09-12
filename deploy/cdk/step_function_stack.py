@@ -5,8 +5,6 @@ from aws_cdk import (
     aws_stepfunctions_tasks as tasks,
 )
 
-import config
-
 
 if TYPE_CHECKING:
     from .queue_stack import QueueStack
@@ -23,6 +21,7 @@ class StepFunctionStack(core.Stack):
         **kwargs,
     ):
         super().__init__(app, construct_id, **kwargs)
+        self.construct_id = construct_id
 
         self.cogify_workflow = self._cogify_workflow(
             lambda_stack=lambda_stack,
@@ -163,12 +162,19 @@ class StepFunctionStack(core.Stack):
         build_stac_item_task = self._lambda_task(
             "Build STAC Task",
             lambda_stack.build_stac_lambda,
+            output_path="$.Payload",
+        )
+
+        build_stac_item_task.add_retry(
+            errors=["RasterioIOError"],
+            interval=core.Duration.seconds(2),
+            max_attempts=5
         )
 
         submit_stac_item_task = self._lambda_task(
             "Submit to STAC Ingestor Task",
             lambda_stack.submit_stac_lambda,
-            input_path="$.Payload",
+            input_path="$",
         )
 
         build_and_submit_stac_items = stepfunctions.Map(
@@ -178,11 +184,7 @@ class StepFunctionStack(core.Stack):
             items_path=stepfunctions.JsonPath.string_at("$"),
         ).iterator(build_stac_item_task.next(submit_stac_item_task))
 
-        publish_workflow = (
-            transfer_task.next(build_and_submit_stac_items)
-            if config.ENV in ["stage", "prod"]
-            else build_and_submit_stac_items
-        )
+        publish_workflow = transfer_task.next(build_and_submit_stac_items)
 
         return stepfunctions.StateMachine(
             self,
@@ -190,3 +192,7 @@ class StepFunctionStack(core.Stack):
             state_machine_name=f"{self.stack_name}-publication",
             definition=publish_workflow,
         )
+
+    def build_arn(self, env_vars, key):
+        base_str = f"arn:aws:states:{env_vars.region}:{env_vars.account}:stateMachine:"
+        return f"{base_str}{self.construct_id}-{key}"

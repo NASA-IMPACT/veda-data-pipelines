@@ -1,13 +1,17 @@
+import os
+
 from pathlib import Path
 from functools import singledispatch
 
-from cmr import GranuleQuery
 import pystac
+import rasterio
+
+from cmr import GranuleQuery
 from pystac.utils import str_to_datetime
-
 from rio_stac import stac
+from rasterio.session import AWSSession
 
-from . import regex, events
+from . import regex, events, role
 
 
 def create_item(
@@ -23,25 +27,42 @@ def create_item(
     """
     Function to create a stac item from a COG using rio_stac
     """
-    return stac.create_stac_item(
-        id=Path(cog_url).stem,
-        source=cog_url,
-        collection=collection,
-        input_datetime=datetime,
-        properties=properties,
-        with_proj=True,
-        with_raster=True,
-        assets=assets,
-        # TODO (aimee):
-        # If we want to have multiple assets _and_ the raster stats from get_raster_info we need to make this conditional more flexible:
-        # https://github.com/developmentseed/rio-stac/blob/0.3.2/rio_stac/stac.py#L315-L330
-        asset_name=asset_name or "cog_default",
-        asset_roles=asset_roles or ["data", "layer"],
-        asset_media_type=(
-            asset_media_type
-            or "image/tiff; application=geotiff; profile=cloud-optimized"
-        ),
-    )
+    def create_stac_item():
+        return stac.create_stac_item(
+            id=Path(cog_url).stem,
+            source=cog_url,
+            collection=collection,
+            input_datetime=datetime,
+            properties=properties,
+            with_proj=True,
+            with_raster=True,
+            assets=assets,
+            asset_name=asset_name or "cog_default",
+            asset_roles=asset_roles or ["data", "layer"],
+            asset_media_type=(
+                asset_media_type
+                or "image/tiff; application=geotiff; profile=cloud-optimized"
+            ),
+        )
+
+    rasterio_kwargs = {}
+    if role_arn := os.environ.get("EXTERNAL_ROLE_ARN"):
+        creds = role.assume_role(role_arn, "veda-data-pipelines_build-stac")
+        rasterio_kwargs["session"] = AWSSession(
+            aws_access_key_id=creds["AccessKeyId"],
+            aws_secret_access_key=creds["SecretAccessKey"],
+            aws_session_token=creds["SessionToken"],
+        )
+
+    with rasterio.Env({
+        **rasterio_kwargs,
+        'GDAL_MAX_DATASET_POOL_SIZE': 1024,
+        'GDAL_DISABLE_READDIR_ON_OPEN': False,
+        'GDAL_CACHEMAX': 1024000000,
+        'GDAL_HTTP_MAX_RETRY': 4,
+        'GDAL_HTTP_RETRY_DELAY': 1
+    }):
+        return create_stac_item()
 
 
 @singledispatch
@@ -52,19 +73,27 @@ def generate_stac(item) -> pystac.Item:
 @generate_stac.register
 def generate_stac_regexevent(item: events.RegexEvent) -> pystac.Item:
     """
-    Generate STAC item from user provided regex & filename
+    Generate STAC item from user provided datetime range or regex & filename
     """
-    start_datetime, end_datetime, single_datetime = regex.extract_dates(
-        item.s3_filename, item.datetime_range
-    )
-
+    if item.start_datetime and item.end_datetime:
+        start_datetime = item.start_datetime
+        end_datetime = item.end_datetime
+        single_datetime = None
+    elif single_datetime := item.single_datetime:
+        start_datetime = end_datetime = None
+        single_datetime = single_datetime
+    else:
+        start_datetime, end_datetime, single_datetime = regex.extract_dates(
+            item.s3_filename, item.datetime_range
+        )
+    properties = item.properties or {}
     if start_datetime and end_datetime:
-        item.properties["start_datetime"] = f"{start_datetime.isoformat()}Z"
-        item.properties["end_datetime"] = f"{end_datetime.isoformat()}Z"
+        properties["start_datetime"] = start_datetime.isoformat()
+        properties["end_datetime"] = end_datetime.isoformat()
         single_datetime = None
 
     return create_item(
-        properties=item.properties,
+        properties=properties,
         datetime=single_datetime,
         cog_url=item.s3_filename,
         collection=item.collection,

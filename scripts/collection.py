@@ -1,48 +1,66 @@
 import os
-import glob
-import json
-import boto3
 
-from .utils import args_handler, data_files, DATA_PATH, SUBMIT_STAC_FUNCTION_NAME
+from pypgstac.load import Loader, Methods
+from pypgstac.db import PgstacDB
+
+from .utils import args_handler, data_files, DATA_PATH, get_secret
+
 
 collections_path = os.path.join(DATA_PATH, 'collections')
 
-lambda_client = boto3.client('lambda')
+
+def get_dsn_string(secret: dict, localhost: bool = False) -> str:
+    """Form database connection string from a dictionary of connection secrets
+
+    Args:
+        secret (dict): dictionary containing connection secrets including username, database name, host, and password
+
+    Returns:
+        dsn (str): full database data source name
+    """
+    if localhost:
+        host = "localhost"
+        port = 9999
+    else:
+        host = secret["host"]
+        port = secret["port"]
+
+    return f"postgres://{secret['username']}:{secret['password']}@{host}:{port}/{secret.get('dbname', 'postgis')}"
+
+
+def insert_collection(collection_ndjson):
+    secret_name = os.environ.get("SECRET_NAME")
+    con_secrets = get_secret(secret_name)
+    dsn = get_dsn_string(con_secrets)
+
+    with PgstacDB(dsn=dsn, debug=False) as db:
+        loader = Loader(db=db)
+        loader.load_collections(collection_ndjson, Methods.upsert)
+
 
 def insert_collections(files):
     print("Inserting collections:")
     for file in files:
         print(file)
-        collections = json.load(open(file))
-        if type(collections) != list:
-            collections = [collections]
-        for collection in collections:
-            content = json.dumps({
-                "stac_item": collection,
-                "type": "collections"
-            })
-            response = lambda_client.invoke(
-                FunctionName=SUBMIT_STAC_FUNCTION_NAME,
-                InvocationType='RequestResponse',
-                Payload=content
-            )
-            print(response)
-            if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-                print(f'Error inserting collection {file}')
-                print(response.get('Payload'))
+        try:
+            insert_collection(file)
+            print("Inserted")
+        except:
+            print("Error inserting collection.")
+            raise
+
 
 @args_handler
 def insert(collections):
     files = data_files(collections, collections_path)
     insert_collections(files)
 
+
 @args_handler
 def delete(collections):
     print("Function not implemented")
 
+
 @args_handler
 def update(collections):
     print("Function not implemented")
-
-if __name__=="__main__":
-    insert()

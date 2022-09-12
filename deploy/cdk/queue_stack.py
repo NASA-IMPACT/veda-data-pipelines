@@ -21,7 +21,7 @@ class QueueStack(core.Stack):
 
         self.cogify_queue = self._queue(
             f"{construct_id}-cogify-queue",
-            visibility_timeout=600,
+            visibility_timeout=900,
             dead_letter_queue=sqs.DeadLetterQueue(
                 max_receive_count=5,
                 queue=self._queue(f"{construct_id}-cogify-dlq"),
@@ -39,7 +39,7 @@ class QueueStack(core.Stack):
 
         self.stac_ready_queue = self._queue(
             f"{construct_id}-stac-ready-queue",
-            visibility_timeout=600,
+            visibility_timeout=900,
             dead_letter_queue=sqs.DeadLetterQueue(
                 max_receive_count=3,
                 queue=self._queue(f"{construct_id}-stac-ready-dlq", retention_days=14),

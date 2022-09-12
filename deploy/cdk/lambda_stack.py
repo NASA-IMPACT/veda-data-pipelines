@@ -5,7 +5,6 @@ from aws_cdk import (
     aws_iam as iam,
     aws_s3 as s3,
     aws_secretsmanager as secretsmanager,
-    aws_stepfunctions as stepfunctions,
 )
 
 import config
@@ -15,10 +14,32 @@ class LambdaStack(core.Stack):
     def __init__(self, app, construct_id, **kwargs) -> None:
         super().__init__(app, construct_id, **kwargs)
         self.construct_id = construct_id
+
+        # external role
+        external_role = iam.Role(
+            self,
+            f"delta-backend-staging-{config.ENV}-external-role",
+            role_name=f"delta-backend-staging-{config.ENV}-external-role",
+            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+            description="Role to write to external bucket",
+        )
+        external_role.add_to_policy(
+            iam.PolicyStatement(
+                resources=[config.EXTERNAL_ROLE_ARN],
+                actions=["sts:AssumeRole"],
+            )
+        )
+
         # Define all lambdas
         # Discovers files from s3 bucket
         self.s3_discovery_lambda = self._lambda(
-            f"{construct_id}-s3-discovery-fn", "../lambdas/s3-discovery"
+            f"{construct_id}-s3-discovery-fn",
+            "../lambdas/s3-discovery",
+            role=external_role,
+            env={
+                "BUCKET": config.MCP_BUCKETS.get(config.ENV, ""),
+                "EXTERNAL_ROLE_ARN": config.EXTERNAL_ROLE_ARN,
+            }
         )
 
         # Discovers files from cmr
@@ -52,6 +73,10 @@ class LambdaStack(core.Stack):
             f"{construct_id}-build-stac-fn",
             "../lambdas/build-stac",
             memory_size=8000,
+            role=external_role,
+            env={
+                "EXTERNAL_ROLE_ARN": config.EXTERNAL_ROLE_ARN,
+            },
         )
 
         # Submit STAC lambda
@@ -65,39 +90,23 @@ class LambdaStack(core.Stack):
             },
         )
 
+        # Transfer data to MCP bucket
+        self.data_transfer_lambda = self._python_lambda(
+            f"{construct_id}-data-transfer-fn",
+            "../lambdas/data-transfer",
+            env={
+                "BUCKET": config.MCP_BUCKETS.get(config.ENV, config.MCP_BUCKETS.get("stage")),
+                "EXTERNAL_ROLE_ARN": config.EXTERNAL_ROLE_ARN,
+            },
+            role=external_role,
+        )
+
         ndjson_bucket = self._bucket(f"{construct_id}-ndjson-bucket")
         ndjson_bucket.grant_read_write(self.build_stac_lambda.role)
         ndjson_bucket.grant_read(self.submit_stac_lambda.role)
 
         self.build_stac_lambda.add_environment("BUCKET", ndjson_bucket.bucket_name)
         self.submit_stac_lambda.add_environment("BUCKET", ndjson_bucket.bucket_name)
-
-        if config.ENV in ["stage", "prod"]:
-            # Transfer data to MCP bucket
-            data_transfer_role = iam.Role(
-                self,
-                f"{construct_id}-data-transfer-role",
-                role_name=f"{construct_id}-data-transfer-role",
-                assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
-                description="Role to write to MCP bucket",
-            )
-            data_transfer_role.add_to_policy(
-                iam.PolicyStatement(
-                    resources=[config.MCP_ROLE_ARN],
-                    actions=["sts:AssumeRole"],
-                )
-            )
-            self.data_transfer_lambda = self._python_lambda(
-                f"{construct_id}-data-transfer-fn",
-                "../lambdas/data-transfer",
-                env={
-                    "BUCKET": config.MCP_BUCKETS.get(config.ENV, ""),
-                    "MCP_ROLE_ARN": config.MCP_ROLE_ARN,
-                },
-                role=data_transfer_role,
-            )
-        else:
-            self.data_transfer_lambda = None
 
         self.give_permissions()
 
@@ -109,6 +118,7 @@ class LambdaStack(core.Stack):
         timeout_seconds=900,
         env=None,
         reserved_concurrent_executions=None,
+        **kwargs,
     ):
         return aws_lambda.Function(
             self,
@@ -126,6 +136,7 @@ class LambdaStack(core.Stack):
             timeout=core.Duration.seconds(timeout_seconds),
             environment=env,
             reserved_concurrent_executions=reserved_concurrent_executions,
+            **kwargs
         )
 
     def _python_lambda(self, name, directory, env=None, timeout_seconds=900, **kwargs):
@@ -146,19 +157,22 @@ class LambdaStack(core.Stack):
         internal_bucket = self._bucket(config.VEDA_DATA_BUCKET)
         internal_bucket.grant_read_write(self.cogify_lambda.role)
 
+        mcp_bucket = self._bucket(
+            config.MCP_BUCKETS.get(
+                config.ENV, config.MCP_BUCKETS.get("stage")
+            )
+        )
+
         external_buckets = [
             self._bucket(bucket) for bucket in config.VEDA_EXTERNAL_BUCKETS
         ]
 
-        for bucket in [internal_bucket, *external_buckets]:
+        for bucket in [internal_bucket, mcp_bucket, *external_buckets]:
             bucket.grant_read(self.s3_discovery_lambda.role)
             bucket.grant_read(self.build_stac_lambda.role)
-            if self.data_transfer_lambda:
-                bucket.grant_read(self.data_transfer_lambda.role)
+            bucket.grant_read(self.data_transfer_lambda.role)
 
-        if self.data_transfer_lambda:
-            mcp_bucket_name = config.MCP_BUCKETS.get(config.ENV)
-            self._bucket(mcp_bucket_name).grant_read_write(self.data_transfer_lambda)
+        mcp_bucket.grant_read_write(self.data_transfer_lambda)
 
         cognito_app_secret = secretsmanager.Secret.from_secret_name_v2(
             self, f"{self.construct_id}-secret", config.COGNITO_APP_SECRET
@@ -175,7 +189,12 @@ class LambdaStack(core.Stack):
     @staticmethod
     def grant_execution_privileges(
         lambda_function: aws_lambda.Function,
-        workflow: stepfunctions.StateMachine,
+        workflow_arn: str,
     ):
-        workflow.grant_start_execution(lambda_function.grant_principal)
-        lambda_function.add_environment("STEP_FUNCTION_ARN", workflow.state_machine_arn)
+        lambda_function.add_to_role_policy(
+            iam.PolicyStatement(
+                actions=["states:StartExecution"],
+                resources=[workflow_arn],
+            )
+        )
+        lambda_function.add_environment("STEP_FUNCTION_ARN", workflow_arn)
