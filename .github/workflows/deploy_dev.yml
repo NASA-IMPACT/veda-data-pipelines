@@ -1,6 +1,6 @@
 on:
   push:
-    branches: [develop]
+    branches: [develop, feature/gh-action-deploy]
 
 jobs:
   deploy:
@@ -8,5 +8,9 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       environment: dev
-      cognito_app_secret: veda-auth-stack-alukach/veda-workflows
+    secrets:
+      cognito_app_secret: ${{ secrets.cognito_app_secret }}
+      aws_access_key_id: ${{ secrets.aws_access_key_id }}
+      aws_secret_access_key: ${{ secrets.aws_secret_access_key }}
+      stac_ingestor_url: ${{ secrets.stac_ingestor_url }}
 
