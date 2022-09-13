@@ -6,7 +6,7 @@ from pypgstac.db import PgstacDB
 from .utils import args_handler, data_files, DATA_PATH, get_secret
 
 
-collections_path = os.path.join(DATA_PATH, 'collections')
+collections_path = os.path.join(DATA_PATH, "collections")
 
 
 def get_dsn_string(secret: dict, localhost: bool = False) -> str:

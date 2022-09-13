@@ -16,6 +16,7 @@ class BaseEvent(BaseModel, frozen=True):
     asset_roles: Optional[List[str]] = None
     asset_media_type: Optional[Union[str, pystac.MediaType]] = None
 
+
 class CmrEvent(BaseEvent):
     granule_id: str
 
@@ -29,5 +30,6 @@ class RegexEvent(BaseEvent):
 
     properties: Optional[Dict] = Field(default_factory=dict)
     datetime_range: Optional[INTERVAL] = None
+
 
 SupportedEvent = Union[RegexEvent, CmrEvent]

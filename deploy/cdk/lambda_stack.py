@@ -39,7 +39,7 @@ class LambdaStack(core.Stack):
             env={
                 "BUCKET": config.MCP_BUCKETS.get(config.ENV, ""),
                 "EXTERNAL_ROLE_ARN": config.EXTERNAL_ROLE_ARN,
-            }
+            },
         )
 
         # Discovers files from cmr
@@ -95,7 +95,9 @@ class LambdaStack(core.Stack):
             f"{construct_id}-data-transfer-fn",
             "../lambdas/data-transfer",
             env={
-                "BUCKET": config.MCP_BUCKETS.get(config.ENV, config.MCP_BUCKETS.get("stage")),
+                "BUCKET": config.MCP_BUCKETS.get(
+                    config.ENV, config.MCP_BUCKETS.get("stage")
+                ),
                 "EXTERNAL_ROLE_ARN": config.EXTERNAL_ROLE_ARN,
             },
             role=external_role,
@@ -136,7 +138,7 @@ class LambdaStack(core.Stack):
             timeout=core.Duration.seconds(timeout_seconds),
             environment=env,
             reserved_concurrent_executions=reserved_concurrent_executions,
-            **kwargs
+            **kwargs,
         )
 
     def _python_lambda(self, name, directory, env=None, timeout_seconds=900, **kwargs):
@@ -158,9 +160,7 @@ class LambdaStack(core.Stack):
         internal_bucket.grant_read_write(self.cogify_lambda.role)
 
         mcp_bucket = self._bucket(
-            config.MCP_BUCKETS.get(
-                config.ENV, config.MCP_BUCKETS.get("stage")
-            )
+            config.MCP_BUCKETS.get(config.ENV, config.MCP_BUCKETS.get("stage"))
         )
 
         external_buckets = [

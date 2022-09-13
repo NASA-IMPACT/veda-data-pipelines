@@ -27,6 +27,7 @@ def create_item(
     """
     Function to create a stac item from a COG using rio_stac
     """
+
     def create_stac_item():
         return stac.create_stac_item(
             id=Path(cog_url).stem,
@@ -54,14 +55,16 @@ def create_item(
             aws_session_token=creds["SessionToken"],
         )
 
-    with rasterio.Env({
-        **rasterio_kwargs,
-        'GDAL_MAX_DATASET_POOL_SIZE': 1024,
-        'GDAL_DISABLE_READDIR_ON_OPEN': False,
-        'GDAL_CACHEMAX': 1024000000,
-        'GDAL_HTTP_MAX_RETRY': 4,
-        'GDAL_HTTP_RETRY_DELAY': 1
-    }):
+    with rasterio.Env(
+        {
+            **rasterio_kwargs,
+            "GDAL_MAX_DATASET_POOL_SIZE": 1024,
+            "GDAL_DISABLE_READDIR_ON_OPEN": False,
+            "GDAL_CACHEMAX": 1024000000,
+            "GDAL_HTTP_MAX_RETRY": 4,
+            "GDAL_HTTP_RETRY_DELAY": 1,
+        }
+    ):
         return create_stac_item()
 
 

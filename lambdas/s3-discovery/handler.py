@@ -22,10 +22,7 @@ def list_bucket(bucket, prefix, filename_regex):
             "aws_secret_access_key": creds["SecretAccessKey"],
             "aws_session_token": creds["SessionToken"],
         }
-    s3 = boto3.resource(
-        "s3",
-        **kwargs
-    )
+    s3 = boto3.resource("s3", **kwargs)
     try:
         files = []
         bucket = s3.Bucket(bucket)
@@ -58,7 +55,7 @@ def handler(event, context):
             {
                 **event,
                 "collection": collection,
-                "s3_filename": f's3://{bucket}/{filename}',
+                "s3_filename": f"s3://{bucket}/{filename}",
                 "upload": event.get("upload", False),
             }
         )
