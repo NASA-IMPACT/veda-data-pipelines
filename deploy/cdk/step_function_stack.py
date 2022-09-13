@@ -168,7 +168,7 @@ class StepFunctionStack(core.Stack):
         build_stac_item_task.add_retry(
             errors=["RasterioIOError"],
             interval=core.Duration.seconds(2),
-            max_attempts=5
+            max_attempts=5,
         )
 
         submit_stac_item_task = self._lambda_task(

@@ -14,6 +14,14 @@ jobs:
       - name: ShellCheck
         uses: ludeeus/action-shellcheck@master
 
+  format:
+    name: Format code
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: psf/black@stable
+
   test_build-stac:
     name: Test lambdas/build-stac
     uses: ./.github/workflows/test_docker_lambda.yml
