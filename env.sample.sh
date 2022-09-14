@@ -2,7 +2,7 @@
 # Script to populate the environment variables for CDK deployment/pgstac database ingestion
 
 # Usage: source env.sh <env>
-# Valid environments: dev, stage (for now)
+# Valid environments: dev, staging (for now)
 
 #===== Needed temporarily to load collections =====#
 devPGSecret=veda-backend-uah-dev/pgstac/621feede
@@ -26,7 +26,7 @@ if [[ -z $1 ]]
 then
     echo "please provide an environment as the first argument"
 else
-    if [[ $1 = 'stage' ]]
+    if [[ $1 = 'staging' ]]
     then
         cognitoAppSecret=$stageCognitoAppSecret
         pgSecret=$stagePGSecret

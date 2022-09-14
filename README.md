@@ -45,7 +45,7 @@ EXTERNAL_ROLE_ARN="<arn-for-external-role-permissions>"
 
 ```bash
 chmod +x env.sh
-source env.sh <dev/stage>
+source env.sh <dev/staging>
 ```
 
 > If anything other than dev/stage is provided as the env, the dev credentials are used (for now).
