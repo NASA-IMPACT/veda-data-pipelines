@@ -7,7 +7,7 @@ jobs:
     name: Deploy to staging environment
     uses: ./.github/workflows/deploy.yml
     with:
-      environment: stage
+      deploy_env: stage
     secrets:
       cognito_app_secret: ${{ secrets.cognito_app_secret }}
       aws_access_key_id: ${{ secrets.aws_access_key_id }}

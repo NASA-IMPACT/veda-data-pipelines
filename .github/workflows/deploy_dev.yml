@@ -7,7 +7,7 @@ jobs:
     name: Deploy to dev environment
     uses: ./.github/workflows/deploy.yml
     with:
-      environment: dev
+      deploy_env: dev
     secrets:
       cognito_app_secret: ${{ secrets.cognito_app_secret }}
       aws_access_key_id: ${{ secrets.aws_access_key_id }}
