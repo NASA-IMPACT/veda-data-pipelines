@@ -1,6 +1,6 @@
 on:
   push:
-    branches: [develop, feature/gh-action-deploy]
+    branches: [develop]
 
 jobs:
   deploy:
