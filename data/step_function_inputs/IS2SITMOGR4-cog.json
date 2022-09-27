@@ -1,6 +1,6 @@
 {
     "collection": "IS2SITMOGR4-cog",
-    "prefix": "IS2SITMOGR4-cog",
+    "prefix": "IS2SITMOGR4-cog/",
     "bucket": "veda-data-store-staging",
     "filename_regex": "^(.*).tif$",
     "discovery": "s3",
