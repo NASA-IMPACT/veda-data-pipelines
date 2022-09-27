@@ -56,14 +56,15 @@ def create_item(
         )
 
     with rasterio.Env(
-        {
+        session=rasterio_kwargs["session"],
+        options={
             **rasterio_kwargs,
             "GDAL_MAX_DATASET_POOL_SIZE": 1024,
             "GDAL_DISABLE_READDIR_ON_OPEN": False,
             "GDAL_CACHEMAX": 1024000000,
             "GDAL_HTTP_MAX_RETRY": 4,
             "GDAL_HTTP_RETRY_DELAY": 1,
-        }
+        },
     ):
         return create_stac_item()
 
