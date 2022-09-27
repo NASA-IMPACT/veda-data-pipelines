@@ -64,7 +64,7 @@ def create_item(
             "GDAL_CACHEMAX": 1024000000,
             "GDAL_HTTP_MAX_RETRY": 4,
             "GDAL_HTTP_RETRY_DELAY": 1,
-        }
+        },
     ):
         return create_stac_item()
 
