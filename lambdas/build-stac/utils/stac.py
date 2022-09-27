@@ -56,7 +56,8 @@ def create_item(
         )
 
     with rasterio.Env(
-        {
+        session=rasterio_kwargs["session"],
+        options={
             **rasterio_kwargs,
             "GDAL_MAX_DATASET_POOL_SIZE": 1024,
             "GDAL_DISABLE_READDIR_ON_OPEN": False,
