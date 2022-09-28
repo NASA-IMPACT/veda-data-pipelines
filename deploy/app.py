@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+
 from aws_cdk import core
 
 from cdk.lambda_stack import LambdaStack
@@ -7,7 +8,6 @@ from cdk.step_function_stack import StepFunctionStack
 from cdk.queue_stack import QueueStack
 
 import config
-
 
 app = core.App()
 
