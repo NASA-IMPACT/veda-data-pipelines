@@ -32,3 +32,6 @@ cdk.context.json
 
 # Virtual Environments
 *env/
+
+# Avoid checking in filled out env file
+env.sh

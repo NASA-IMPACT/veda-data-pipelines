@@ -13,6 +13,8 @@ on:
         required: true
       stac_ingestor_url:
         required: true
+      external_role_arn:
+        required: true
 
 jobs:
   deploy:
@@ -22,17 +24,15 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v3
 
-      - name: Install poetry
-        run: pipx install poetry
-
-      - name: Set up Python
+      - name: Set up Python, caching dependencies
         uses: actions/setup-python@v4
         with:
           python-version: '3.8'
-          cache: 'poetry'
-          cache-dependency-path: |
-            poetry.lock
-
+          cache: 'pip'
+      
+      - name: Manually install requirements.txt
+        run: pip install -r deploy/requirements.txt
+      
       - name: Install node and related deps
         uses: actions/setup-node@v3
         with:
@@ -49,9 +49,10 @@ jobs:
           aws-region: us-west-2
 
       - name: deploy
-        run: poetry run deploy
+        run: cd deploy && cdk deploy --all --require-approval never
         env:
           ENV: ${{ inputs.deploy_env }}
           COGNITO_APP_SECRET: ${{ secrets.COGNITO_APP_SECRET }}
           STAC_INGESTOR_URL: ${{ secrets.STAC_INGESTOR_URL }}
           APP_NAME: "veda-data-pipelines"
+          EXTERNAL_ROLE_ARN: ${{ secrets.EXTERNAL_ROLE_ARN }}
