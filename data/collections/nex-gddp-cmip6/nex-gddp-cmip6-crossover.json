@@ -1,0 +1,41 @@
+{
+    "id": "nex-gddp-cmip6-crossover",
+    "type": "Collection",
+    "links": [],
+    "title": "CMIP6 2-degree average temperature crossover predictions",
+    "extent": {
+        "spatial": {
+            "bbox": [
+                [
+                    -180,
+                    -90,
+                    180,
+                    90
+                ]
+            ]
+        },
+        "temporal": {
+            "interval": [
+                [
+                    "2015-01-01T00:00:00Z",
+                    "2101-01-01T00:00:00Z"
+                ]
+            ]
+        }
+    },
+    "license": "MIT",
+    "description": "Predicted year at which the average daily temperature has risen by 2-degrees",
+    "stac_version": "1.0.0",
+    "dashboard:is_periodic": false,
+    "item_assets": {
+        "cog_default": {
+            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+            "roles": [
+                "data",
+                "layer"
+            ],
+            "title": "Default COG Layer",
+            "description": "Cloud optimized default layer to display on map"
+        }
+    }
+}

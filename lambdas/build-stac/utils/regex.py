@@ -21,9 +21,16 @@ def _calculate_month_range(datetime_obj: datetime) -> DATERANGE:
     return start_datetime, end_datetime
 
 
+def _calculate_day_range(datetime_obj: datetime) -> DATERANGE:
+    start_datetime = datetime_obj
+    end_datetime = datetime_obj + relativedelta(hour=23, minute=59, second=59)
+    return start_datetime, end_datetime
+
+
 DATETIME_RANGE_METHODS: Dict[events.INTERVAL, Callable[[datetime], DATERANGE]] = {
     "month": _calculate_month_range,
     "year": _calculate_year_range,
+    "day": _calculate_day_range,
 }
 
 
@@ -35,6 +42,7 @@ def extract_dates(
     """
     DATE_REGEX_STRATEGIES = [
         (r"_(\d{4}-\d{2}-\d{2})", "%Y-%m-%d"),
+        (r"_(\d{4}_\d{2}_\d{2})", "%Y_%m_%d"),
         (r"_(\d{8})", "%Y%m%d"),
         (r"_(\d{6})", "%Y%m"),
         (r"_(\d{4})", "%Y"),

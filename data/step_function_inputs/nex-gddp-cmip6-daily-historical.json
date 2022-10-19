@@ -1,0 +1,218 @@
+[
+    {
+        "collection": "nex-gddp-cmip6-daily",
+        "prefix": "daily/GFDL-CM4/historical/r1i1p1f1/hurs/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "properties": {
+            "ssp": "historical",
+            "model": "GFDL-CM4",
+            "variable": "hurs"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily",
+        "prefix": "daily/GFDL-CM4/historical/r1i1p1f1/huss/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "properties": {
+            "ssp": "historical",
+            "model": "GFDL-CM4",
+            "variable": "huss"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily",
+        "prefix": "daily/GFDL-CM4/historical/r1i1p1f1/pr/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "properties": {
+            "ssp": "historical",
+            "model": "GFDL-CM4",
+            "variable": "pr"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily",
+        "prefix": "daily/GFDL-CM4/historical/r1i1p1f1/rlds/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "properties": {
+            "ssp": "historical",
+            "model": "GFDL-CM4",
+            "variable": "rlds"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily",
+        "prefix": "daily/GFDL-CM4/historical/r1i1p1f1/rsds/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "properties": {
+            "ssp": "historical",
+            "model": "GFDL-CM4",
+            "variable": "rsds"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily",
+        "prefix": "daily/GFDL-CM4/historical/r1i1p1f1/sfcWind/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "properties": {
+            "ssp": "historical",
+            "model": "GFDL-CM4",
+            "variable": "sfcWind"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily",
+        "prefix": "daily/GFDL-CM4/historical/r1i1p1f1/tasmax/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "properties": {
+            "ssp": "historical",
+            "model": "GFDL-CM4",
+            "variable": "tasmax"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily",
+        "prefix": "daily/GFDL-CM4/historical/r1i1p1f1/tasmin/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "properties": {
+            "ssp": "historical",
+            "model": "GFDL-CM4",
+            "variable": "tasmin"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily",
+        "prefix": "daily/GFDL-CM4/historical/r1i1p1f1/tas/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "properties": {
+            "ssp": "historical",
+            "model": "GFDL-CM4",
+            "variable": "tas"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily",
+        "prefix": "daily/GISS-E2-1-G/historical/r1i1p1f1/hurs/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "properties": {
+            "ssp": "historical",
+            "model": "GISS-E2.1-G",
+            "variable": "hurs"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily",
+        "prefix": "daily/GISS-E2-1-G/historical/r1i1p1f1/huss/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "properties": {
+            "ssp": "historical",
+            "model": "GISS-E2.1-G",
+            "variable": "huss"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily",
+        "prefix": "daily/GISS-E2-1-G/historical/r1i1p1f1/pr/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "properties": {
+            "ssp": "historical",
+            "model": "GISS-E2.1-G",
+            "variable": "pr"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily",
+        "prefix": "daily/GISS-E2-1-G/historical/r1i1p1f1/rlds/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "properties": {
+            "ssp": "historical",
+            "model": "GISS-E2.1-G",
+            "variable": "rlds"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily",
+        "prefix": "daily/GISS-E2-1-G/historical/r1i1p1f1/rsds/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "properties": {
+            "ssp": "historical",
+            "model": "GISS-E2.1-G",
+            "variable": "rsds"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily",
+        "prefix": "daily/GISS-E2-1-G/historical/r1i1p1f1/sfcWind/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "properties": {
+            "ssp": "historical",
+            "model": "GISS-E2.1-G",
+            "variable": "sfcWind"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily",
+        "prefix": "daily/GISS-E2-1-G/historical/r1i1p1f1/tasmax/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "properties": {
+            "ssp": "historical",
+            "model": "GISS-E2.1-G",
+            "variable": "tasmax"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily",
+        "prefix": "daily/GISS-E2-1-G/historical/r1i1p1f1/tasmin/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "properties": {
+            "ssp": "historical",
+            "model": "GISS-E2.1-G",
+            "variable": "tasmin"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily",
+        "prefix": "daily/GISS-E2-1-G/historical/r1i1p1f1/tas/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "properties": {
+            "ssp": "historical",
+            "model": "GISS-E2.1-G",
+            "variable": "tas"
+        }
+    }
+]

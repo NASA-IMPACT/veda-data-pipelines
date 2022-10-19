@@ -175,7 +175,11 @@ def handler(event, context):
     to_cog_config["filename"] = downloaded_filename
     to_cog_config["collection"] = collection
 
-    return_obj = {"granule_id": event["granule_id"], "collection": event["collection"]}
+    return_obj = {
+        "granule_id": event["granule_id"],
+        "collection": event["collection"],
+        "properties": event["properties"],
+    }
 
     output_locations = to_cog(upload=event.get("upload", False), **to_cog_config)
 
@@ -188,6 +192,7 @@ def handler(event, context):
 if __name__ == "__main__":
     sample_event = {
         "collection": "OMDOAO3e",
+        "properties": {},
         "href": "https://acdisc.gesdisc.eosdis.nasa.gov/data//Aura_OMI_Level3/OMDOAO3e.003/2022/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5",
         "upload": False,
         "granule_id": "G2205784904-GES_DISC",

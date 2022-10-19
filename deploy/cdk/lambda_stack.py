@@ -57,6 +57,12 @@ class LambdaStack(core.Stack):
             },
         )
 
+        # Proxy lambda to trigger discovery step function
+        self.trigger_discovery_lambda = self._python_lambda(
+            f"{construct_id}-trigger-discover-fn",
+            "../lambdas/discovery-trigger",
+        )
+
         # Proxy lambda to trigger cogify step function
         self.trigger_cogify_lambda = self._python_lambda(
             f"{construct_id}-trigger-cogify-fn",

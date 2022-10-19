@@ -1,0 +1,74 @@
+[
+    {
+        "collection": "nex-gddp-cmip6-monthly-p50-hurs",
+        "prefix": "monthly/CMIP6_ensemble_median/hurs/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "datetime_range": "month"
+    },
+    {
+        "collection": "nex-gddp-cmip6-monthly-p50-huss",
+        "prefix": "monthly/CMIP6_ensemble_median/huss/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "datetime_range": "month"
+    },
+    {
+        "collection": "nex-gddp-cmip6-monthly-p50-pr",
+        "prefix": "monthly/CMIP6_ensemble_median/pr/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "datetime_range": "month"
+    },
+    {
+        "collection": "nex-gddp-cmip6-monthly-p50-rlds",
+        "prefix": "monthly/CMIP6_ensemble_median/rlds/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "datetime_range": "month"
+    },
+    {
+        "collection": "nex-gddp-cmip6-monthly-p50-rds",
+        "prefix": "monthly/CMIP6_ensemble_median/rsds/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "datetime_range": "month"
+    },
+    {
+        "collection": "nex-gddp-cmip6-monthly-p50-sfcwind",
+        "prefix": "monthly/CMIP6_ensemble_median/sfcWind/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "datetime_range": "month"
+    },
+    {
+        "collection": "nex-gddp-cmip6-monthly-p50-tasmax",
+        "prefix": "monthly/CMIP6_ensemble_median/tasmax/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "datetime_range": "month"
+    },
+    {
+        "collection": "nex-gddp-cmip6-monthly-p50-tasmin",
+        "prefix": "monthly/CMIP6_ensemble_median/tasmin/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "datetime_range": "month"
+    },
+    {
+        "collection": "nex-gddp-cmip6-monthly-p50-tas",
+        "prefix": "monthly/CMIP6_ensemble_median/tas/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "datetime_range": "month"
+    }
+]

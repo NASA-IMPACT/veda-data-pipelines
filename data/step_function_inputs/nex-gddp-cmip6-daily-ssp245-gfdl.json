@@ -1,0 +1,110 @@
+[
+    {
+        "collection": "nex-gddp-cmip6-daily-hurs",
+        "prefix": "daily/GFDL-CM4/ssp245/r1i1p1f1/hurs/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "datetime_range": "day",
+        "properties": {
+            "model": "GFDL-CM4",
+            "ssp": "245"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily-huss",
+        "prefix": "daily/GFDL-CM4/ssp245/r1i1p1f1/huss/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "datetime_range": "day",
+        "properties": {
+            "model": "GFDL-CM4",
+            "ssp": "245"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily-pr",
+        "prefix": "daily/GFDL-CM4/ssp245/r1i1p1f1/pr/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "datetime_range": "day",
+        "properties": {
+            "model": "GFDL-CM4",
+            "ssp": "245"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily-rlds",
+        "prefix": "daily/GFDL-CM4/ssp245/r1i1p1f1/rlds/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "datetime_range": "day",
+        "properties": {
+            "model": "GFDL-CM4",
+            "ssp": "245"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily-rsds",
+        "prefix": "daily/GFDL-CM4/ssp245/r1i1p1f1/rsds/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "datetime_range": "day",
+        "properties": {
+            "model": "GFDL-CM4",
+            "ssp": "245"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily-sfcwind",
+        "prefix": "daily/GFDL-CM4/ssp245/r1i1p1f1/sfcWind/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "datetime_range": "day",
+        "properties": {
+            "model": "GFDL-CM4",
+            "ssp": "245"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily-tasmax",
+        "prefix": "daily/GFDL-CM4/ssp245/r1i1p1f1/tasmax/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "datetime_range": "day",
+        "properties": {
+            "model": "GFDL-CM4",
+            "ssp": "245"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily-tasmin",
+        "prefix": "daily/GFDL-CM4/ssp245/r1i1p1f1/tasmin/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "datetime_range": "day",
+        "properties": {
+            "model": "GFDL-CM4",
+            "ssp": "245"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-daily-tas",
+        "prefix": "daily/GFDL-CM4/ssp245/r1i1p1f1/tas/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^.*.tif",
+        "discovery": "s3",
+        "datetime_range": "day",
+        "properties": {
+            "model": "GFDL-CM4",
+            "ssp": "245"
+        }
+    }
+]

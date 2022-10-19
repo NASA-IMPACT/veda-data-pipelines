@@ -12,12 +12,13 @@ DATA_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "dat
 
 sts = boto3.client("sts")
 ACCOUNT_ID = sts.get_caller_identity().get("Account")
-REGION = os.environ.get("AWS_REGION", "us-east-1")
+REGION = os.environ.get("AWS_REGION", "us-west-2")
 APP_NAME = os.environ.get("APP_NAME")
 ENV = os.environ.get("ENV", "dev")
 
 SUBMIT_STAC_FUNCTION_NAME = f"{APP_NAME}-{ENV}-lambda-submit-stac-fn"
-INGESTION_STEP_MACHINE_ARN = f"arn:aws:states:{REGION}:{ACCOUNT_ID}:stateMachine:{APP_NAME}-{ENV}-stepfunction-discover"
+INGESTION_STEP_MACHINE_ARN = f"arn:aws:states:{REGION}:{ACCOUNT_ID}:stateMachine:{APP_NAME}-{ENV}-stepfunction-discovery-queue"
+DISCOVERY_TRIGGER_ARN = f"arn:aws:lambda:{REGION}:{ACCOUNT_ID}:function:{APP_NAME}-{ENV}-lambda-trigger-discover-fn"
 
 
 def arguments():
