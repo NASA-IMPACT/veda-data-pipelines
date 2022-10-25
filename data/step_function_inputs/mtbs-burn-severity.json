@@ -1,0 +1,9 @@
+{
+    "collection": "mtbs-burn-severity",
+    "discovery": "s3",
+    "prefix": "EIS/COG/Fire-Hydro/",
+    "bucket": "veda-data-store-staging",
+    "filename_regex": "^(.*).tif$",
+    "datetime_range": "year",
+    "cogify": "true"
+}
