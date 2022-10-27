@@ -2,7 +2,7 @@ import pytest
 
 from datetime import datetime
 
-from utils import regex
+from utils import regex, events
 
 
 @pytest.mark.parametrize(
@@ -90,3 +90,35 @@ def test_date_extraction(test_input, expected):
     Ensure dateranges are properly extracted from filenames.
     """
     assert regex.extract_dates(*test_input) == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    [
+        (
+            events.BaseEvent.parse_obj(
+                {
+                    "collection": "NO2",
+                    "s3_filename": "s3://OMNO2d_HRM/OMI_trno20.10x0.10_201601_Col3_V4.nc.tif",
+                    "id_regex": r"s3://([^/]*)/(.+).tif$",
+                }
+            ),
+            "OMNO2d_HRM-OMI_trno20.10x0.10_201601_Col3_V4.nc",
+        ),
+        (
+            events.BaseEvent.parse_obj(
+                {
+                    "collection": "NO2",
+                    "s3_filename": "s3://OMNO2d_HRMDifference/OMI_trno20.10x0.10_201601_Col3_V4.nc.tif",
+                    "id_regex": r"s3://([^/]*)/(.+).tif$",
+                }
+            ),
+            "OMNO2d_HRMDifference-OMI_trno20.10x0.10_201601_Col3_V4.nc",
+        ),
+    ],
+)
+def test_item_id_regex(input, expected):
+    """
+    Ensure dateranges are properly extracted from filenames.
+    """
+    assert input.item_id() == expected

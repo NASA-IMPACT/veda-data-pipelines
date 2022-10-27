@@ -15,6 +15,7 @@ from . import regex, events, role
 
 
 def create_item(
+    id,
     properties,
     datetime,
     cog_url,
@@ -30,7 +31,7 @@ def create_item(
 
     def create_stac_item():
         return stac.create_stac_item(
-            id=Path(cog_url).stem,
+            id=id,
             source=cog_url,
             collection=collection,
             input_datetime=datetime,
@@ -97,6 +98,7 @@ def generate_stac_regexevent(item: events.RegexEvent) -> pystac.Item:
         single_datetime = None
 
     return create_item(
+        id=item.item_id(),
         properties=properties,
         datetime=single_datetime,
         cog_url=item.s3_filename,
@@ -115,6 +117,7 @@ def generate_stac_cmrevent(item: events.CmrEvent) -> pystac.Item:
     cmr_json = GranuleQuery().concept_id(item.granule_id).get(1)[0]
 
     return create_item(
+        id=item.item_id(),
         properties=cmr_json,
         datetime=str_to_datetime(cmr_json["time_start"]),
         cog_url=item.s3_filename,
