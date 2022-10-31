@@ -86,7 +86,7 @@ class IngestionApi:
 
         try:
             response.raise_for_status()
-        except:
+        except Exception as e:
             print(response.text)
             raise e
 
