@@ -10,7 +10,7 @@ assignees: ''
 - [ ] Identify the point of contact and ensure someone is providing them updates:
 - [ ] Identify data location:
 - [ ] Number of items:
-- [ ] Verify that files are valid COGs (e.g. with `rio cogeo validate`)
+- [ ] Verify that files are valid COGs (e.g. with [`rio cogeo validate`](https://cogeotiff.github.io/rio-cogeo/Is_it_a_COG/#3-cog-validation))
 - [ ] Gather STAC collection metadata
 
   - id:
