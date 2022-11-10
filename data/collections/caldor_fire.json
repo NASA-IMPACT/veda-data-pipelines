@@ -1,0 +1,43 @@
+{
+    "id": "caldor-fire",
+    "type": "Collection",
+    "links":[
+    ],
+    "title":"Caldor Fire - Temporary",
+    "extent":{
+        "spatial":{
+            "bbox":[
+                [
+                    "-180",
+                    "90",
+                    "-90",
+                    "180"
+                ]
+            ]
+        },
+        "temporal":{
+            "interval":[
+                [
+                    "2021-08-14T00:00:00Z",
+                    "2021-10-21T23:59:59Z"
+                ]
+            ]
+        }
+    },
+    "license":"MIT",
+    "description": "Temporary Description - contains what looks like an elevation COG and a fire progression COG for the 2021 Caldor fire.",
+    "stac_version": "1.0.0",
+    "dashboard:is_periodic": false,
+    "dashboard:time_density": null,
+    "item_assets": {
+        "cog_default": {
+            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+            "roles": [
+                "data",
+                "layer"
+            ],
+            "title": "Default COG Layer",
+            "description": "Cloud optimized default layer to display on map"
+        }
+    }
+}
