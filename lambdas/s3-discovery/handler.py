@@ -42,6 +42,8 @@ def handler(event, context):
     file_objs_size = 0
     payload = {**event, "cogify": cogify, "objects": []}
     for page in pages:
+        if "Contents" not in page:
+            raise Exception(f"No files found at s3://{bucket}/{prefix}")
         for obj in page["Contents"]:
             # The limit is advertised at 256000, but we'll preserve some breathing room
             if file_objs_size > 230000:

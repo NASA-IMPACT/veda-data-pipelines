@@ -1,218 +1,218 @@
 [
     {
-        "collection": "nex-gddp-cmip6-daily",
+        "collection": "nex-gddp-cmip6-daily-hurs",
         "prefix": "daily/GFDL-CM4/historical/r1i1p1f1/hurs/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
+        "datetime_range": "day",
         "properties": {
             "ssp": "historical",
-            "model": "GFDL-CM4",
-            "variable": "hurs"
+            "model": "GFDL-CM4"
         }
     },
     {
-        "collection": "nex-gddp-cmip6-daily",
+        "collection": "nex-gddp-cmip6-daily-huss",
         "prefix": "daily/GFDL-CM4/historical/r1i1p1f1/huss/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
+        "datetime_range": "day",
         "properties": {
             "ssp": "historical",
-            "model": "GFDL-CM4",
-            "variable": "huss"
+            "model": "GFDL-CM4"
         }
     },
     {
-        "collection": "nex-gddp-cmip6-daily",
+        "collection": "nex-gddp-cmip6-daily-pr",
         "prefix": "daily/GFDL-CM4/historical/r1i1p1f1/pr/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
+        "datetime_range": "day",
         "properties": {
             "ssp": "historical",
-            "model": "GFDL-CM4",
-            "variable": "pr"
+            "model": "GFDL-CM4"
         }
     },
     {
-        "collection": "nex-gddp-cmip6-daily",
+        "collection": "nex-gddp-cmip6-daily-rlds",
         "prefix": "daily/GFDL-CM4/historical/r1i1p1f1/rlds/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
+        "datetime_range": "day",
         "properties": {
             "ssp": "historical",
-            "model": "GFDL-CM4",
-            "variable": "rlds"
+            "model": "GFDL-CM4"
         }
     },
     {
-        "collection": "nex-gddp-cmip6-daily",
+        "collection": "nex-gddp-cmip6-daily-rsds",
         "prefix": "daily/GFDL-CM4/historical/r1i1p1f1/rsds/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
+        "datetime_range": "day",
         "properties": {
             "ssp": "historical",
-            "model": "GFDL-CM4",
-            "variable": "rsds"
+            "model": "GFDL-CM4"
         }
     },
     {
-        "collection": "nex-gddp-cmip6-daily",
+        "collection": "nex-gddp-cmip6-daily-sfcwind",
         "prefix": "daily/GFDL-CM4/historical/r1i1p1f1/sfcWind/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
+        "datetime_range": "day",
         "properties": {
             "ssp": "historical",
-            "model": "GFDL-CM4",
-            "variable": "sfcWind"
+            "model": "GFDL-CM4"
         }
     },
     {
-        "collection": "nex-gddp-cmip6-daily",
+        "collection": "nex-gddp-cmip6-daily-tasmax",
         "prefix": "daily/GFDL-CM4/historical/r1i1p1f1/tasmax/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
+        "datetime_range": "day",
         "properties": {
             "ssp": "historical",
-            "model": "GFDL-CM4",
-            "variable": "tasmax"
+            "model": "GFDL-CM4"
         }
     },
     {
-        "collection": "nex-gddp-cmip6-daily",
+        "collection": "nex-gddp-cmip6-daily-tasmin",
         "prefix": "daily/GFDL-CM4/historical/r1i1p1f1/tasmin/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
+        "datetime_range": "day",
         "properties": {
             "ssp": "historical",
-            "model": "GFDL-CM4",
-            "variable": "tasmin"
+            "model": "GFDL-CM4"
         }
     },
     {
-        "collection": "nex-gddp-cmip6-daily",
+        "collection": "nex-gddp-cmip6-daily-tas",
         "prefix": "daily/GFDL-CM4/historical/r1i1p1f1/tas/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
+        "datetime_range": "day",
         "properties": {
             "ssp": "historical",
-            "model": "GFDL-CM4",
-            "variable": "tas"
+            "model": "GFDL-CM4"
         }
     },
     {
-        "collection": "nex-gddp-cmip6-daily",
+        "collection": "nex-gddp-cmip6-daily-hurs",
         "prefix": "daily/GISS-E2-1-G/historical/r1i1p1f1/hurs/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
+        "datetime_range": "day",
         "properties": {
             "ssp": "historical",
-            "model": "GISS-E2.1-G",
-            "variable": "hurs"
+            "model": "GISS-E2.1-G"
         }
     },
     {
-        "collection": "nex-gddp-cmip6-daily",
+        "collection": "nex-gddp-cmip6-daily-huss",
         "prefix": "daily/GISS-E2-1-G/historical/r1i1p1f1/huss/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
+        "datetime_range": "day",
         "properties": {
             "ssp": "historical",
-            "model": "GISS-E2.1-G",
-            "variable": "huss"
+            "model": "GISS-E2.1-G"
         }
     },
     {
-        "collection": "nex-gddp-cmip6-daily",
+        "collection": "nex-gddp-cmip6-daily-pr",
         "prefix": "daily/GISS-E2-1-G/historical/r1i1p1f1/pr/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
+        "datetime_range": "day",
         "properties": {
             "ssp": "historical",
-            "model": "GISS-E2.1-G",
-            "variable": "pr"
+            "model": "GISS-E2.1-G"
         }
     },
     {
-        "collection": "nex-gddp-cmip6-daily",
+        "collection": "nex-gddp-cmip6-daily-rlds",
         "prefix": "daily/GISS-E2-1-G/historical/r1i1p1f1/rlds/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
+        "datetime_range": "day",
         "properties": {
             "ssp": "historical",
-            "model": "GISS-E2.1-G",
-            "variable": "rlds"
+            "model": "GISS-E2.1-G"
         }
     },
     {
-        "collection": "nex-gddp-cmip6-daily",
+        "collection": "nex-gddp-cmip6-daily-rsds",
         "prefix": "daily/GISS-E2-1-G/historical/r1i1p1f1/rsds/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
+        "datetime_range": "day",
         "properties": {
             "ssp": "historical",
-            "model": "GISS-E2.1-G",
-            "variable": "rsds"
+            "model": "GISS-E2.1-G"
         }
     },
     {
-        "collection": "nex-gddp-cmip6-daily",
+        "collection": "nex-gddp-cmip6-daily-sfcwind",
         "prefix": "daily/GISS-E2-1-G/historical/r1i1p1f1/sfcWind/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
+        "datetime_range": "day",
         "properties": {
             "ssp": "historical",
-            "model": "GISS-E2.1-G",
-            "variable": "sfcWind"
+            "model": "GISS-E2.1-G"
         }
     },
     {
-        "collection": "nex-gddp-cmip6-daily",
+        "collection": "nex-gddp-cmip6-daily-tasmax",
         "prefix": "daily/GISS-E2-1-G/historical/r1i1p1f1/tasmax/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
+        "datetime_range": "day",
         "properties": {
             "ssp": "historical",
-            "model": "GISS-E2.1-G",
-            "variable": "tasmax"
+            "model": "GISS-E2.1-G"
         }
     },
     {
-        "collection": "nex-gddp-cmip6-daily",
+        "collection": "nex-gddp-cmip6-daily-tasmin",
         "prefix": "daily/GISS-E2-1-G/historical/r1i1p1f1/tasmin/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
+        "datetime_range": "day",
         "properties": {
             "ssp": "historical",
-            "model": "GISS-E2.1-G",
-            "variable": "tasmin"
+            "model": "GISS-E2.1-G"
         }
     },
     {
-        "collection": "nex-gddp-cmip6-daily",
+        "collection": "nex-gddp-cmip6-daily-tas",
         "prefix": "daily/GISS-E2-1-G/historical/r1i1p1f1/tas/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
+        "datetime_range": "day",
         "properties": {
             "ssp": "historical",
-            "model": "GISS-E2.1-G",
-            "variable": "tas"
+            "model": "GISS-E2.1-G"
         }
     }
 ]

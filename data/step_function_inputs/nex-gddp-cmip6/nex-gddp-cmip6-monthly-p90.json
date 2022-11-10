@@ -1,71 +1,71 @@
 [
     {
-        "collection": "nex-gddp-cmip6-monthly-p10-hurs",
-        "prefix": "monthly/CMIP6_ensemble_p10/hurs/",
+        "collection": "nex-gddp-cmip6-monthly-p90-hurs",
+        "prefix": "monthly/CMIP6_ensemble_p90/hurs/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
         "datetime_range": "month"
     },
     {
-        "collection": "nex-gddp-cmip6-monthly-p10-huss",
-        "prefix": "monthly/CMIP6_ensemble_p10/huss/",
+        "collection": "nex-gddp-cmip6-monthly-p90-huss",
+        "prefix": "monthly/CMIP6_ensemble_p90/huss/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
         "datetime_range": "month"
     },
     {
-        "collection": "nex-gddp-cmip6-monthly-p10-pr",
-        "prefix": "monthly/CMIP6_ensemble_p10/pr/",
+        "collection": "nex-gddp-cmip6-monthly-p90-pr",
+        "prefix": "monthly/CMIP6_ensemble_p90/pr/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
         "datetime_range": "month"
     },
     {
-        "collection": "nex-gddp-cmip6-monthly-p10-rlds",
-        "prefix": "monthly/CMIP6_ensemble_p10/rlds/",
+        "collection": "nex-gddp-cmip6-monthly-p90-rlds",
+        "prefix": "monthly/CMIP6_ensemble_p90/rlds/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
         "datetime_range": "month"
     },
     {
-        "collection": "nex-gddp-cmip6-monthly-p10-rds",
-        "prefix": "monthly/CMIP6_ensemble_p10/rsds/",
+        "collection": "nex-gddp-cmip6-monthly-p90-rsds",
+        "prefix": "monthly/CMIP6_ensemble_p90/rsds/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
         "datetime_range": "month"
     },
     {
-        "collection": "nex-gddp-cmip6-monthly-p10-sfcwind",
-        "prefix": "monthly/CMIP6_ensemble_p10/sfcWind/",
+        "collection": "nex-gddp-cmip6-monthly-p90-sfcwind",
+        "prefix": "monthly/CMIP6_ensemble_p90/sfcWind/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
         "datetime_range": "month"
     },
     {
-        "collection": "nex-gddp-cmip6-monthly-p10-tasmax",
-        "prefix": "monthly/CMIP6_ensemble_p10/tasmax/",
+        "collection": "nex-gddp-cmip6-monthly-p90-tasmax",
+        "prefix": "monthly/CMIP6_ensemble_p90/tasmax/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
         "datetime_range": "month"
     },
     {
-        "collection": "nex-gddp-cmip6-monthly-p10-tasmin",
-        "prefix": "monthly/CMIP6_ensemble_p10/tasmin/",
+        "collection": "nex-gddp-cmip6-monthly-p90-tasmin",
+        "prefix": "monthly/CMIP6_ensemble_p90/tasmin/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",
         "datetime_range": "month"
     },
     {
-        "collection": "nex-gddp-cmip6-monthly-p10-tas",
-        "prefix": "monthly/CMIP6_ensemble_p10/tas/",
+        "collection": "nex-gddp-cmip6-monthly-p90-tas",
+        "prefix": "monthly/CMIP6_ensemble_p90/tas/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
         "discovery": "s3",

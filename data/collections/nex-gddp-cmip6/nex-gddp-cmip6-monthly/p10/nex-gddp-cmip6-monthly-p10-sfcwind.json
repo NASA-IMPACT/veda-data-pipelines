@@ -24,7 +24,7 @@
         }
     },
     "license": "MIT",
-    "description": "CMIP6 historical and projected near-surface wind speed",
+    "description": "CMIP6 historical and projected near-surface wind speed.",
     "stac_version": "1.0.0",
     "dashboard:is_periodic": true,
     "dashboard:time_density": "day",

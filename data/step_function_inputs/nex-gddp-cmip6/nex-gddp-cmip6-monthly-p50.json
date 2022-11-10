@@ -32,7 +32,7 @@
         "datetime_range": "month"
     },
     {
-        "collection": "nex-gddp-cmip6-monthly-p50-rds",
+        "collection": "nex-gddp-cmip6-monthly-p50-rsds",
         "prefix": "monthly/CMIP6_ensemble_median/rsds/",
         "bucket": "nex-gddp-cmip6-cog",
         "filename_regex": "^.*.tif",
