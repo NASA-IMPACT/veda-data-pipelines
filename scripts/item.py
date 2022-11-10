@@ -15,17 +15,15 @@ def insert_items(files):
         events = json.load(open(filename))
         if type(events) != list:
             events = [events]
-        print(events)
         for event in events:
-            print(event)
             lambda_client = boto3.client("lambda")
-        #     response = lambda_client.invoke(
-        #         FunctionName=DISCOVERY_TRIGGER_ARN,
-        #         InvocationType="Event",
-        #         Payload=json.dumps(event),
-        #     )
+            response = lambda_client.invoke(
+                FunctionName=DISCOVERY_TRIGGER_ARN,
+                InvocationType="Event",
+                Payload=json.dumps(event),
+            )
 
-        # print(response)
+            print(response)
 
 
 @args_handler
