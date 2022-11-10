@@ -99,7 +99,7 @@ class StepFunctionStack(core.Stack):
                 stepfunctions.Map(
                     self,
                     "Run concurrent queueing to cogify queue",
-                    max_concurrency=3,
+                    max_concurrency=1,
                     items_path=stepfunctions.JsonPath.string_at("$.Payload.objects"),
                     result_path=stepfunctions.JsonPath.DISCARD,
                     output_path="$.Payload",
@@ -111,7 +111,7 @@ class StepFunctionStack(core.Stack):
                 stepfunctions.Map(
                     self,
                     "Run concurrent queueing to stac ready queue",
-                    max_concurrency=3,
+                    max_concurrency=1,
                     items_path=stepfunctions.JsonPath.string_at("$.Payload.objects"),
                     result_path=stepfunctions.JsonPath.DISCARD,
                     output_path="$.Payload",
@@ -166,7 +166,7 @@ class StepFunctionStack(core.Stack):
         cogify_workflow = stepfunctions.Map(
             self,
             "Run concurrent cogifications",
-            max_concurrency=3,
+            max_concurrency=1,
             items_path=stepfunctions.JsonPath.string_at("$"),
         ).iterator(cogify_task.next(enqueue_task))
 
@@ -209,7 +209,7 @@ class StepFunctionStack(core.Stack):
         build_and_submit_stac_items = stepfunctions.Map(
             self,
             "Submit to STAC Ingestor",
-            max_concurrency=3,
+            max_concurrency=1,
             items_path=stepfunctions.JsonPath.string_at("$"),
         ).iterator(build_stac_item_task.next(submit_stac_item_task))
 
