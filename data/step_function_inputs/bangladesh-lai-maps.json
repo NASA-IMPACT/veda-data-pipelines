@@ -1,0 +1,16 @@
+[{
+    "collection": "bangladesh-lai-maps",
+    "prefix": "EIS/COG/coastal-flooding-and-slr/",
+    "bucket": "veda-data-store-staging",
+    "filename_regex": "^MODIS_LAI_2003_BD.tif$",
+    "discovery": "s3",
+    "upload": false
+},
+{
+    "collection": "bangladesh-lai-maps",
+    "prefix": "EIS/COG/coastal-flooding-and-slr/",
+    "bucket": "veda-data-store-staging",
+    "filename_regex": "^MODIS_LAI_2018_BD.tif$",
+    "discovery": "s3",
+    "upload": false
+}]
