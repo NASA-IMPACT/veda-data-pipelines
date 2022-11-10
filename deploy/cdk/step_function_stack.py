@@ -73,9 +73,19 @@ class StepFunctionStack(core.Stack):
             lambda_stack.s3_discovery_lambda,
         )
 
+        s3_discovery_task.add_retry(
+            interval=core.Duration.seconds(2),
+            max_attempts=5,
+        )
+
         cmr_discovery_task = self._lambda_task(
             "CMR Discover Task",
             lambda_stack.cmr_discovery_lambda,
+        )
+
+        cmr_discovery_task.add_retry(
+            interval=core.Duration.seconds(2),
+            max_attempts=5,
         )
 
         enqueue_cogify_task = self._sqs_task(
