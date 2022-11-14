@@ -41,6 +41,18 @@ def handler(event, context):
 
     file_objs_size = 0
     payload = {**event, "cogify": cogify, "objects": []}
+
+    # Propagate forward optional datetime arguments
+    date_fields = {}
+    if "single_datetime" in event:
+        date_fields["single_datetime"] = event["single_datetime"]
+    if "start_datetime" in event:
+        date_fields["start_datetime"] = event["start_datetime"]
+    if "end_datetime" in event:
+        date_fields["end_datetime"] = event["end_datetime"]
+    if "datetime_range" in event:
+        date_fields["datetime_range"] = event["datetime_range"]
+
     for page in pages:
         if "Contents" not in page:
             raise Exception(f"No files found at s3://{bucket}/{prefix}")
@@ -57,6 +69,7 @@ def handler(event, context):
                 "s3_filename": f"s3://{bucket}/{filename}",
                 "upload": event.get("upload", False),
                 "properties": properties,
+                **date_fields
             }
             payload["objects"].append(file_obj)
             file_obj_size = len(json.dumps(file_obj, ensure_ascii=False).encode("utf8"))

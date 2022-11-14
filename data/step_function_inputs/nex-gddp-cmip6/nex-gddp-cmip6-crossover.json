@@ -3,8 +3,9 @@
         "collection": "nex-gddp-cmip6-crossover",
         "prefix": "crossing/",
         "bucket": "nex-gddp-cmip6-cog",
-        "filename_regex": "tas_CrossingYear_CMIP6_ssp245.tif",
+        "filename_regex": "^.*245.tif",
         "discovery": "s3",
+        "single_datetime": "2015-01-01T00:00:00Z",
         "properties": {
             "ssp": "245"
         }
@@ -13,8 +14,9 @@
         "collection": "nex-gddp-cmip6-crossover",
         "prefix": "crossing/",
         "bucket": "nex-gddp-cmip6-cog",
-        "filename_regex": "tas_CrossingYear_CMIP6_ssp585.tif",
+        "filename_regex": "^.*585.tif",
         "discovery": "s3",
+        "single_datetime": "2015-01-01T00:00:00Z",
         "properties": {
             "ssp": "585"
         }
