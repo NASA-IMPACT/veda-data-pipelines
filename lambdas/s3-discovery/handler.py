@@ -69,7 +69,7 @@ def handler(event, context):
                 "s3_filename": f"s3://{bucket}/{filename}",
                 "upload": event.get("upload", False),
                 "properties": properties,
-                **date_fields
+                **date_fields,
             }
             payload["objects"].append(file_obj)
             file_obj_size = len(json.dumps(file_obj, ensure_ascii=False).encode("utf8"))
