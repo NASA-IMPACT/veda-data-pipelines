@@ -70,3 +70,7 @@ poetry run destroy
 4. Install the requirements with `pip install -r requirements.txt`
 5. Run `cdk deploy --all`
 6. Useful: `cdk destroy --all` to destroy the infrastructure
+
+# License
+This project is licensed under **Apache 2**, see the [LICENSE](LICENSE) file for more details.
+
