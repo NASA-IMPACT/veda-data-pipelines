@@ -5,7 +5,8 @@
       "bucket": "veda-data-store-staging",
       "filename_regex": "^(.*)MODIS_LC_2001_BD.cog.tif$",
       "discovery": "s3",
-      "single_datetime": "2001-01-01T00:00:00Z",
+      "start_datetime": "2001-01-01T00:00:00Z",
+      "end_datetime": "2001-12-31T23:59:59Z",
       "upload": false
   },
   {
@@ -14,7 +15,8 @@
       "bucket": "veda-data-store-staging",
       "filename_regex": "^(.*)MODIS_LC_2020_BD.cog.tif$",
       "discovery": "s3",
-      "single_datetime": "2020-01-01T00:00:00Z",
+      "start_datetime": "2020-01-01T00:00:00Z",
+      "end_datetime": "2020-12-31T23:59:59Z",
       "upload": false
   }
 ]
