@@ -2,6 +2,8 @@
 
 This guide provides information on how VEDA runs data ingest, transformation and metadata (STAC) publication workflows via AWS Services, such as step functions.
 
+NOTE: Since collection ingest still requires calling the database from a local machine, users must add their IP to an inbound rule on the security group attached to the RDS instance.
+
 ## Data
 
 ### `collections/`
@@ -115,6 +117,12 @@ Create an input json file in the `data/step_function_inputs/` directory. For for
 ```bash
 poetry run insert-item <event-json-start-pattern>
 ```
+
+
+### Updating collection summaries
+
+
+Login in...
 
 ## Glossary
 
