@@ -1,9 +1,9 @@
 {
-    "id": "caldor-fire",
+    "id": "caldor-fire-burn-severity",
     "type": "Collection",
     "links":[
     ],
-    "title":"Caldor Fire - Temporary",
+    "title":"Caldor Fire Burn Severity",
     "extent":{
         "spatial":{
             "bbox":[
@@ -24,8 +24,8 @@
             ]
         }
     },
-    "license":"MIT",
-    "description": "Temporary Description - contains what looks like an elevation COG and a fire progression COG for the 2021 Caldor fire.",
+    "license":"CC0",
+    "description": "`.geojson` and `tif` files describing the progression and active fire behavior of the 2021 Caldor Fire in California via the algorithm detailed in https://www.nature.com/articles/s41597-022-01343-0. This includes an extra `.tif` file detailing the soil burn severity (SBS) conditions provided by the [Burned Area Emergency Response](https://burnseverity.cr.usgs.gov/baer/) team.",
     "stac_version": "1.0.0",
     "dashboard:is_periodic": false,
     "dashboard:time_density": null,
