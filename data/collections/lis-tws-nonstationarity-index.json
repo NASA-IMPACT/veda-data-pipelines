@@ -35,5 +35,5 @@
     },
     "stac_version": "1.0.0",
     "dashboard:is_periodic": false,
-    "dashboard:time_density": "none"
+    "dashboard:time_density": null
 }
