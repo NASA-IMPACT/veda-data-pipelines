@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 import pystac
 
 
-INTERVAL = Literal["month", "year"]
+INTERVAL = Literal["month", "year", "day"]
 
 
 class BaseEvent(BaseModel, frozen=True):
