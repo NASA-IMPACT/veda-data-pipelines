@@ -124,9 +124,13 @@ poetry run insert-item <event-json-start-pattern>
 
 Discovers all the files in an S3 bucket, based on the prefix and filename regex.
 
-#### 2. cmr-query
+#### 2a. cmr-query
 
 Discovers all the files in a CMR collection, based on the version, temporal, bounding box, and include. Returns objects that follow the specified criteria.
+
+#### 2b. stac-query
+
+Discovers all the files in a STAC collection, based on the version, temporal, bounding box, and include. Returns objects that follow the specified criteria.
 
 #### 3. cogify
 
