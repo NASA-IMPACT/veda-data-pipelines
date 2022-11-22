@@ -15,7 +15,7 @@ def assume_role(role_arn, session_name):
 
 def list_bucket(bucket, prefix, filename_regex):
     kwargs = {}
-    if role_arn := os.environ.get("EXTERNAL_ROLE_ARN"):
+    if role_arn := os.environ.get("DATA_MANAGEMENT_ROLE_ARN"):
         creds = assume_role(role_arn, "veda-data-pipelines_s3-discovery")
         kwargs = {
             "aws_access_key_id": creds["AccessKeyId"],

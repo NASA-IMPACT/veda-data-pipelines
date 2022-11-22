@@ -41,7 +41,7 @@ else
         stacIngestorUrl=$devStacIngestorUrl
     fi
 
-    export EXTERNAL_ROLE_ARN="arn:aws:iam::xxxxxx:role/xxxxx"
+    export DATA_MANAGEMENT_ROLE_ARN="arn:aws:iam::xxxxxx:role/xxxxx"
     export EARTHDATA_USERNAME=XXXX
     export EARTHDATA_PASSWORD=XXXX
 

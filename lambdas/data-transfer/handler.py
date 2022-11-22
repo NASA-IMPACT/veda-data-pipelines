@@ -19,7 +19,7 @@ def handler(event, context):
     TARGET_BUCKET = os.environ["BUCKET"]
 
     kwargs = {}
-    if role_arn := os.environ.get("EXTERNAL_ROLE_ARN"):
+    if role_arn := os.environ.get("DATA_MANAGEMENT_ROLE_ARN"):
         creds = assume_role(role_arn, "veda-data-pipelines_data-transfer")
         kwargs = {
             "aws_access_key_id": creds["AccessKeyId"],

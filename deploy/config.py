@@ -21,4 +21,4 @@ STAC_API_ENDPOINT='https://az2kiic44c.execute-api.us-west-2.amazonaws.com/dev/st
 STAC_PROVIDER='NASA_MAAP'
 
 # This should throw if it is not provided
-EXTERNAL_ROLE_ARN = os.environ["EXTERNAL_ROLE_ARN"]
+DATA_MANAGEMENT_ROLE_ARN = os.environ.get("DATA_MANAGEMENT_ROLE_ARN")

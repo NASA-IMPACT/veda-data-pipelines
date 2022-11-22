@@ -16,16 +16,16 @@ class LambdaStack(core.Stack):
         self.construct_id = construct_id
 
         # external role
-        external_role = iam.Role(
+        data_management_role = iam.Role(
             self,
             f"delta-backend-staging-{config.ENV}-external-role",
             role_name=f"delta-backend-staging-{config.ENV}-external-role",
             assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
             description="Role to write to external bucket",
         )
-        external_role.add_to_policy(
+        data_management_role.add_to_policy(
             iam.PolicyStatement(
-                resources=[config.EXTERNAL_ROLE_ARN],
+                resources=[config.DATA_MANAGEMENT_ROLE_ARN],
                 actions=["sts:AssumeRole"],
             )
         )
@@ -35,10 +35,10 @@ class LambdaStack(core.Stack):
         self.s3_discovery_lambda = self._lambda(
             f"{construct_id}-s3-discovery-fn",
             "../lambdas/s3-discovery",
-            role=external_role,
+            role=data_management_role,
             env={
                 "BUCKET": config.MCP_BUCKETS.get(config.ENV, ""),
-                "EXTERNAL_ROLE_ARN": config.EXTERNAL_ROLE_ARN,
+                "DATA_MANAGEMENT_ROLE_ARN": config.DATA_MANAGEMENT_ROLE_ARN,
             },
         )
 
@@ -82,9 +82,9 @@ class LambdaStack(core.Stack):
             f"{construct_id}-build-stac-fn",
             "../lambdas/build-stac",
             memory_size=8000,
-            role=external_role,
+            role=data_management_role,
             env={
-                "EXTERNAL_ROLE_ARN": config.EXTERNAL_ROLE_ARN,
+                "DATA_MANAGEMENT_ROLE_ARN": config.DATA_MANAGEMENT_ROLE_ARN,
             },
         )
 
@@ -95,7 +95,7 @@ class LambdaStack(core.Stack):
             memory_size=8000,
             env={
                 "COGNITO_APP_SECRET": config.COGNITO_APP_SECRET,
-                "STAC_INGESTOR_API_URL": config.STAC_INGESTOR_URL,
+                "STAC_INGESTOR_URL": config.STAC_INGESTOR_URL,
             },
         )
 
@@ -107,9 +107,9 @@ class LambdaStack(core.Stack):
                 "BUCKET": config.MCP_BUCKETS.get(
                     config.ENV, config.MCP_BUCKETS.get("stage")
                 ),
-                "EXTERNAL_ROLE_ARN": config.EXTERNAL_ROLE_ARN,
+                "DATA_MANAGEMENT_ROLE_ARN": config.DATA_MANAGEMENT_ROLE_ARN,
             },
-            role=external_role,
+            role=data_management_role,
         )
 
         ndjson_bucket = self._bucket(f"{construct_id}-ndjson-bucket")
