@@ -45,7 +45,6 @@ class IngestionApi:
     @classmethod
     def from_veda_auth_secret(cls, *, secret_id: str, base_url: str) -> "IngestionApi":
         cognito_details = cls._get_cognito_service_details(secret_id)
-        print(cognito_details)
         credentials = cls._get_app_credentials(**cognito_details)
         return cls(token=credentials["access_token"], base_url=base_url)
 
@@ -301,7 +300,7 @@ if __name__ == "__main__":
             "https://stac-extensions.github.io/projection/v1.0.0/schema.json",
             "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
             ],
-            "collection": "ABLVIS1B"
+            "collection": "ABLVIS1B.v001"
         }
     }
     handler(sample_event, {})
