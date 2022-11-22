@@ -1,5 +1,5 @@
 import re
-
+import json
 import datetime as dt
 
 from cmr import GranuleQuery
@@ -17,7 +17,7 @@ def handler(event, context):
     enddate = dt.datetime.strptime(temporal[1], "%Y-%m-%dT%H:%M:%SZ")
     print(f"Querying for {collection} granules from {startdate} to {enddate}")
 
-    api = GranuleQuery()
+    api = GranuleQuery(mode="https://cmr.maap-project.org/search/")
     granules = (
         api.short_name(collection)
         .version(version)
@@ -26,43 +26,39 @@ def handler(event, context):
         .get_all()
     )
 
-    urls = []
+    granules_to_insert = []
     for granule in granules:
         for link in granule["links"]:
             if event.get("mode") == "stac":
                 if link["href"][-9:] == "stac.json" and link["href"][0:5] == "https":
-                    urls.append(link)
+                    granules_to_insert.append(link)
             else:
-                if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/data#":
+                if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/s3#":
                     href = link["href"]
                     file_obj = {
                         "collection": collection,
-                        "href": href,
+                        "s3_filename": href,
                         "granule_id": granule["id"],
                         "id": granule["id"],
                         "mode": event.get("mode"),
-                        # "start_datetime": granule["time_start"],
-                        # "end_datetime": granule["time_end"]
                     }
-                    if event["include"]:
+                    if event.get("include"):
                         pattern = re.compile(event["include"])
                         matched = pattern.match(href)
                         if matched:
-                            urls.append(file_obj)
+                            granules_to_insert.append(file_obj)
                     else:
-                        urls.append(file_obj)
+                        granules_to_insert.append(file_obj)
 
-    print(f"Returning {len(urls)} urls")
-    return {"cogify": event.get("cogify", False), "objects": urls}
+    print(f"Returning {len(granules_to_insert)} granules to insert")
+    print(json.dumps(granules_to_insert[0], indent=2))
+    return {"cogify": event.get("cogify", False), "objects": granules_to_insert}
 
 
 if __name__ == "__main__":
     sample_event = {
-        # "mode": "stac",
-        "collection": "IS2SITMOGR4",
-        "version": "1",
-        "include": "^.+nc$",
-        "temporal": ["2018-01-21T00:00:00Z", "2018-04-20T23:59:59Z"],
-        "bounding_box": [-180, -90, 180, 90],
+        "mode": "cmr",
+        "collection": "ABLVIS1B",
+        "version": "001"
     }
     handler(sample_event, {})

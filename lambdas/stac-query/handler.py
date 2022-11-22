@@ -46,9 +46,6 @@ if __name__ == "__main__":
     sample_event = {
         "mode": "stac",
         "collection": "ABLVIS1B.v001",
-        "version": "001",
-        # "include": "^.+nc$",
-        # "temporal": ["2018-01-21T00:00:00Z", "2018-04-20T23:59:59Z"],
-        # "bounding_box": [-180, -90, 180, 90],
+        "version": "001"
     }
     handler(sample_event, {})

@@ -56,7 +56,7 @@ def create_item(
         )
 
     with rasterio.Env(
-        session=rasterio_kwargs["session"],
+        session=rasterio_kwargs.get("session"),
         options={
             **rasterio_kwargs,
             "GDAL_MAX_DATASET_POOL_SIZE": 1024,
@@ -112,7 +112,7 @@ def generate_stac_cmrevent(item: events.CmrEvent) -> pystac.Item:
     """
     Generate STAC Item from CMR granule
     """
-    cmr_json = GranuleQuery().concept_id(item.granule_id).get(1)[0]
+    cmr_json = GranuleQuery(mode="https://cmr.maap-project.org/search/").concept_id(item.granule_id).get(1)[0]
 
     return create_item(
         properties=cmr_json,
