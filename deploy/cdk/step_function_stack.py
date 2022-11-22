@@ -63,8 +63,13 @@ class StepFunctionStack(core.Stack):
         )
 
         cmr_discovery_task = self._lambda_task(
-            "CMR Discover Task",
+            "CMR Discovery Task",
             lambda_stack.cmr_discovery_lambda,
+        )
+
+        stac_discovery_task = self._lambda_task(
+            "STAC Discovery Task",
+            lambda_stack.stac_discovery_lambda,
         )
 
         enqueue_cogify_task = self._sqs_task(
@@ -107,6 +112,10 @@ class StepFunctionStack(core.Stack):
             .when(
                 stepfunctions.Condition.string_equals("$.discovery", "cmr"),
                 cmr_discovery_task.next(maybe_cogify),
+            )
+            .when(
+                stepfunctions.Condition.string_equals("$.discovery", "stac"),
+                stac_discovery_task.next(maybe_cogify),
             )
             .otherwise(stepfunctions.Fail(self, "Discovery Type not supported"))
         )

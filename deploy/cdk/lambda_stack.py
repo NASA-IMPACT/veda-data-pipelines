@@ -47,6 +47,15 @@ class LambdaStack(core.Stack):
             f"{construct_id}-cmr-discovery-fn", "../lambdas/cmr-query"
         )
 
+        # Discovers files from stac
+        self.stac_discovery_lambda = self._lambda(
+            f"{construct_id}-stac-discovery-fn", "../lambdas/stac-query",
+            env={
+                "STAC_API_ENDPOINT": config.STAC_API_ENDPOINT,
+                "STAC_PROVIDER": config.STAC_PROVIDER
+            }
+        )
+
         # Cogify files
         self.cogify_lambda = self._lambda(
             f"{construct_id}-cogify-fn",

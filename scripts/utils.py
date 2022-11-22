@@ -4,7 +4,7 @@ import glob
 import os
 import base64
 import json
-
+import requests
 import boto3
 
 DATA_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "data")
@@ -26,11 +26,27 @@ def arguments():
         return
     return argv[1:]
 
+def cmr_records(collection):
+    provider = 'NASA_MAAP'
+    CMR_STAC_ENDPOINT = 'https://az2kiic44c.execute-api.us-west-2.amazonaws.com/dev/stac'
+    response = requests.get(f"{CMR_STAC_ENDPOINT}/{provider}/collections/{collection}")
+    print(response.status_code)
+    filename = f"../data/collections/{collection}.json"
+    with open(filename, "w+") as f:
+        json.dump(json.loads(response.text), f, indent=2)
+        f.close()
+    print (f"Wrote to file {filename}")
+    return filename
 
 def data_files(data, data_path):
     files = []
     for item in data:
         files.extend(glob.glob(os.path.join(data_path, f"{item}*.json")))
+    # If there are no files already in existence, check CMR for the data
+    if len(files) == 0:
+        for item in data:
+            filename = cmr_records(item)
+            files.append(filename)
     return files
 
 

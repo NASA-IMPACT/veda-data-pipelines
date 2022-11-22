@@ -56,12 +56,20 @@ def handler(event: Dict[str, Any], context) -> Union[S3LinkOutput, StacItemOutpu
 
 
 if __name__ == "__main__":
+    # sample_event = {
+    #     "collection": "nightlights-hd-monthly",
+    #     "s3_filename": "s3://climatedashboard-data/delivery/BMHD_Maria_Stages/BeforeMaria_Stage0_2017-07-21_2017-09-19.tif",
+    #     "granule_id": None,
+    #     "datetime_range": None,
+    #     "start_datetime": None,
+    #     "end_datetime": None,
+    # }
     sample_event = {
-        "collection": "nightlights-hd-monthly",
-        "s3_filename": "s3://climatedashboard-data/delivery/BMHD_Maria_Stages/BeforeMaria_Stage0_2017-07-21_2017-09-19.tif",
-        "granule_id": None,
-        "datetime_range": None,
-        "start_datetime": None,
-        "end_datetime": None,
-    }
+        "mode": "stac",
+        "queue_messages": "true",
+        "collection": "ABLVIS1B.v001",
+        "version": "001",
+        "discovery": "stac",
+        "s3_filename": "s3://nasa-maap-data-store/file-staging/nasa-map/ABLVIS1B___001/LVIS1B_ABoVE2017_0629_R1803_056233.h5"
+    }  
     print(json.dumps(handler(sample_event, {}), indent=2))
