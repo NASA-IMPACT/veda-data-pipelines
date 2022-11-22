@@ -1,0 +1,72 @@
+{
+  "id": "ABLVIS1B.v001",
+  "stac_version": "1.0.0",
+  "license": "not-provided",
+  "title": "ABoVE LVIS L1B Geolocated Return Energy Waveforms V001",
+  "type": "Collection",
+  "description": "This data set contains laser altimetry return energy waveform measurements over Alaska and Western Canada taken from the NASA Land, Vegetation, and Ice Sensor (LVIS). The data were collected as part of NASA's Terrestrial Ecology Program campaign, the Arctic-Boreal Vulnerability Experiment (ABoVE).",
+  "links": [
+    {
+      "rel": "self",
+      "href": "http://az2kiic44c.execute-api.us-west-2.amazonaws.com/stac/NASA_MAAP/collections/ABLVIS1B.v001",
+      "title": "Info about this collection",
+      "type": "application/json"
+    },
+    {
+      "rel": "root",
+      "href": "http://az2kiic44c.execute-api.us-west-2.amazonaws.com/stac",
+      "title": "Root catalog",
+      "type": "application/json"
+    },
+    {
+      "rel": "parent",
+      "href": "http://az2kiic44c.execute-api.us-west-2.amazonaws.com/stac/NASA_MAAP",
+      "title": "Parent catalog",
+      "type": "application/json"
+    },
+    {
+      "rel": "items",
+      "href": "http://az2kiic44c.execute-api.us-west-2.amazonaws.com/stac/NASA_MAAP/collections/ABLVIS1B.v001/items",
+      "title": "Granules in this collection",
+      "type": "application/json"
+    },
+    {
+      "rel": "about",
+      "href": "https://cmr.maap-project.org/search/concepts/C1200110748-NASA_MAAP.html",
+      "title": "HTML metadata for collection",
+      "type": "text/html"
+    },
+    {
+      "rel": "via",
+      "href": "https://cmr.maap-project.org/search/concepts/C1200110748-NASA_MAAP.json",
+      "title": "CMR JSON metadata for collection",
+      "type": "application/json"
+    },
+    {
+      "rel": "child",
+      "href": "http://az2kiic44c.execute-api.us-west-2.amazonaws.com/stac/NASA_MAAP/collections/ABLVIS1B.v001/2017",
+      "title": "2017 catalog",
+      "type": "application/json"
+    }
+  ],
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [
+          -158,
+          48,
+          -104,
+          72
+        ]
+      ]
+    },
+    "temporal": {
+      "interval": [
+        [
+          "2017-06-29T00:00:00.000Z",
+          "2017-07-17T23:59:59.000Z"
+        ]
+      ]
+    }
+  }
+}
