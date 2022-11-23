@@ -1,7 +1,0 @@
-{
-    "mode": "stac",
-    "queue_messages": "true",
-    "collection": "ABLVIS1B.v001",
-    "version": "001",
-    "discovery": "cmr"
-}

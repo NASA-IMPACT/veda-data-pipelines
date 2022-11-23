@@ -51,14 +51,14 @@ def handler(event, context):
                         granules_to_insert.append(file_obj)
 
     print(f"Returning {len(granules_to_insert)} granules to insert")
-    print(json.dumps(granules_to_insert[0], indent=2))
     return {"cogify": event.get("cogify", False), "objects": granules_to_insert}
 
 
 if __name__ == "__main__":
     sample_event = {
-        "mode": "cmr",
+        "queue_messages": "true",
         "collection": "ABLVIS1B",
-        "version": "001"
+        "version": "001",
+        "discovery": "cmr"
     }
     handler(sample_event, {})
