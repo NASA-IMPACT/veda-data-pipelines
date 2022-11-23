@@ -42,6 +42,9 @@ def handler(event, context):
                         "id": granule["id"],
                         "mode": event.get("mode"),
                     }
+                    for key, value in event.items():
+                        if 'asset' in key:
+                            file_obj[key] = value
                     if event.get("include"):
                         pattern = re.compile(event["include"])
                         matched = pattern.match(href)
@@ -50,15 +53,19 @@ def handler(event, context):
                     else:
                         granules_to_insert.append(file_obj)
 
+
     print(f"Returning {len(granules_to_insert)} granules to insert")
     return {"cogify": event.get("cogify", False), "objects": granules_to_insert}
 
 
 if __name__ == "__main__":
     sample_event = {
-        "queue_messages": "true",
         "collection": "ABLVIS1B",
         "version": "001",
-        "discovery": "cmr"
+        "discovery": "cmr",
+        "temporal": ["2017-01-01T00:00:00Z", "2017-07-01T23:59:59Z"],
+        "asset_name": "data",
+        "asset_roles": ["data"],
+        "asset_media_type": "application/x-hdf5"
     }
     handler(sample_event, {})
