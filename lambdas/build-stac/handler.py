@@ -59,6 +59,9 @@ if __name__ == "__main__":
         "collection": "ABLVIS1B",
         "s3_filename": "s3://nasa-maap-data-store/file-staging/nasa-map/ABLVIS1B___001/LVIS1B_ABoVE2017_0629_R1803_056233.h5",
         "granule_id": "G1200116875-NASA_MAAP",
+        "asset_name": "data",
+        "asset_roles": ["data"],
+        "asset_media_type": "application/x-hdf5",
         "id": "G1200116875-NASA_MAAP",
         "mode": "cmr"
     }  

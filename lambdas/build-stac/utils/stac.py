@@ -36,7 +36,7 @@ def create_item(
             input_datetime=datetime,
             properties=properties,
             with_proj=True,
-            with_raster=True,
+            #with_raster=True,
             assets=assets,
             asset_name=asset_name or "cog_default",
             asset_roles=asset_roles or ["data", "layer"],
@@ -113,6 +113,7 @@ def generate_stac_cmrevent(item: events.CmrEvent) -> pystac.Item:
     Generate STAC Item from CMR granule
     """
     cmr_json = GranuleQuery(mode="https://cmr.maap-project.org/search/").concept_id(item.granule_id).get(1)[0]
+    cmr_json['concept_id'] = cmr_json.pop('id')
 
     return create_item(
         properties=cmr_json,
