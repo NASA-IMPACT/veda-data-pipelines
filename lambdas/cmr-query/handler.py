@@ -60,10 +60,10 @@ def handler(event, context):
 
 if __name__ == "__main__":
     sample_event = {
-        "collection": "ABLVIS1B",
-        "version": "001",
+        "collection": "GEDI_L4A_AGB_Density_V2_1_2056",
+        "version": "2.1",
         "discovery": "cmr",
-        "temporal": ["2017-01-01T00:00:00Z", "2017-07-01T23:59:59Z"],
+        "temporal": ["2020-01-01T00:00:00Z", "2020-01-31T23:59:59Z"],
         "asset_name": "data",
         "asset_roles": ["data"],
         "asset_media_type": "application/x-hdf5"

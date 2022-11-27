@@ -33,7 +33,9 @@ def cmr_records(collection):
     print(response.status_code)
     filename = f"../data/collections/{collection}.json"
     with open(filename, "w+") as f:
-        json.dump(json.loads(response.text), f, indent=2)
+        data = json.loads(response.text)
+        del data['links']
+        json.dump(data, f, indent=2)
         f.close()
     print (f"Wrote to file {filename}")
     return filename
