@@ -27,7 +27,7 @@ def arguments():
     return argv[1:]
 
 def cmr_records(collection):
-    provider = 'NASA_MAAP'
+    provider = 'ESA_MAAP'
     CMR_STAC_ENDPOINT = 'https://az2kiic44c.execute-api.us-west-2.amazonaws.com/dev/stac'
     response = requests.get(f"{CMR_STAC_ENDPOINT}/{provider}/collections/{collection}")
     print(response.status_code)

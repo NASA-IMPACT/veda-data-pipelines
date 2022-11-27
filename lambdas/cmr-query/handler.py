@@ -20,9 +20,9 @@ def handler(event, context):
     api = GranuleQuery(mode="https://cmr.maap-project.org/search/")
     granules = (
         api.short_name(collection)
-        .version(version)
-        .temporal(startdate, enddate)
-        .bounding_box(*event.get("bounding_box", [-180, -90, 180, 90]))
+        #.version(version)
+        #.temporal(startdate, enddate)
+        #.bounding_box(*event.get("bounding_box", [-180, -90, 180, 90]))
         .get_all()
     )
 
@@ -33,7 +33,7 @@ def handler(event, context):
                 if link["href"][-9:] == "stac.json" and link["href"][0:5] == "https":
                     granules_to_insert.append(link)
             else:
-                if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/s3#":
+                if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/s3#" or link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/data#":
                     href = link["href"]
                     file_obj = {
                         "collection": collection,
@@ -55,17 +55,20 @@ def handler(event, context):
 
 
     print(f"Returning {len(granules_to_insert)} granules to insert")
+    with open('sample-sf.json', 'w+') as f:
+        json.dump({"cogify": event.get("cogify", False), "objects": granules_to_insert}, f)
+        f.close()
     return {"cogify": event.get("cogify", False), "objects": granules_to_insert}
 
 
 if __name__ == "__main__":
     sample_event = {
-        "collection": "GEDI_L4A_AGB_Density_V2_1_2056",
-        "version": "2.1",
+        "queue_messages": "true",
+        "collection": "AFRISAR_DLR",
+        "version": "1",
         "discovery": "cmr",
-        "temporal": ["2020-01-01T00:00:00Z", "2020-01-31T23:59:59Z"],
         "asset_name": "data",
         "asset_roles": ["data"],
-        "asset_media_type": "application/x-hdf5"
+        "asset_media_type": "image/tiff"
     }
     handler(sample_event, {})
