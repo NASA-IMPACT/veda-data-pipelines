@@ -162,7 +162,7 @@ def to_cog(upload, **config):
     }
     if upload:
         s3location = upload_file(outfilename, config["collection"])
-        return_obj["s3_filename"] = s3location
+        return_obj["remote_fileurl"] = s3location
 
     return return_obj
 

@@ -10,7 +10,7 @@ INTERVAL = Literal["month", "year"]
 
 class BaseEvent(BaseModel, frozen=True):
     collection: str
-    s3_filename: str
+    remote_fileurl: str
 
     asset_name: Optional[str] = None
     asset_roles: Optional[List[str]] = None

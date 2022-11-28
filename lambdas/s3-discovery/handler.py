@@ -55,7 +55,7 @@ def handler(event, context):
             {
                 **event,
                 "collection": collection,
-                "s3_filename": f"s3://{bucket}/{filename}",
+                "remote_fileurl": f"s3://{bucket}/{filename}",
                 "upload": event.get("upload", False),
             }
         )

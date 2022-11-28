@@ -33,7 +33,7 @@ def handler(event, context):
         if not object.get("upload"):
             continue
 
-        url = urllib.parse.urlparse(object["s3_filename"])
+        url = urllib.parse.urlparse(object["remote_fileurl"])
         src_bucket = url.hostname
         src_key = url.path.strip("/")
         filename = src_key.split("/")[-1]
@@ -58,6 +58,6 @@ def handler(event, context):
                 )
                 raise
 
-        object["s3_filename"] = target_url
+        object["remote_fileurl"] = target_url
 
     return event

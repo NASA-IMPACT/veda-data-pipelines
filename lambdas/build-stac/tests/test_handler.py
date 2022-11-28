@@ -43,7 +43,7 @@ def test_routing_regex_event():
     """
     regex_event = {
         "collection": "test-collection",
-        "s3_filename": "s3://test-bucket/delivery/BMHD_Maria_Stages/70001_BeforeMaria_Stage0_2017-07-21.tif",
+        "remote_fileurl": "s3://test-bucket/delivery/BMHD_Maria_Stages/70001_BeforeMaria_Stage0_2017-07-21.tif",
         "granule_id": None,
         "datetime_range": None,
         "start_datetime": None,
@@ -71,7 +71,7 @@ def test_routing_cmr_event():
     """
     cmr_event = {
         "collection": "test-collection",
-        "s3_filename": "s3://test-bucket/delivery/BMHD_Maria_Stages/70001_BeforeMaria_Stage0_2017-07-21.tif",
+        "remote_fileurl": "s3://test-bucket/delivery/BMHD_Maria_Stages/70001_BeforeMaria_Stage0_2017-07-21.tif",
         "granule_id": "test-granule",
     }
 

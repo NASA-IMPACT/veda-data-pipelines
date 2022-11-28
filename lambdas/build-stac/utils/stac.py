@@ -29,6 +29,7 @@ def create_item(
     """
 
     def create_stac_item():
+        print(cog_url)
         return stac.create_stac_item(
             id=Path(cog_url).stem,
             source=cog_url,
@@ -52,7 +53,7 @@ def create_item(
         rasterio_kwargs["session"] = AWSSession(
             aws_access_key_id=creds["AccessKeyId"],
             aws_secret_access_key=creds["SecretAccessKey"],
-            aws_session_token=creds["SessionToken"],
+            aws_session_token=creds['SessionToken'],
         )
 
     with rasterio.Env(
@@ -88,7 +89,7 @@ def generate_stac_regexevent(item: events.RegexEvent) -> pystac.Item:
         single_datetime = single_datetime
     else:
         start_datetime, end_datetime, single_datetime = regex.extract_dates(
-            item.s3_filename, item.datetime_range
+            item.remote_fileurl, item.datetime_range
         )
     properties = item.properties or {}
     if start_datetime and end_datetime:
@@ -99,7 +100,7 @@ def generate_stac_regexevent(item: events.RegexEvent) -> pystac.Item:
     return create_item(
         properties=properties,
         datetime=single_datetime,
-        cog_url=item.s3_filename,
+        cog_url=item.remote_fileurl,
         collection=item.collection,
         asset_name=item.asset_name,
         asset_roles=item.asset_roles,
@@ -118,7 +119,7 @@ def generate_stac_cmrevent(item: events.CmrEvent) -> pystac.Item:
     return create_item(
         properties=cmr_json,
         datetime=str_to_datetime(cmr_json["time_start"]),
-        cog_url=item.s3_filename,
+        cog_url=item.remote_fileurl,
         collection=item.collection,
         asset_name=item.asset_name,
         asset_roles=item.asset_roles,

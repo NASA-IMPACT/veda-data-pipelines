@@ -37,7 +37,7 @@ Example Input:
 Example Output
 ```
 {
-  "s3_filename": xxx,
+  "remote_fileurl": xxx,
   "filename": xxx,
   "granule_id": xxx,
   "collection": xxx,

@@ -20,9 +20,9 @@ def handler(event, context):
     api = GranuleQuery(mode="https://cmr.maap-project.org/search/")
     granules = (
         api.short_name(collection)
-        #.version(version)
-        #.temporal(startdate, enddate)
-        #.bounding_box(*event.get("bounding_box", [-180, -90, 180, 90]))
+        .version(version)
+        .temporal(startdate, enddate)
+        .bounding_box(*event.get("bounding_box", [-180, -90, 180, 90]))
         .get_all()
     )
 
@@ -37,7 +37,7 @@ def handler(event, context):
                     href = link["href"]
                     file_obj = {
                         "collection": collection,
-                        "s3_filename": href,
+                        "remote_fileurl": href,
                         "granule_id": granule["id"],
                         "id": granule["id"],
                         "mode": event.get("mode"),
@@ -58,6 +58,7 @@ def handler(event, context):
     with open('sample-sf.json', 'w+') as f:
         json.dump({"cogify": event.get("cogify", False), "objects": granules_to_insert}, f)
         f.close()
+    print(json.dumps(granules_to_insert[0], indent=2))
     return {"cogify": event.get("cogify", False), "objects": granules_to_insert}
 
 

@@ -26,13 +26,13 @@ def handler(event: Dict[str, Any], context) -> Union[S3LinkOutput, StacItemOutpu
         Format option 1 (with Granule ID defined to retrieve all metadata from CMR):
         {
             "collection": "OMDOAO3e",
-            "s3_filename": "s3://climatedashboard-data/OMDOAO3e/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5.tif",
+            "remote_fileurl": "s3://climatedashboard-data/OMDOAO3e/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5.tif",
             "granule_id": "G2205784904-GES_DISC",
         }
         Format option 2 (with regex provided to parse datetime from the filename:
         {
             "collection": "OMDOAO3e",
-            "s3_filename": "s3://climatedashboard-data/OMSO2PCA/OMSO2PCA_LUT_SCD_2005.tif",
+            "remote_fileurl": "s3://climatedashboard-data/OMSO2PCA/OMSO2PCA_LUT_SCD_2005.tif",
         }
 
     """
@@ -56,13 +56,15 @@ def handler(event: Dict[str, Any], context) -> Union[S3LinkOutput, StacItemOutpu
 
 if __name__ == "__main__":
     sample_event = {
-        "collection": "ABLVIS1B",
-        "s3_filename": "s3://nasa-maap-data-store/file-staging/nasa-map/ABLVIS1B___001/LVIS1B_ABoVE2017_0629_R1803_056233.h5",
-        "granule_id": "G1200116875-NASA_MAAP",
+        "collection": "AFRISAR_DLR",
+        "remote_fileurl": "https://bmap-catalogue-data.oss.eu-west-0.prod-cloud-ocb.orange-business.com/Campaign_data/afrisar_dlr/afrisar_dlr_Mo1-0_SLC_HH.tiff",
+        "granule_id": "G1200115948-ESA_MAAP",
+        "id": "G1200115948-ESA_MAAP",
+        "mode": None,
         "asset_name": "data",
-        "asset_roles": ["data"],
-        "asset_media_type": "application/x-hdf5",
-        "id": "G1200116875-NASA_MAAP",
-        "mode": "cmr"
-    }  
+        "asset_roles": [
+            "data"
+        ],
+        "asset_media_type": "image/tiff"
+    }
     print(json.dumps(handler(sample_event, {}), indent=2))
