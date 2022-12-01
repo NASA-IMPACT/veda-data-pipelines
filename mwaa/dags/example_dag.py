@@ -5,6 +5,7 @@ import pendulum
 import logging
 import time
 
+
 def log_task(text:str):
     logging.info(text)
 
@@ -30,7 +31,7 @@ def push_to_cmr_task(text):
     log_task(text)
 
 with DAG(
-    dag_id="maap_flow",
+    dag_id="example_etl_flow",
     start_date= pendulum.today('UTC').add(days=-1),
     schedule_interval=None
 ) as dag:
