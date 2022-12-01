@@ -5,47 +5,49 @@ import json
 from uuid import uuid4
 from airflow.models.variable import Variable
 
-def assume_role(role_arn, session_name="veda-data-pipelines_s3-discovery"):
 
+def assume_role(role_arn, session_name="veda-data-pipelines_s3-discovery"):
     sts = boto3.client("sts")
-    creds = sts.assume_role(
+    credentials = sts.assume_role(
         RoleArn=role_arn,
         RoleSessionName=session_name,
     )
-    return  {
-            "aws_access_key_id": creds["AccessKeyId"],
-            "aws_secret_access_key": creds.get("SecretAccessKey"),
-            "aws_session_token": creds.get("SessionToken"),
-        }
-def get_s3_resp_iterator(bucket_name, prefix, s3_client, pagination_config={'page_size': 1000}):
+    creds = credentials['Credentials']
+    return {
+        "aws_access_key_id": creds["AccessKeyId"],
+        "aws_secret_access_key": creds.get("SecretAccessKey"),
+        "aws_session_token": creds.get("SessionToken"),
+    }
+
+
+def get_s3_resp_iterator(bucket_name, prefix, s3_client, page_size=1000):
     """
     Returns an s3 paginator.
     :param bucket_name: The bucket.
     :param prefix: The path for the s3 granules.
     :param s3_client: Initialized boto3 S3 client
-    :param pagination_config: Configuration for s3 pagination
+    :param page_size: Number of records returned
     """
     s3_paginator = s3_client.get_paginator('list_objects')
     return s3_paginator.paginate(
         Bucket=bucket_name,
         Prefix=prefix,
-        PaginationConfig=pagination_config
+        PaginationConfig={'page_size': page_size}
     )
 
+
 def discover_from_s3(response_iterator):
-        """
+    """
         Fetch the link of the granules in the host url_path
         :return: Returns a dictionary containing the path, etag, and the last modified date of a granule
         
         """
-        for page in response_iterator:
-            for s3_object in page.get('Contents', {}):
-                yield s3_object
+    for page in response_iterator:
+        for s3_object in page.get('Contents', {}):
+            yield s3_object
 
 
-
-def s3_discovery_handler(event, chunk_size = 2800):
-    return {'collection': 'nex-gddp-cmip6-monthly-p10-hurs', 'prefix': 'monthly/CMIP6_ensemble_p10/hurs/', 'bucket': 'nex-gddp-cmip6-cog', 'filename_regex': '^.*.tif', 'discovery': 's3', 'datetime_range': 'month', 'cogify': False, 'payload': 's3://veda-uah-dev-impact-mwaa-853558080719/events/s3_discovery_handler_d3fe149c-f5e3-408b-a415-cc09fb376825.json'}
+def s3_discovery_handler(event, chunk_size=2800):
     bucket = event.get("bucket")
     prefix = event.get("prefix", "")
     filename_regex = event.get("filename_regex", None)
@@ -63,7 +65,7 @@ def s3_discovery_handler(event, chunk_size = 2800):
         date_fields["end_datetime"] = event["end_datetime"]
     if "datetime_range" in event:
         date_fields["datetime_range"] = event["datetime_range"]
-    
+
     role_arn = Variable.get('ASSUME_ROLE_ARN', default_var=False)
     kwargs = assume_role(role_arn=role_arn) if role_arn else {}
     s3client = boto3.client("s3", **kwargs)
@@ -79,12 +81,12 @@ def s3_discovery_handler(event, chunk_size = 2800):
         if filename_regex and not re.match(filename_regex, filename):
             continue
         file_obj = {
-                "collection": collection,
-                "s3_filename": f"s3://{bucket}/{filename}",
-                "upload": event.get("upload", False),
-                "properties": properties,
-                **date_fields
-            }
+            "collection": collection,
+            "s3_filename": f"s3://{bucket}/{filename}",
+            "upload": event.get("upload", False),
+            "properties": properties,
+            **date_fields
+        }
 
         payload["objects"].append(file_obj)
         if records == chunk_size:
@@ -96,7 +98,7 @@ def s3_discovery_handler(event, chunk_size = 2800):
             discovered += len(payload["objects"])
             payload["objects"] = []
         records += 1
-    
+
     if payload["objects"]:
         output_key = f"{key}/s3_discover_output_{uuid4()}.json"
         discovered += len(payload["objects"])
@@ -104,5 +106,4 @@ def s3_discovery_handler(event, chunk_size = 2800):
             file.write(json.dumps(payload))
         out_keys.append(output_key)
 
-    
     return {**event, 'payload': out_keys, 'discovered': discovered}

@@ -28,3 +28,4 @@ $bash deploy.sh .env deploy
   * Can be tested locally
   * No need to worry about scalability 
   * No need to create cloudwatch rules and schedules (already included)
+  * You can re-run only the failed tasks 
