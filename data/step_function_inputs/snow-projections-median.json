@@ -1,0 +1,74 @@
+[
+    {
+        "collection": "snow-projections-median",
+        "prefix": "EIS/snowProjections/",
+        "bucket": "veda-data-store-staging",
+        "filename_regex": "^(.*)2011(.*).tif$",
+        "discovery": "s3",
+        "upload": false
+    },
+    {
+        "collection": "snow-projections-median",
+        "prefix": "EIS/snowProjections/",
+        "bucket": "veda-data-store-staging",
+        "filename_regex": "^(.*)ssp245(.*)2017(.*)_median.cog.tif$",
+        "discovery": "s3",
+        "upload": false
+    },
+    {
+        "collection": "snow-projections-median",
+        "prefix": "EIS/snowProjections/",
+        "bucket": "veda-data-store-staging",
+        "filename_regex": "^(.*)ssp585(.*)2017(.*)_median.cog.tif$",
+        "discovery": "s3",
+        "upload": false
+    },
+    {
+        "collection": "snow-projections-median",
+        "prefix": "EIS/snowProjections/",
+        "bucket": "veda-data-store-staging",
+        "filename_regex": "^(.*)ssp245(.*)2037(.*)_median.cog.tif$",
+        "discovery": "s3",
+        "upload": false
+    },
+    {
+        "collection": "snow-projections-median",
+        "prefix": "EIS/snowProjections/",
+        "bucket": "veda-data-store-staging",
+        "filename_regex": "^(.*)ssp585(.*)2037(.*)_median.cog.tif$",
+        "discovery": "s3",
+        "upload": false
+    },
+    {
+        "collection": "snow-projections-median",
+        "prefix": "EIS/snowProjections/",
+        "bucket": "veda-data-store-staging",
+        "filename_regex": "^(.*)ssp245(.*)2057(.*)_median.cog.tif$",
+        "discovery": "s3",
+        "upload": false
+    },
+    {
+        "collection": "snow-projections-median",
+        "prefix": "EIS/snowProjections/",
+        "bucket": "veda-data-store-staging",
+        "filename_regex": "^(.*)ssp585(.*)2057(.*)_median.cog.tif$",
+        "discovery": "s3",
+        "upload": false
+    },
+    {
+        "collection": "snow-projections-median",
+        "prefix": "EIS/snowProjections/",
+        "bucket": "veda-data-store-staging",
+        "filename_regex": "^(.*)ssp245(.*)2077(.*)_median.cog.tif$",
+        "discovery": "s3",
+        "upload": false
+    },
+    {
+        "collection": "snow-projections-median",
+        "prefix": "EIS/snowProjections/",
+        "bucket": "veda-data-store-staging",
+        "filename_regex": "^(.*)ssp585(.*)2077(.*)_median.cog.tif$",
+        "discovery": "s3",
+        "upload": false
+    }
+]
