@@ -13,7 +13,9 @@ __pycache__
 
 # Ignore Terraform
 .terraform
-.env_*
+.env
+terraform.tf
+terraform.tfvars
 # Ignore data files which are downloaded for local testing
 *.xml
 *.vrt
