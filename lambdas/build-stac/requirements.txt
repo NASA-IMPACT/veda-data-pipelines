@@ -8,3 +8,4 @@ rio-stac==0.4.2
 shapely
 smart-open
 pydantic==1.9.1
+geojson==2.5.0

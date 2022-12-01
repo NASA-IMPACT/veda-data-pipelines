@@ -1,5 +1,6 @@
 import os
 
+import geojson
 from pathlib import Path
 from functools import singledispatch
 
@@ -19,6 +20,7 @@ def create_item(
     datetime,
     cog_url,
     collection,
+    bbox,
     geometry,
     assets=None,
     asset_name=None,
@@ -38,7 +40,7 @@ def create_item(
             href=cog_url,
             datetime=datetime,
             collection=collection,
-            bbox=[]
+            bbox=bbox
         )
         return stac.create_stac_item(
             id=Path(cog_url).stem,
@@ -123,6 +125,14 @@ def pairwise(iterable):
     a = iter(iterable)
     return zip(a, a)
 
+def bbox(coord_list):
+     box = []
+     for i in (0,1):
+         res = sorted(coord_list, key=lambda x:x[i])
+         box.append((res[0][i],res[-1][i]))
+     ret = [box[0][0], box[1][0], box[0][1], box[1][1]]
+     return ret
+
 @generate_stac.register
 def generate_stac_cmrevent(item: events.CmrEvent) -> pystac.Item:
     """
@@ -130,9 +140,9 @@ def generate_stac_cmrevent(item: events.CmrEvent) -> pystac.Item:
     """
     cmr_json = GranuleQuery(mode="https://cmr.maap-project.org/search/").concept_id(item.granule_id).get(1)[0]
     cmr_json['concept_id'] = cmr_json.pop('id')
-    print(cmr_json['polygons'])
     str_coords = cmr_json['polygons'][0][0].split()
     polygon_coords = [(float(x), float(y)) for x,y in pairwise(str_coords)]
+    line = bbox(list(geojson.utils.coords(polygon_coords)))
     return create_item(
         properties=cmr_json,
         datetime=str_to_datetime(cmr_json["time_start"]),
@@ -141,8 +151,9 @@ def generate_stac_cmrevent(item: events.CmrEvent) -> pystac.Item:
         asset_name=item.asset_name,
         asset_roles=item.asset_roles,
         asset_media_type=item.asset_media_type,
+        bbox=line,
         geometry={
-            "coordinates": polygon_coords,
+            "coordinates": [polygon_coords],
             "type": "Polygon"
         }
     )
