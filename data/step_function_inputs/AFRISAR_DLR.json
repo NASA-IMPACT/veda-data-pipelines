@@ -1,6 +1,7 @@
 {
     "queue_messages": "true",
     "collection": "AFRISAR_DLR",
+    "temporal": ["2016-02-10T23:59:59Z", "2016-02-28T23:59:59Z"],
     "version": "1",
     "discovery": "cmr",
     "asset_name": "data",

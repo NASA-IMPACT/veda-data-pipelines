@@ -4,7 +4,7 @@ import glob
 import os
 import base64
 import json
-import requests
+
 import boto3
 
 DATA_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "data")
@@ -12,12 +12,13 @@ DATA_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "dat
 
 sts = boto3.client("sts")
 ACCOUNT_ID = sts.get_caller_identity().get("Account")
-REGION = os.environ.get("AWS_REGION", "us-east-1")
+REGION = os.environ.get("AWS_REGION", "us-west-2")
 APP_NAME = os.environ.get("APP_NAME")
 ENV = os.environ.get("ENV", "dev")
 
 SUBMIT_STAC_FUNCTION_NAME = f"{APP_NAME}-{ENV}-lambda-submit-stac-fn"
-INGESTION_STEP_MACHINE_ARN = f"arn:aws:states:{REGION}:{ACCOUNT_ID}:stateMachine:{APP_NAME}-{ENV}-stepfunction-discover"
+INGESTION_STEP_MACHINE_ARN = f"arn:aws:states:{REGION}:{ACCOUNT_ID}:stateMachine:{APP_NAME}-{ENV}-stepfunction-discovery-queue"
+DISCOVERY_TRIGGER_ARN = f"arn:aws:lambda:{REGION}:{ACCOUNT_ID}:function:{APP_NAME}-{ENV}-lambda-trigger-discover-fn"
 
 
 def arguments():
@@ -26,29 +27,11 @@ def arguments():
         return
     return argv[1:]
 
-def cmr_records(collection):
-    provider = 'ESA_MAAP'
-    CMR_STAC_ENDPOINT = 'https://az2kiic44c.execute-api.us-west-2.amazonaws.com/dev/stac'
-    response = requests.get(f"{CMR_STAC_ENDPOINT}/{provider}/collections/{collection}")
-    print(response.status_code)
-    filename = f"../data/collections/{collection}.json"
-    with open(filename, "w+") as f:
-        data = json.loads(response.text)
-        del data['links']
-        json.dump(data, f, indent=2)
-        f.close()
-    print (f"Wrote to file {filename}")
-    return filename
 
 def data_files(data, data_path):
     files = []
     for item in data:
         files.extend(glob.glob(os.path.join(data_path, f"{item}*.json")))
-    # If there are no files already in existence, check CMR for the data
-    if len(files) == 0:
-        for item in data:
-            filename = cmr_records(item)
-            files.append(filename)
     return files
 
 

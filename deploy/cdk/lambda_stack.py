@@ -16,16 +16,16 @@ class LambdaStack(core.Stack):
         self.construct_id = construct_id
 
         # external role
-        data_management_role = iam.Role(
+        external_role = iam.Role(
             self,
             f"delta-backend-staging-{config.ENV}-external-role",
             role_name=f"delta-backend-staging-{config.ENV}-external-role",
             assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
             description="Role to write to external bucket",
         )
-        data_management_role.add_to_policy(
+        external_role.add_to_policy(
             iam.PolicyStatement(
-                resources=[config.DATA_MANAGEMENT_ROLE_ARN],
+                resources=[config.EXTERNAL_ROLE_ARN],
                 actions=["sts:AssumeRole"],
             )
         )
@@ -35,25 +35,16 @@ class LambdaStack(core.Stack):
         self.s3_discovery_lambda = self._lambda(
             f"{construct_id}-s3-discovery-fn",
             "../lambdas/s3-discovery",
-            role=data_management_role,
+            role=external_role,
             env={
                 "BUCKET": config.MCP_BUCKETS.get(config.ENV, ""),
-                "DATA_MANAGEMENT_ROLE_ARN": config.DATA_MANAGEMENT_ROLE_ARN,
+                "EXTERNAL_ROLE_ARN": config.EXTERNAL_ROLE_ARN,
             },
         )
 
         # Discovers files from cmr
         self.cmr_discovery_lambda = self._lambda(
             f"{construct_id}-cmr-discovery-fn", "../lambdas/cmr-query"
-        )
-
-        # Discovers files from stac
-        self.stac_discovery_lambda = self._lambda(
-            f"{construct_id}-stac-discovery-fn", "../lambdas/stac-query",
-            env={
-                "STAC_API_ENDPOINT": config.STAC_API_ENDPOINT,
-                "STAC_PROVIDER": config.STAC_PROVIDER
-            }
         )
 
         # Cogify files
@@ -64,6 +55,12 @@ class LambdaStack(core.Stack):
                 "EARTHDATA_USERNAME": config.EARTHDATA_USERNAME,
                 "EARTHDATA_PASSWORD": config.EARTHDATA_PASSWORD,
             },
+        )
+
+        # Proxy lambda to trigger discovery step function
+        self.trigger_discovery_lambda = self._python_lambda(
+            f"{construct_id}-trigger-discover-fn",
+            "../lambdas/discovery-trigger",
         )
 
         # Proxy lambda to trigger cogify step function
@@ -82,9 +79,9 @@ class LambdaStack(core.Stack):
             f"{construct_id}-build-stac-fn",
             "../lambdas/build-stac",
             memory_size=8000,
-            role=data_management_role,
+            role=external_role,
             env={
-                "DATA_MANAGEMENT_ROLE_ARN": config.DATA_MANAGEMENT_ROLE_ARN,
+                "EXTERNAL_ROLE_ARN": config.EXTERNAL_ROLE_ARN,
             },
         )
 
@@ -95,7 +92,7 @@ class LambdaStack(core.Stack):
             memory_size=8000,
             env={
                 "COGNITO_APP_SECRET": config.COGNITO_APP_SECRET,
-                "STAC_INGESTOR_URL": config.STAC_INGESTOR_URL,
+                "STAC_INGESTOR_API_URL": config.STAC_INGESTOR_URL,
             },
         )
 
@@ -107,9 +104,9 @@ class LambdaStack(core.Stack):
                 "BUCKET": config.MCP_BUCKETS.get(
                     config.ENV, config.MCP_BUCKETS.get("stage")
                 ),
-                "DATA_MANAGEMENT_ROLE_ARN": config.DATA_MANAGEMENT_ROLE_ARN,
+                "EXTERNAL_ROLE_ARN": config.EXTERNAL_ROLE_ARN,
             },
-            role=data_management_role,
+            role=external_role,
         )
 
         ndjson_bucket = self._bucket(f"{construct_id}-ndjson-bucket")

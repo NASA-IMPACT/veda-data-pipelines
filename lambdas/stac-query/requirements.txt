@@ -1,3 +1,0 @@
-pystac-client
-awslambdaric
-boto3
