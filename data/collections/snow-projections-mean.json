@@ -1,0 +1,44 @@
+{
+    "id": "<collection-id>",
+    "type": "Collection",
+    "links":[
+    ],
+    "title":"<collection-title>",
+    "extent":{
+        "spatial":{
+            "bbox":[
+                [
+                    "<min-longitude>",
+                    "<min-latitude>",
+                    "<max-longitude>",
+                    "<max-latitude>",
+                ]
+            ]
+        },
+        "temporal":{
+            "interval":[
+                [
+                    "<start-date>",
+                    "<end-date>",
+                ]
+            ]
+        }
+    },
+    "license":"MIT",
+    "description": "<collection-description>",
+    "stac_version": "1.0.0",
+    "dashboard:is_periodic": "<true/false>",
+    "dashboard:time_density": "<month/>day/year>",
+    "item_assets": {
+        "cog_default": {
+            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+            "roles": [
+                "data",
+                "layer"
+            ],
+            "title": "Default COG Layer",
+            "description": "Cloud optimized default layer to display on map"
+        }
+    }
+}
+
