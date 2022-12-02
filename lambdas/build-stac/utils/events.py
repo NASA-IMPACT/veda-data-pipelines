@@ -1,5 +1,7 @@
 from datetime import datetime
 from typing import Dict, List, Literal, Optional, Union
+from pathlib import Path
+import re
 
 from pydantic import BaseModel, Field
 import pystac
@@ -12,10 +14,20 @@ class BaseEvent(BaseModel, frozen=True):
     collection: str
     remote_fileurl: str
 
+    id_regex: Optional[str] = None
     asset_name: Optional[str] = None
     asset_roles: Optional[List[str]] = None
     asset_media_type: Optional[Union[str, pystac.MediaType]] = None
     assets: Optional[List[Dict]] = None
+
+    def item_id(self: "BaseEvent") -> str:
+        if self.id_regex:
+            id_components = re.findall(self.id_regex, self.s3_filename)
+            assert len(id_components) == 1
+            id = "-".join(id_components[0])
+        else:
+            id = Path(self.s3_filename).stem
+        return id
 
 
 class CmrEvent(BaseEvent):

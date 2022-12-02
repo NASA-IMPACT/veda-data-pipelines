@@ -35,3 +35,6 @@ cdk.context.json
 
 # Avoid checking in filled out env file
 env.sh
+
+.hypothesis
+Makefile

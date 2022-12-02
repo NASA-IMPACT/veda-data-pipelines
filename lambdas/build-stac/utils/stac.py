@@ -16,6 +16,7 @@ from . import regex, events, role
 
 
 def create_item(
+    id,
     properties,
     datetime,
     cog_url,
@@ -40,7 +41,7 @@ def create_item(
                 input_datetime=datetime,
                 properties=properties,
                 with_proj=True,
-                with_raster=False,
+                with_raster=True,
                 assets=assets,
                 asset_name=asset_name or "cog_default",
                 asset_roles=asset_roles or ["data", "layer"],
@@ -117,6 +118,7 @@ def generate_stac_regexevent(item: events.RegexEvent) -> pystac.Item:
         single_datetime = None
 
     return create_item(
+        id=item.item_id(),
         properties=properties,
         datetime=single_datetime,
         cog_url=item.remote_fileurl,
@@ -186,6 +188,7 @@ def generate_stac_cmrevent(item: events.CmrEvent) -> pystac.Item:
     assets = get_assets_from_cmr(cmr_json)
 
     return create_item(
+        id=item.item_id(),
         properties=cmr_json,
         datetime=str_to_datetime(cmr_json["time_start"]),
         cog_url=item.remote_fileurl,
