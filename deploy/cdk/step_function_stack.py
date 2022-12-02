@@ -58,12 +58,12 @@ class StepFunctionStack(core.Stack):
         lambda_stack: "LambdaStack",
         queue_stack: "QueueStack",
     ) -> stepfunctions.StateMachine:
-        trigger_s3_discovery_task = self._lambda_task(
+        trigger_discovery_task = self._lambda_task(
             "Trigger new discovery state machine",
             lambda_stack.trigger_discovery_lambda,
         )
 
-        trigger_s3_discovery_task.add_retry(
+        trigger_discovery_task.add_retry(
             interval=core.Duration.seconds(2),
             max_attempts=5,
         )
@@ -147,7 +147,7 @@ class StepFunctionStack(core.Stack):
         # Defined below workflow to avoid circular dependency of steps
         maybe_next_discovery.when(
             stepfunctions.Condition.is_present("$.start_after"),
-            trigger_s3_discovery_task,
+            trigger_discovery_task,
         )
 
         return stepfunctions.StateMachine(

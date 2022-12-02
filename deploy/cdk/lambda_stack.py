@@ -25,7 +25,7 @@ class LambdaStack(core.Stack):
         )
         external_role.add_to_policy(
             iam.PolicyStatement(
-                resources=[config.EXTERNAL_ROLE_ARN],
+                resources=[config.DATA_MANAGEMENT_ROLE_ARN],
                 actions=["sts:AssumeRole"],
             )
         )
@@ -38,7 +38,7 @@ class LambdaStack(core.Stack):
             role=external_role,
             env={
                 "BUCKET": config.MCP_BUCKETS.get(config.ENV, ""),
-                "EXTERNAL_ROLE_ARN": config.EXTERNAL_ROLE_ARN,
+                "DATA_MANAGEMENT_ROLE_ARN": config.DATA_MANAGEMENT_ROLE_ARN,
             },
         )
 
@@ -78,10 +78,10 @@ class LambdaStack(core.Stack):
         self.build_stac_lambda = self._lambda(
             f"{construct_id}-build-stac-fn",
             "../lambdas/build-stac",
-            memory_size=8000,
+            memory_size=1024,
             role=external_role,
             env={
-                "EXTERNAL_ROLE_ARN": config.EXTERNAL_ROLE_ARN,
+                "DATA_MANAGEMENT_ROLE_ARN": config.DATA_MANAGEMENT_ROLE_ARN,
             },
         )
 
@@ -89,10 +89,10 @@ class LambdaStack(core.Stack):
         self.submit_stac_lambda = self._lambda(
             f"{construct_id}-submit-stac-fn",
             "../lambdas/submit-stac",
-            memory_size=8000,
+            memory_size=1024,
             env={
                 "COGNITO_APP_SECRET": config.COGNITO_APP_SECRET,
-                "STAC_INGESTOR_API_URL": config.STAC_INGESTOR_URL,
+                "STAC_INGESTOR_URL": config.STAC_INGESTOR_URL,
             },
         )
 
@@ -104,7 +104,7 @@ class LambdaStack(core.Stack):
                 "BUCKET": config.MCP_BUCKETS.get(
                     config.ENV, config.MCP_BUCKETS.get("stage")
                 ),
-                "EXTERNAL_ROLE_ARN": config.EXTERNAL_ROLE_ARN,
+                "DATA_MANAGEMENT_ROLE_ARN": config.DATA_MANAGEMENT_ROLE_ARN,
             },
             role=external_role,
         )

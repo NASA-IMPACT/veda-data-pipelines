@@ -128,13 +128,6 @@ def handler(event: Union[S3LinkInput, StacItemInput], context) -> None:
 
 
 if __name__ == "__main__":
-    # filename = "example.ndjson"
-    # sample_event = {
-    #     "stac_file_url": "example.ndjson",
-    #     # or
-    #     "stac_item": {},
-    #     "type": "collections",
-    # }
     sample_event = {
         "stac_item": {
             "type": "Feature",
@@ -230,11 +223,40 @@ if __name__ == "__main__":
             "links": [
             {
                 "rel": "self",
-                "href": "https://bmap-catalogue-data.oss.eu-west-0.prod-cloud-ocb.orange-business.com/Campaign_data/afrisar_dlr/afrisar_dlr_roi_SAV1.prj",
+                "href": "https://bmap-catalogue-data.oss.eu-west-0.prod-cloud-ocb.orange-business.com/Campaign_data/afrisar_dlr/afrisar_dlr_roi_SAV1.shx",
                 "type": "application/json"
             }
             ],
-            "assets": {},
+            "assets": {
+            "prj": {
+                "href": "https://bmap-catalogue-data.oss.eu-west-0.prod-cloud-ocb.orange-business.com/Campaign_data/afrisar_dlr/afrisar_dlr_roi_SAV1.prj",
+                "type": "application/octet-stream",
+                "roles": [
+                "metadata"
+                ]
+            },
+            "dbf": {
+                "href": "https://bmap-catalogue-data.oss.eu-west-0.prod-cloud-ocb.orange-business.com/Campaign_data/afrisar_dlr/afrisar_dlr_roi_SAV1.dbf",
+                "type": "application/octet-stream",
+                "roles": [
+                "data"
+                ]
+            },
+            "shp": {
+                "href": "https://bmap-catalogue-data.oss.eu-west-0.prod-cloud-ocb.orange-business.com/Campaign_data/afrisar_dlr/afrisar_dlr_roi_SAV1.shp",
+                "type": "application/octet-stream",
+                "roles": [
+                "data"
+                ]
+            },
+            "shx": {
+                "href": "https://bmap-catalogue-data.oss.eu-west-0.prod-cloud-ocb.orange-business.com/Campaign_data/afrisar_dlr/afrisar_dlr_roi_SAV1.shx",
+                "type": "application/octet-stream",
+                "roles": [
+                "data"
+                ]
+            }
+            },
             "bbox": [
             -0.208279,
             11.5902481,
@@ -245,5 +267,4 @@ if __name__ == "__main__":
             "collection": "AFRISAR_DLR"
         }
         }
-
     handler(sample_event, {})

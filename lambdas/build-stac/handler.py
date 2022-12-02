@@ -57,31 +57,13 @@ def handler(event: Dict[str, Any], context) -> Union[S3LinkOutput, StacItemOutpu
 if __name__ == "__main__":
     sample_event = {
         "collection": "AFRISAR_DLR",
-        "remote_fileurl": "https://bmap-catalogue-data.oss.eu-west-0.prod-cloud-ocb.orange-business.com/Campaign_data/afrisar_dlr/afrisar_dlr_roi_SAV1.prj",
+        "remote_fileurl": "https://bmap-catalogue-data.oss.eu-west-0.prod-cloud-ocb.orange-business.com/Campaign_data/afrisar_dlr/afrisar_dlr_roi_SAV1.shx",
         "granule_id": "G1201298435-ESA_MAAP",
         "id": "G1201298435-ESA_MAAP",
         "mode": None,
-        "assets": [
-            {
-            "href": "https://bmap-catalogue-data.oss.eu-west-0.prod-cloud-ocb.orange-business.com/Campaign_data/afrisar_dlr/afrisar_dlr_roi_SAV1.prj",
-            "asset_media_type": "text/plain"
-            },
-            {
-            "href": "https://bmap-catalogue-data.oss.eu-west-0.prod-cloud-ocb.orange-business.com/Campaign_data/afrisar_dlr/afrisar_dlr_roi_SAV1.dbf",
-            "asset_media_type": "application/x-dbf"
-            },
-            {
-            "href": "https://bmap-catalogue-data.oss.eu-west-0.prod-cloud-ocb.orange-business.com/Campaign_data/afrisar_dlr/afrisar_dlr_roi_SAV1.shp",
-            "asset_media_type": "application/octet-stream"
-            },
-            {
-            "href": "https://bmap-catalogue-data.oss.eu-west-0.prod-cloud-ocb.orange-business.com/Campaign_data/afrisar_dlr/afrisar_dlr_roi_SAV1.shx",
-            "asset_media_type": "application/octet-stream"
-            }
-        ],
         "asset_name": "data",
         "asset_roles": [
             "data"
         ]
-        }
+    }
     print(json.dumps(handler(sample_event, {}), indent=2))

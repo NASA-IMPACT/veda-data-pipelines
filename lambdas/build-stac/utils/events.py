@@ -15,6 +15,7 @@ class BaseEvent(BaseModel, frozen=True):
     asset_name: Optional[str] = None
     asset_roles: Optional[List[str]] = None
     asset_media_type: Optional[Union[str, pystac.MediaType]] = None
+    assets: Optional[List[Dict]] = None
 
 
 class CmrEvent(BaseEvent):

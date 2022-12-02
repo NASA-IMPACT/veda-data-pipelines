@@ -1,5 +1,5 @@
 import os
-
+import json
 import geojson
 from pathlib import Path
 from functools import singledispatch
@@ -32,32 +32,39 @@ def create_item(
     """
 
     def create_stac_item():
-        return pystac.Item(
-            # need to get these things from CMR
-            id=Path(cog_url).stem,
-            geometry=geometry,
-            properties=properties,
-            href=cog_url,
-            datetime=datetime,
-            collection=collection,
-            bbox=bbox
-        )
-        return stac.create_stac_item(
-            id=Path(cog_url).stem,
-            source=cog_url,
-            collection=collection,
-            input_datetime=datetime,
-            properties=properties,
-            with_proj=True,
-            with_raster=False,
-            assets=assets,
-            asset_name=asset_name or "cog_default",
-            asset_roles=asset_roles or ["data", "layer"],
-            asset_media_type=(
-                asset_media_type
-                or "image/tiff; application=geotiff; profile=cloud-optimized"
-            ),
-        )
+        try:
+            return stac.create_stac_item(
+                id=Path(cog_url).stem,
+                source=cog_url,
+                collection=collection,
+                input_datetime=datetime,
+                properties=properties,
+                with_proj=True,
+                with_raster=False,
+                assets=assets,
+                asset_name=asset_name or "cog_default",
+                asset_roles=asset_roles or ["data", "layer"],
+                asset_media_type=(
+                    asset_media_type
+                    or "image/tiff; application=geotiff; profile=cloud-optimized"
+                ),
+            )
+        except Exception as e:
+            print(f"Caught exception {e}")
+            if 'not recognized as a supported file format' in str(e):
+                stac_item = pystac.Item(
+                    id=Path(cog_url).stem,
+                    geometry=geometry,
+                    properties=properties,
+                    href=cog_url,
+                    datetime=datetime,
+                    collection=collection,
+                    bbox=bbox
+                )
+                stac_item.assets = assets
+                return stac_item
+            else:
+                raise
 
     rasterio_kwargs = {}
     if role_arn := os.environ.get("DATA_MANAGEMENT_ROLE_ARN"):
@@ -125,13 +132,44 @@ def pairwise(iterable):
     a = iter(iterable)
     return zip(a, a)
 
-def bbox(coord_list):
+def get_bbox(coord_list):
      box = []
      for i in (0,1):
          res = sorted(coord_list, key=lambda x:x[i])
          box.append((res[0][i],res[-1][i]))
      ret = [box[0][0], box[1][0], box[0][1], box[1][1]]
      return ret
+
+def generate_geometry_from_cmr(cmr_json):
+    if cmr_json.get('polygons'):
+        str_coords = cmr_json['polygons'][0][0].split()
+        polygon_coords = [(float(x), float(y)) for x,y in pairwise(str_coords)]
+        return {
+            "coordinates": [polygon_coords],
+            "type": "Polygon"
+        }
+    else:
+        return None
+
+def get_assets_from_cmr(cmr_json):
+    """
+    each asset has a key and the values within should be
+    roles, href, title, description, type. Only href is required.
+    """
+    assets = {}
+    links = cmr_json['links']
+    for link in links:
+        if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/data#":
+            extension = os.path.splitext(link['href'])[-1].replace('.', '')
+            role = 'data'
+            if extension == 'prj':
+                role = 'metadata'
+            assets[extension] = pystac.Asset(
+                roles=[role],
+                href=link.get('href'),
+                media_type=link.get('type')
+            )
+    return assets
 
 @generate_stac.register
 def generate_stac_cmrevent(item: events.CmrEvent) -> pystac.Item:
@@ -140,9 +178,13 @@ def generate_stac_cmrevent(item: events.CmrEvent) -> pystac.Item:
     """
     cmr_json = GranuleQuery(mode="https://cmr.maap-project.org/search/").concept_id(item.granule_id).get(1)[0]
     cmr_json['concept_id'] = cmr_json.pop('id')
-    str_coords = cmr_json['polygons'][0][0].split()
-    polygon_coords = [(float(x), float(y)) for x,y in pairwise(str_coords)]
-    line = bbox(list(geojson.utils.coords(polygon_coords)))
+    geometry = generate_geometry_from_cmr(cmr_json)
+    if geometry:
+        bbox = get_bbox(list(geojson.utils.coords(geometry['coordinates'])))
+    else:
+        bbox = None
+    assets = get_assets_from_cmr(cmr_json)
+
     return create_item(
         properties=cmr_json,
         datetime=str_to_datetime(cmr_json["time_start"]),
@@ -151,9 +193,7 @@ def generate_stac_cmrevent(item: events.CmrEvent) -> pystac.Item:
         asset_name=item.asset_name,
         asset_roles=item.asset_roles,
         asset_media_type=item.asset_media_type,
-        bbox=line,
-        geometry={
-            "coordinates": [polygon_coords],
-            "type": "Polygon"
-        }
+        assets=assets,
+        bbox=bbox,
+        geometry=geometry
     )
