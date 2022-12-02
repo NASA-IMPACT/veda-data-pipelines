@@ -76,6 +76,7 @@ def s3_discovery_handler(event, chunk_size=2800):
     records = 0
     out_keys = []
     discovered = 0
+    limit = event.get('limit')
     for s3_object in discover_from_s3(s3_iterator):
         filename = s3_object["Key"]
         if filename_regex and not re.match(filename_regex, filename):
@@ -98,6 +99,8 @@ def s3_discovery_handler(event, chunk_size=2800):
             discovered += len(payload["objects"])
             payload["objects"] = []
         records += 1
+        if limit and discovered >= limit:
+            break
 
     if payload["objects"]:
         output_key = f"{key}/s3_discover_output_{uuid4()}.json"

@@ -1,7 +1,9 @@
 from airflow.utils.task_group import TaskGroup
 from airflow.operators.python import PythonOperator, BranchPythonOperator
 from veda_data_pipeline.src.s3_discovery import s3_discovery_handler
+from airflow.utils.trigger_rule import TriggerRule
 import os
+import subprocess
 import json
 import time
 
@@ -17,46 +19,33 @@ def get_payload(ti_xcom_pull):
     return [ payload for payload in ti_xcom_pull(task_ids=task_ids) if payload is not None][0]
 
 
-def discover_from_cmr_task(ti, text):
-
-    payload = {
-    "collection": "lis-tws-nonstationarity-index",
-    "prefix": "EIS/Global_TWS_data/DATWS_nonstationarity_index_v2.cog.tif",
-    "bucket": "veda-data-store-staging",
-    "filename_regex": "^(.*).tif$",
-    "discovery": "cmr",
-    "start_datetime": "2003-01-01T00:00:00Z",
-    "end_datetime": "2020-01-01T00:00:00Z",
-    "upload": False,
-    "cogify": True,
-    "objects": [
-      {
-        "collection": "lis-tws-nonstationarity-index",
-        "s3_filename": "s3://veda-data-store-staging/EIS/Global_TWS_data/DATWS_nonstationarity_index_v2.cog.tif",
-        "upload": False,
-        "properties": {},
-        "start_datetime": "2003-01-01T00:00:00Z",
-        "end_datetime": "2020-01-01T00:00:00Z"
-      }
-    ]
-  }
-    ti.xcom_push(key="payload", value = payload)
-    return {"text": text}
+def discover_from_cmr_task(text):
+    return {"place_holder": text}
 
 def discover_from_s3_task(ti):
     config = ti.dag_run.conf
     return s3_discovery_handler(config)
 
-def run_process_task(ti):
+
+def run_process_task(ti, dag_id):
     payload = get_payload(ti.xcom_pull)
-
+    os.environ["PYTHONWARNINGS"] = "ignore"
     payloads_xcom = payload.pop('payload', [])
+    successes = []
+    failures = []
     for payload_xcom in payloads_xcom:
-        event = {**payload, 'payload': [payload_xcom]}
-        os.system(f"airflow dags trigger --conf \'{json.dumps(event)}\' veda_ingest_pipeline")
         time.sleep(2)
+        dag_conf = {**payload, 'payload': [payload_xcom]}
+        out = subprocess.run(["airflow", 'dags', 'trigger', '-c', json.dumps(dag_conf), dag_id],
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+        if out.stderr:
+            failures.append(f'failed to run {dag_id}: {out.stderr}')
+        else:
+            successes.append(f"message: {out.stdout}")
+    return {"payload": {"failure_msg": failures,
+                        "stats": {"success": len(successes), "failure": len(failures)}}}
 
-    return 
+
 
 def discover_choice(ti):
 
@@ -92,7 +81,14 @@ def subdag_discover():
             op_kwargs={'text': "Discover from S3"}
       
     )
+        run_process = PythonOperator(
+            task_id="parallel_run_process_tasks",
+            python_callable=run_process_task,
+            op_kwargs={"dag_id": "example_etl_flow"},
+            trigger_rule=TriggerRule.ONE_SUCCESS
+
+        )
 
 
-        discover_branching >> [discover_from_cmr, discover_from_s3]
+        discover_branching >> [discover_from_cmr, discover_from_s3] >> run_process
         return discover_grp
