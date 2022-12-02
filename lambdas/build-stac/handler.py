@@ -40,6 +40,7 @@ def handler(event: Dict[str, Any], context) -> Union[S3LinkOutput, StacItemOutpu
     EventType = events.CmrEvent if event.get("granule_id") else events.RegexEvent
     parsed_event = EventType.parse_obj(event)
     stac_item = stac.generate_stac(parsed_event).to_dict()
+
     output: StacItemOutput = {"stac_item": stac_item}
 
     # Return STAC Item Directly
@@ -56,14 +57,11 @@ def handler(event: Dict[str, Any], context) -> Union[S3LinkOutput, StacItemOutpu
 
 if __name__ == "__main__":
     sample_event = {
-        "collection": "AFRISAR_DLR",
-        "remote_fileurl": "https://bmap-catalogue-data.oss.eu-west-0.prod-cloud-ocb.orange-business.com/Campaign_data/afrisar_dlr/afrisar_dlr_roi_SAV1.shx",
-        "granule_id": "G1201298435-ESA_MAAP",
-        "id": "G1201298435-ESA_MAAP",
-        "mode": None,
-        "asset_name": "data",
-        "asset_roles": [
-            "data"
-        ]
+        "collection": "nightlights-hd-monthly",
+        "remote_fileurl": "s3://climatedashboard-data/delivery/BMHD_Maria_Stages/BeforeMaria_Stage0_2017-07-21_2017-09-19.tif",
+        "granule_id": None,
+        "datetime_range": None,
+        "start_datetime": None,
+        "end_datetime": None
     }
     print(json.dumps(handler(sample_event, {}), indent=2))
