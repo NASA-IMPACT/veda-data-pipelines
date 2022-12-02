@@ -19,7 +19,7 @@ def create_item(
     id,
     properties,
     datetime,
-    cog_url,
+    item_url,
     collection,
     bbox,
     geometry,
@@ -35,8 +35,8 @@ def create_item(
     def create_stac_item():
         try:
             return stac.create_stac_item(
-                id=Path(cog_url).stem,
-                source=cog_url,
+                id=Path(item_url).stem,
+                source=item_url,
                 collection=collection,
                 input_datetime=datetime,
                 properties=properties,
@@ -54,10 +54,10 @@ def create_item(
             print(f"Caught exception {e}")
             if 'not recognized as a supported file format' in str(e):
                 stac_item = pystac.Item(
-                    id=Path(cog_url).stem,
+                    id=Path(item_url).stem,
                     geometry=geometry,
                     properties=properties,
-                    href=cog_url,
+                    href=item_url,
                     datetime=datetime,
                     collection=collection,
                     bbox=bbox
@@ -121,7 +121,7 @@ def generate_stac_regexevent(item: events.RegexEvent) -> pystac.Item:
         id=item.item_id(),
         properties=properties,
         datetime=single_datetime,
-        cog_url=item.remote_fileurl,
+        item_url=item.remote_fileurl,
         collection=item.collection,
         asset_name=item.asset_name,
         asset_roles=item.asset_roles,
@@ -129,20 +129,32 @@ def generate_stac_regexevent(item: events.RegexEvent) -> pystac.Item:
     )
 
 
-def pairwise(iterable):
-    # "s -> (s0, s1), (s2, s3), (s4, s5), ..."
+def pairwise(iterable) -> zip:
+    """
+    generates a generator object of tuples from a flat list
+    "[s0, s1, s2, s3, s4, s5, ...] -> [(s0, s1), (s2, s3), (s4, s5), ...]"
+    """
     a = iter(iterable)
     return zip(a, a)
 
-def get_bbox(coord_list):
-     box = []
-     for i in (0,1):
-         res = sorted(coord_list, key=lambda x:x[i])
-         box.append((res[0][i],res[-1][i]))
-     ret = [box[0][0], box[1][0], box[0][1], box[1][1]]
-     return ret
+def get_bbox(coord_list) -> list[float]:
+    """
+    Returns the corners of a list of coordinates by:
+    1. Sorting the coordinates by latitude and longitude coordinates
+    2. Adding the min and max value for latitude and min and max value for longitude to a list
+    3. Returning a list of min x, min y, max x, max y
+    """
+    box = []
+    for i in (0,1):
+        res = sorted(coord_list, key=lambda x:x[i])
+        box.append((res[0][i], res[-1][i]))
+    ret = [box[0][0], box[1][0], box[0][1], box[1][1]]
+    return ret
 
-def generate_geometry_from_cmr(cmr_json):
+def generate_geometry_from_cmr(cmr_json) -> dict:
+    """
+    Generates geoJSON object from list of coordinates provided in CMR JSON
+    """
     if cmr_json.get('polygons'):
         str_coords = cmr_json['polygons'][0][0].split()
         polygon_coords = [(float(x), float(y)) for x,y in pairwise(str_coords)]
@@ -153,10 +165,10 @@ def generate_geometry_from_cmr(cmr_json):
     else:
         return None
 
-def get_assets_from_cmr(cmr_json):
+def get_assets_from_cmr(cmr_json) -> dict[pystac.Asset]:
     """
-    each asset has a key and the values within should be
-    roles, href, title, description, type. Only href is required.
+    Generates a dictionary of pystac.Asset's from cmr_json links
+    TODO(aimee): This is using some heuristics and could probably be refined according to some standard in the future.
     """
     assets = {}
     links = cmr_json['links']
@@ -191,7 +203,7 @@ def generate_stac_cmrevent(item: events.CmrEvent) -> pystac.Item:
         id=item.item_id(),
         properties=cmr_json,
         datetime=str_to_datetime(cmr_json["time_start"]),
-        cog_url=item.remote_fileurl,
+        item_url=item.remote_fileurl,
         collection=item.collection,
         asset_name=item.asset_name,
         asset_roles=item.asset_roles,
