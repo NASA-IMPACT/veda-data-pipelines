@@ -31,9 +31,11 @@ def create_item(
     """
     Function to create a stac item from a COG using rio_stac
     """
-
+    
     def create_stac_item():
         try:
+            # stac.create_stac_item tries to opn a dataset with rasterio,
+            # if that fails (since not all items are rasterio-readable), fall back to pystac.Item
             return stac.create_stac_item(
                 id=Path(item_url).stem,
                 source=item_url,
@@ -185,12 +187,17 @@ def get_assets_from_cmr(cmr_json) -> dict[pystac.Asset]:
             )
     return assets
 
+def cmr_api_url(item):
+    default_cmr_api_url = "https://cmr.earthdata.nasa.gov"
+    cmr_api_url = item.get('cmr_api_url', os.environ.get('CMR_API_URL', default_cmr_api_url))
+    return cmr_api_url
+
 @generate_stac.register
 def generate_stac_cmrevent(item: events.CmrEvent) -> pystac.Item:
     """
     Generate STAC Item from CMR granule
     """
-    cmr_json = GranuleQuery(mode="https://cmr.maap-project.org/search/").concept_id(item.granule_id).get(1)[0]
+    cmr_json = GranuleQuery(mode=f"{cmr_api_url}/search/").concept_id(item.granule_id).get(1)[0]
     cmr_json['concept_id'] = cmr_json.pop('id')
     geometry = generate_geometry_from_cmr(cmr_json)
     if geometry:
