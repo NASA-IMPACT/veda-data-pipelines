@@ -18,6 +18,7 @@ from . import regex, events, role
 def create_item(
     id,
     properties,
+    mode,
     datetime,
     item_url,
     collection,
@@ -31,10 +32,25 @@ def create_item(
     """
     Function to create a stac item from a COG using rio_stac
     """
-    
+
+    def create_item_item():
+        stac_item = pystac.Item(
+            id=Path(item_url).stem,
+            geometry=geometry,
+            properties=properties,
+            href=item_url,
+            datetime=datetime,
+            collection=collection,
+            bbox=bbox
+        )
+        stac_item.assets = assets
+        return stac_item
+
     def create_stac_item():
+        if mode == 'cmr':
+            return create_item_item()
         try:
-            # stac.create_stac_item tries to opn a dataset with rasterio,
+            # `stac.create_stac_item` tries to opon a dataset with rasterio.
             # if that fails (since not all items are rasterio-readable), fall back to pystac.Item
             return stac.create_stac_item(
                 id=Path(item_url).stem,
@@ -55,17 +71,7 @@ def create_item(
         except Exception as e:
             print(f"Caught exception {e}")
             if 'not recognized as a supported file format' in str(e):
-                stac_item = pystac.Item(
-                    id=Path(item_url).stem,
-                    geometry=geometry,
-                    properties=properties,
-                    href=item_url,
-                    datetime=datetime,
-                    collection=collection,
-                    bbox=bbox
-                )
-                stac_item.assets = assets
-                return stac_item
+                return create_item_item()
             else:
                 raise
 
@@ -167,7 +173,14 @@ def generate_geometry_from_cmr(cmr_json) -> dict:
     else:
         return None
 
-def get_assets_from_cmr(cmr_json) -> dict[pystac.Asset]:
+def gen_asset(role: str, link: dict, asset_type: str) -> pystac.Asset:
+    return pystac.Asset(
+        roles=[role],
+        href=link.get('href'),
+        media_type=link.get('type', asset_type)
+    )
+
+def get_assets_from_cmr(cmr_json, item) -> dict[pystac.Asset]:
     """
     Generates a dictionary of pystac.Asset's from cmr_json links
     TODO(aimee): This is using some heuristics and could probably be refined according to some standard in the future.
@@ -177,19 +190,24 @@ def get_assets_from_cmr(cmr_json) -> dict[pystac.Asset]:
     for link in links:
         if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/data#":
             extension = os.path.splitext(link['href'])[-1].replace('.', '')
-            role = 'data'
             if extension == 'prj':
                 role = 'metadata'
             assets[extension] = pystac.Asset(
-                roles=[role],
+                roles=['data'],
                 href=link.get('href'),
                 media_type=link.get('type')
             )
+        if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/s3#":
+            assets['data'] = gen_asset('data', link, item.asset_media_type)
+        if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/metadata#" and 'metadata' not in assets:
+            assets['metadata'] = gen_asset('metadata', link, None)
+        if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/documentation#" and 'documentation' not in assets:
+            assets['documentation'] = gen_asset('documentation', link, None)
     return assets
 
-def cmr_api_url(item) -> str:
+def cmr_api_url() -> str:
     default_cmr_api_url = "https://cmr.earthdata.nasa.gov"
-    cmr_api_url = item.get('cmr_api_url', os.environ.get('CMR_API_URL', default_cmr_api_url))
+    cmr_api_url = os.environ.get('CMR_API_URL', default_cmr_api_url)
     return cmr_api_url
 
 @generate_stac.register
@@ -197,18 +215,19 @@ def generate_stac_cmrevent(item: events.CmrEvent) -> pystac.Item:
     """
     Generate STAC Item from CMR granule
     """
-    cmr_json = GranuleQuery(mode=f"{cmr_api_url}/search/").concept_id(item.granule_id).get(1)[0]
+    cmr_json = GranuleQuery(mode=f"{cmr_api_url()}/search/").concept_id(item.granule_id).get(1)[0]
     cmr_json['concept_id'] = cmr_json.pop('id')
     geometry = generate_geometry_from_cmr(cmr_json)
     if geometry:
         bbox = get_bbox(list(geojson.utils.coords(geometry['coordinates'])))
     else:
         bbox = None
-    assets = get_assets_from_cmr(cmr_json)
+    assets = get_assets_from_cmr(cmr_json, item)
 
     return create_item(
         id=item.item_id(),
         properties=cmr_json,
+        mode=item.mode,
         datetime=str_to_datetime(cmr_json["time_start"]),
         item_url=item.remote_fileurl,
         collection=item.collection,

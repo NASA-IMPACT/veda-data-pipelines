@@ -19,3 +19,4 @@ MCP_BUCKETS = {
 
 # This should throw if it is not provided
 DATA_MANAGEMENT_ROLE_ARN = os.environ.get("DATA_MANAGEMENT_ROLE_ARN")
+CMR_API_URL = os.environ.get("CMR_API_URL")
