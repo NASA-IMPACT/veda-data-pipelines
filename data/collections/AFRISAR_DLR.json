@@ -1,0 +1,28 @@
+{
+  "id": "AFRISAR_DLR",
+  "stac_version": "1.0.0",
+  "license": "not-provided",
+  "title": "AFRISAR_DLR",
+  "type": "Collection",
+  "description": "The  ESA  BIOMASS  mission  was  selected  in  2013  as  the  7th  Earth  Explorer  mission.  BIOMASS  will  provide estimates of forest biomass and height with full coverage over the tropical areas exploiting the penetration  capabilities  of  P-band.  In  order  to  further  support  the  BIOMASS  mission  development,  especially concerning the mission concept verification and the development of geophysical algorithms, ESA funded the AfriSAR campaign.During the AfriSAR campaign, shared between ONERA (dry season, July 2015) and DLR (wet season 2016),  Pol-InSAR  and  TomoSAR  airborne  data  set  were  collected  over  four  test  sites  of  Gabon  (Africa),  therefore  covering  different  forest  structures,  biomass  levels  and  disturbances.  Although  the  interferometric  /  tomographic  baselines  were  optimized  for  P-band  acquisitions,  L-band  data  were  collected simultaneously as well.This reports describes the test sites, the available ground measurements (carried out in a parallel field inventory  campaign  in  2016)  and  Lidar  data  for  the  validation  of  the  SAR  product  derivation  and  analysis. Furthermore, both campaigns are described in details, and data acquired and processed are listed.   The   results   of   data   quality   check   are   provided,   together   with   first   analyses   aimed   at   investigating  the  potentials  of  the  acquired  data  sets  for  generating  Level-2  products  in  terms  of  Pol-InSAR forest height and TomoSAR vertical reflectivity profiles.",
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [
+          6.9960938,
+          -4.78125,
+          15.5390625,
+          2.9882813
+        ]
+      ]
+    },
+    "temporal": {
+      "interval": [
+        [
+          "2016-02-03T00:00:00.000Z",
+          null
+        ]
+      ]
+    }
+  }
+}

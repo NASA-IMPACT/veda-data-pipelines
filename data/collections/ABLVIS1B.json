@@ -1,0 +1,28 @@
+{
+  "id": "ABLVIS1B",
+  "stac_version": "1.0.0",
+  "license": "not-provided",
+  "title": "ABoVE LVIS L1B Geolocated Return Energy Waveforms V001",
+  "type": "Collection",
+  "description": "This data set contains laser altimetry return energy waveform measurements over Alaska and Western Canada taken from the NASA Land, Vegetation, and Ice Sensor (LVIS). The data were collected as part of NASA's Terrestrial Ecology Program campaign, the Arctic-Boreal Vulnerability Experiment (ABoVE).",
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [
+          -158,
+          48,
+          -104,
+          72
+        ]
+      ]
+    },
+    "temporal": {
+      "interval": [
+        [
+          "2017-06-29T00:00:00.000Z",
+          "2017-07-17T23:59:59.000Z"
+        ]
+      ]
+    }
+  }
+}
