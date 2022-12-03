@@ -9,7 +9,7 @@ import requests
 
 
 COGNITO_APP_SECRET = os.environ["COGNITO_APP_SECRET"]
-STAC_INGESTOR_URL = os.environ["STAC_INGESTOR_URL"]
+STAC_INGESTOR_API_URL = os.environ["STAC_INGESTOR_API_URL"]
 
 
 class InputBase(TypedDict):
@@ -111,7 +111,7 @@ def get_stac_item(event: Dict[str, Any]) -> Dict[str, Any]:
 
 ingestor = IngestionApi.from_veda_auth_secret(
     secret_id=COGNITO_APP_SECRET,
-    base_url=STAC_INGESTOR_URL,
+    base_url=STAC_INGESTOR_API_URL,
 )
 
 

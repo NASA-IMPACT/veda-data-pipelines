@@ -53,7 +53,7 @@ else
     export SECURITY_GROUP_ID=$sgId
     export SECRET_NAME=$pgSecret
 
-    export STAC_INGESTOR_URL=$stacIngestorUrl
+    export STAC_INGESTOR_API_URL=$stacIngestorUrl
 
     echo "$1 environment set"
 fi

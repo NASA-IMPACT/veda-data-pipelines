@@ -187,7 +187,7 @@ def get_assets_from_cmr(cmr_json) -> dict[pystac.Asset]:
             )
     return assets
 
-def cmr_api_url(item):
+def cmr_api_url(item) -> str:
     default_cmr_api_url = "https://cmr.earthdata.nasa.gov"
     cmr_api_url = item.get('cmr_api_url', os.environ.get('CMR_API_URL', default_cmr_api_url))
     return cmr_api_url

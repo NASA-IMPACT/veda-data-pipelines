@@ -92,7 +92,7 @@ class LambdaStack(core.Stack):
             memory_size=1024,
             env={
                 "COGNITO_APP_SECRET": config.COGNITO_APP_SECRET,
-                "STAC_INGESTOR_URL": config.STAC_INGESTOR_URL,
+                "STAC_INGESTOR_API_URL": config.STAC_INGESTOR_API_URL,
             },
         )
 
