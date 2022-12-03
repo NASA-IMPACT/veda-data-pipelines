@@ -19,6 +19,7 @@ class BaseEvent(BaseModel, frozen=True):
     asset_roles: Optional[List[str]] = None
     asset_media_type: Optional[Union[str, pystac.MediaType]] = None
     assets: Optional[List[Dict]] = None
+    mode: Optional[str] = None
 
     def item_id(self: "BaseEvent") -> str:
         if self.id_regex:
@@ -26,7 +27,7 @@ class BaseEvent(BaseModel, frozen=True):
             assert len(id_components) == 1
             id = "-".join(id_components[0])
         else:
-            id = Path(self.s3_filename).stem
+            id = Path(self.remote_fileurl).stem
         return id
 
 

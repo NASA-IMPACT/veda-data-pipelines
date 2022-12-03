@@ -44,7 +44,10 @@ class LambdaStack(core.Stack):
 
         # Discovers files from cmr
         self.cmr_discovery_lambda = self._lambda(
-            f"{construct_id}-cmr-discovery-fn", "../lambdas/cmr-query"
+            f"{construct_id}-cmr-discovery-fn", "../lambdas/cmr-query",
+            env={
+                "CMR_API_URL": config.CMR_API_URL
+            }
         )
 
         # Cogify files
@@ -82,6 +85,7 @@ class LambdaStack(core.Stack):
             role=external_role,
             env={
                 "DATA_MANAGEMENT_ROLE_ARN": config.DATA_MANAGEMENT_ROLE_ARN,
+                "CMR_API_URL": config.CMR_API_URL
             },
         )
 

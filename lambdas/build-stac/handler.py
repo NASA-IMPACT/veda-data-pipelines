@@ -57,11 +57,15 @@ def handler(event: Dict[str, Any], context) -> Union[S3LinkOutput, StacItemOutpu
 
 if __name__ == "__main__":
     sample_event = {
-        "collection": "nightlights-hd-monthly",
-        "remote_fileurl": "s3://climatedashboard-data/delivery/BMHD_Maria_Stages/BeforeMaria_Stage0_2017-07-21_2017-09-19.tif",
-        "granule_id": None,
-        "datetime_range": None,
-        "start_datetime": None,
-        "end_datetime": None
+        "collection": "GEDI02_B",
+        "remote_fileurl": "s3://nasa-maap-data-store/file-staging/nasa-map/GEDI02_B___002/2020.12.31/GEDI02_B_2020366232302_O11636_02_T08595_02_003_01_V002.h5",
+        "granule_id": "G1201538384-NASA_MAAP",
+        "id": "G1201538384-NASA_MAAP",
+        "mode": "cmr",
+        "asset_name": "data",
+        "asset_roles": [
+            "data"
+        ],
+        "asset_media_type": "application/x-hdf5"
     }
     print(json.dumps(handler(sample_event, {}), indent=2))

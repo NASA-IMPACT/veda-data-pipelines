@@ -19,8 +19,6 @@ def handler(event, context):
     version = event["version"]
 
     temporal = event.get("temporal", ["1000-01-01T00:00:00Z", "3000-01-01T23:59:59Z"])
-    startdate = dt.datetime.strptime(temporal[0], "%Y-%m-%dT%H:%M:%SZ")
-    enddate = dt.datetime.strptime(temporal[1], "%Y-%m-%dT%H:%M:%SZ")
     page = event.get('start_after', 1)
     limit = event.get('limit', 100)
 
@@ -41,11 +39,11 @@ def handler(event, context):
         # Decide if we should continue after this page
         # Start paging if there are more hits than the limit
         # Stop paging when there are no more results to return
-        if len(granules) > 0 and int(hits) > limit*page:
+        if len(granules) > 0 and int(hits) > limit*page:            
             print(f"Got {int(hits)} which is greater than {limit*page}")
-            print(f"Returning next page {event['start_after']}")
             page += 1
-            event['start_after'] = page
+            event['start_after'] = page            
+            print(f"Returning next page {event.get('start_after')}")
         else:
             event.pop('start_after')
 
@@ -72,7 +70,7 @@ def handler(event, context):
         granules_to_insert.append(file_obj)
 
     # Useful for testing locally with build-stac/handler.py
-    # print(json.dumps(granules_to_insert[0], indent=2))
+    print(json.dumps(granules_to_insert[0], indent=2))
     return_obj = {
         **event,
         "cogify": event.get("cogify", False),
@@ -85,13 +83,12 @@ def handler(event, context):
 if __name__ == "__main__":
     sample_event = {
         "queue_messages": "true",
-        "collection": "AFRISAR_DLR",
-        "temporal": ["2021-01-01T00:00:00Z", "2021-12-31T23:59:59Z"],
-        "version": "1",
+        "collection": "GEDI02_B",
+        "temporal": ["2020-01-01T00:00:00Z", "2020-01-31T23:59:59Z"],
+        "version": "002",
         "discovery": "cmr",
-        "cmr_api_url": "https://cmr.maap-project.org",
         "asset_name": "data",
         "asset_roles": ["data"],
-        "start_after": 4
+        "start_after": 13
     }
     handler(sample_event, {})
