@@ -39,10 +39,10 @@ def handler(event, context):
         # Decide if we should continue after this page
         # Start paging if there are more hits than the limit
         # Stop paging when there are no more results to return
-        if len(granules) > 0 and int(hits) > limit*page:            
+        if len(granules) > 0 and int(hits) > limit*page:
             print(f"Got {int(hits)} which is greater than {limit*page}")
             page += 1
-            event['start_after'] = page            
+            event['start_after'] = page
             print(f"Returning next page {event.get('start_after')}")
         else:
             event.pop('start_after')
