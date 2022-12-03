@@ -70,13 +70,12 @@ def handler(event, context):
         granules_to_insert.append(file_obj)
 
     # Useful for testing locally with build-stac/handler.py
-    print(json.dumps(granules_to_insert[0], indent=2))
+    # print(json.dumps(granules_to_insert[0], indent=2))
     return_obj = {
         **event,
         "cogify": event.get("cogify", False),
         "objects": granules_to_insert
     }
-    print(event)
     return return_obj
 
 
