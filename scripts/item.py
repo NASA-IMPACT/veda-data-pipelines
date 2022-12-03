@@ -28,9 +28,7 @@ def insert_items(files):
 
 @args_handler
 def insert(items):
-    print(items_path)
     files = data_files(items, items_path)
-    print(files)
     insert_items(files)
 
 
