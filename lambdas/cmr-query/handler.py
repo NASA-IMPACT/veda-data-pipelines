@@ -45,7 +45,7 @@ def handler(event, context):
             event['start_after'] = page
             print(f"Returning next page {event.get('start_after')}")
         else:
-            event.pop('start_after')
+            event.pop('start_after', None)
 
     granules_to_insert = []
     for granule in granules:
@@ -55,7 +55,7 @@ def handler(event, context):
                 if link["href"][-9:] == "stac.json" and link["href"][0:5] == "https":
                     granules_to_insert.append(link)
             else:
-                if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/s3#" or link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/data#":
+                if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/s3#":
                     href = link["href"]
                     file_obj = {
                         "collection": collection,
@@ -64,6 +64,7 @@ def handler(event, context):
                         "id": granule["id"],
                         "mode": event.get("mode")
                     }
+                    # don't overwrite the fileurl if it's already been discovered.
                     for key, value in event.items():
                         if 'asset' in key:
                             file_obj[key] = value
@@ -82,12 +83,10 @@ def handler(event, context):
 if __name__ == "__main__":
     sample_event = {
         "queue_messages": "true",
-        "collection": "GEDI02_B",
-        "temporal": ["2020-01-01T00:00:00Z", "2020-01-31T23:59:59Z"],
-        "version": "002",
+        "collection": "AfriSAR_UAVSAR_Coreg_SLC",
+        "version": "1",
         "discovery": "cmr",
         "asset_name": "data",
-        "asset_roles": ["data"],
-        "start_after": 13
+        "asset_roles": ["data"]
     }
     handler(sample_event, {})

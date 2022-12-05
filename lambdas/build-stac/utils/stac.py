@@ -2,6 +2,7 @@ import os
 import json
 import geojson
 from pathlib import Path
+import requests
 from functools import singledispatch
 
 import pystac
@@ -163,9 +164,19 @@ def generate_geometry_from_cmr(cmr_json) -> dict:
     """
     Generates geoJSON object from list of coordinates provided in CMR JSON
     """
+    str_coords = None
     if cmr_json.get('polygons'):
         str_coords = cmr_json['polygons'][0][0].split()
+    elif cmr_json.get("boxes"):
+        str_coords = cmr_json['boxes'][0].split()
+
+    if str_coords:
         polygon_coords = [(float(x), float(y)) for x,y in pairwise(str_coords)]
+        print(polygon_coords)
+        if len(polygon_coords) == 2:
+            polygon_coords.insert(1, (polygon_coords[1][0], polygon_coords[0][1]))
+            polygon_coords.insert(3, (polygon_coords[0][0], polygon_coords[2][1]))
+            polygon_coords.insert(4, polygon_coords[0])
         return {
             "coordinates": [polygon_coords],
             "type": "Polygon"
@@ -173,11 +184,16 @@ def generate_geometry_from_cmr(cmr_json) -> dict:
     else:
         return None
 
-def gen_asset(role: str, link: dict, asset_type: str) -> pystac.Asset:
+def gen_asset(role: str, link: dict, item: dict) -> pystac.Asset:
+    if item.test_links and 'http' in link.get('href'):
+        response = requests.head(link.get('href'))
+        if response.status_code != 200:
+            print(f"Got error for link {link}")
+            return None
     return pystac.Asset(
         roles=[role],
         href=link.get('href'),
-        media_type=link.get('type', asset_type)
+        media_type=link.get('type', item.asset_media_type)
     )
 
 def get_assets_from_cmr(cmr_json, item) -> dict[pystac.Asset]:
@@ -192,17 +208,18 @@ def get_assets_from_cmr(cmr_json, item) -> dict[pystac.Asset]:
             extension = os.path.splitext(link['href'])[-1].replace('.', '')
             if extension == 'prj':
                 role = 'metadata'
-            assets[extension] = pystac.Asset(
-                roles=['data'],
-                href=link.get('href'),
-                media_type=link.get('type')
-            )
+            if extension != '':
+                assets[extension] = pystac.Asset(
+                    roles=['data'],
+                    href=link.get('href'),
+                    media_type=link.get('type')
+                )
         if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/s3#":
-            assets['data'] = gen_asset('data', link, item.asset_media_type)
+            assets['data'] = gen_asset('data', link, item)
         if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/metadata#" and 'metadata' not in assets:
-            assets['metadata'] = gen_asset('metadata', link, None)
+            assets['metadata'] = gen_asset('metadata', link, item)
         if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/documentation#" and 'documentation' not in assets:
-            assets['documentation'] = gen_asset('documentation', link, None)
+            assets['documentation'] = gen_asset('documentation', link, item)
     return assets
 
 def cmr_api_url() -> str:

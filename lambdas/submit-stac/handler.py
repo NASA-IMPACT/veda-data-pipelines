@@ -130,283 +130,82 @@ def handler(event: Union[S3LinkInput, StacItemInput], context) -> None:
 if __name__ == "__main__":
     filename = "example.ndjson"
     sample_event = {
-        "stac_item": {
+         "stac_item": {
             "type": "Feature",
             "stac_version": "1.0.0",
-            "id": "GEDI02_B_2020366232302_O11636_02_T08595_02_003_01_V002",
+            "id": "uavsar_AfriSAR_v1_SLC-twenty_14044_16008_003_160225_L090",
             "properties": {
-            "producer_granule_id": "GEDI02_B_2020366232302_O11636_02_T08595_02_003_01_V002.h5",
-            "time_start": "2020-12-31T23:23:02.000Z",
-            "updated": "2021-09-16T13:37:33.255Z",
-            "dataset_id": "GEDI L2B Canopy Cover and Vertical Profile Metrics Data Global Footprint Level V002",
-            "data_center": "NASA_MAAP",
-            "title": "SC:GEDI02_B.002:2479608683",
-            "coordinate_system": "GEODETIC",
-            "day_night_flag": "UNSPECIFIED",
-            "time_end": "2021-01-01T00:55:54.000Z",
-            "original_format": "ECHO10",
-            "granule_size": "663.926",
-            "browse_flag": False,
-            "polygons": [
-                [
-                "-0.2640931 -7.5942986 2.7932293 -5.4398834 5.8454799 -3.2726337 8.8866541 -1.0780887 11.9114801 1.1566424 14.9130173 3.4473936 17.8848238 5.8091107 20.8197692 8.2582584 23.7095027 10.8132661 26.544827 13.4937214 29.3157925 16.3194844 32.0107917 19.3138675 34.6167406 22.4998778 37.1188361 25.9025215 39.4994854 29.547296 41.7401324 33.4580782 43.8184058 37.6568137 45.7114327 42.1594278 47.3924312 46.9745689 48.8360387 52.0968745 50.0150151 57.5065964 50.9057461 63.1637517 51.4875696 69.0098772 51.7455864 74.9686714 51.7565444 75.9660086 51.8427388 75.987172 51.8319445 74.9875826 51.5742477 69.0162927 50.9925629 63.1585731 50.1015707 57.4905648 48.9214244 52.0711538 47.4763487 46.9406189 45.7935181 42.1186894 43.8986719 37.6106335 41.8182714 33.4077396 39.5757225 29.4937108 37.1932254 25.8465441 34.689305 22.442235 32.0816387 19.2550737 29.3850463 16.2598944 26.6126275 13.4337206 23.7760066 10.7530123 20.885204 8.197866 17.9493436 5.748683 14.9767598 3.3869977 11.9745821 1.0962992 8.9492949 -1.1383706 5.9077824 -3.3328705 2.855375 -5.5001079 -0.2019723 -7.6545299 -0.2640931 -7.5942986"
-                ]
+            "boxes": [
+                "-2.0677778 9.1694444 0.61 11.8641667"
             ],
-            "collection_concept_id": "C1201460047-NASA_MAAP",
+            "time_start": "2016-02-25T00:00:00.000Z",
+            "updated": "2019-03-07T21:22:05.563Z",
+            "dataset_id": "AfriSAR UAVSAR Coregistered SLCs Generated Using NISAR Tools",
+            "data_center": "NASA_MAAP",
+            "title": "uavsar_AfriSAR_v1_SLC-twenty_14044_16008_003_160225_L090.vrt",
+            "coordinate_system": "CARTESIAN",
+            "time_end": "2016-03-08T00:00:00.000Z",
+            "original_format": "ECHO10",
+            "browse_flag": True,
+            "collection_concept_id": "C1200000308-NASA_MAAP",
             "online_access_flag": False,
             "links": [
                 {
                 "rel": "http://esipfed.org/ns/fedsearch/1.1/s3#",
                 "title": "File to download",
                 "hreflang": "en-US",
-                "href": "s3://nasa-maap-data-store/file-staging/nasa-map/GEDI02_B___002/2020.12.31/GEDI02_B_2020366232302_O11636_02_T08595_02_003_01_V002.h5"
+                "href": "s3://nasa-maap-data-store/file-staging/circleci/AfriSAR_UAVSAR_Coreg_SLC___1/uavsar_AfriSAR_v1_SLC-twenty_14044_16008_003_160225_L090.vrt"
+                },
+                {
+                "rel": "http://esipfed.org/ns/fedsearch/1.1/browse#",
+                "title": "(BROWSE)",
+                "hreflang": "en-US",
+                "href": "s3://nasa-maap-data-store/file-staging/circleci/AfriSAR_UAVSAR_Coreg_SLC___1/uavsar_AfriSAR_v1_SLC-twenty_14044_16008_003_160225_L090.vrt.cog.tif"
+                },
+                {
+                "rel": "http://esipfed.org/ns/fedsearch/1.1/metadata#",
+                "title": "WMS GetMap Resource (VisualizationURL)",
+                "hreflang": "en-US",
+                "href": "https://api.maap.xyz/api/wms/GetMap?SERVICE=WMS&VERSION=1.1.0&REQUEST=GetMap&LAYERS=uavsar_AfriSAR_v1_SLC-twenty_14044_16008_003_160225_L090.vrt"
                 },
                 {
                 "inherited": True,
-                "rel": "http://esipfed.org/ns/fedsearch/1.1/metadata#",
+                "rel": "http://esipfed.org/ns/fedsearch/1.1/data#",
                 "hreflang": "en-US",
-                "href": "https://doi.org/10.5067/GEDI/GEDI02_B.002"
-                },
-                {
-                "inherited": True,
-                "rel": "http://esipfed.org/ns/fedsearch/1.1/metadata#",
-                "hreflang": "en-US",
-                "href": "https://gedi.umd.edu/"
-                },
-                {
-                "inherited": True,
-                "rel": "http://esipfed.org/ns/fedsearch/1.1/metadata#",
-                "hreflang": "en-US",
-                "href": "https://lpdaac.usgs.gov/products/gedi02_bv002/"
+                "href": "s3://nasa-maap-data-store/file-staging/nasa-map/AfriSAR_UAVSAR_Coreg_SLC___1"
                 },
                 {
                 "inherited": True,
                 "rel": "http://esipfed.org/ns/fedsearch/1.1/documentation#",
                 "hreflang": "en-US",
-                "href": "https://lpdaac.usgs.gov/documents/587/gedi_l2b_dictionary_P001_v1.html"
-                },
-                {
-                "inherited": True,
-                "rel": "http://esipfed.org/ns/fedsearch/1.1/documentation#",
-                "hreflang": "en-US",
-                "href": "https://doi.org/10.5067/DOC/GEDI/GEDI_WF_ATBD.001"
-                },
-                {
-                "inherited": True,
-                "rel": "http://esipfed.org/ns/fedsearch/1.1/documentation#",
-                "hreflang": "en-US",
-                "href": "https://doi.org/10.5067/DOC/GEDI/GEDI_FCCVPM_ATBD.001"
+                "href": "https://ieeexplore.ieee.org/document/8469014"
                 }
             ],
-            "concept_id": "G1201538384-NASA_MAAP",
-            "datetime": "2020-12-31T23:23:02Z"
+            "concept_id": "G1200040264-NASA_MAAP",
+            "datetime": "2016-02-25T00:00:00Z"
             },
             "geometry": {
             "coordinates": [
                 [
                 [
-                    -0.2640931,
-                    -7.5942986
+                    -2.0677778,
+                    9.1694444
                 ],
                 [
-                    2.7932293,
-                    -5.4398834
+                    0.61,
+                    9.1694444
                 ],
                 [
-                    5.8454799,
-                    -3.2726337
+                    0.61,
+                    11.8641667
                 ],
                 [
-                    8.8866541,
-                    -1.0780887
+                    -2.0677778,
+                    11.8641667
                 ],
                 [
-                    11.9114801,
-                    1.1566424
-                ],
-                [
-                    14.9130173,
-                    3.4473936
-                ],
-                [
-                    17.8848238,
-                    5.8091107
-                ],
-                [
-                    20.8197692,
-                    8.2582584
-                ],
-                [
-                    23.7095027,
-                    10.8132661
-                ],
-                [
-                    26.544827,
-                    13.4937214
-                ],
-                [
-                    29.3157925,
-                    16.3194844
-                ],
-                [
-                    32.0107917,
-                    19.3138675
-                ],
-                [
-                    34.6167406,
-                    22.4998778
-                ],
-                [
-                    37.1188361,
-                    25.9025215
-                ],
-                [
-                    39.4994854,
-                    29.547296
-                ],
-                [
-                    41.7401324,
-                    33.4580782
-                ],
-                [
-                    43.8184058,
-                    37.6568137
-                ],
-                [
-                    45.7114327,
-                    42.1594278
-                ],
-                [
-                    47.3924312,
-                    46.9745689
-                ],
-                [
-                    48.8360387,
-                    52.0968745
-                ],
-                [
-                    50.0150151,
-                    57.5065964
-                ],
-                [
-                    50.9057461,
-                    63.1637517
-                ],
-                [
-                    51.4875696,
-                    69.0098772
-                ],
-                [
-                    51.7455864,
-                    74.9686714
-                ],
-                [
-                    51.7565444,
-                    75.9660086
-                ],
-                [
-                    51.8427388,
-                    75.987172
-                ],
-                [
-                    51.8319445,
-                    74.9875826
-                ],
-                [
-                    51.5742477,
-                    69.0162927
-                ],
-                [
-                    50.9925629,
-                    63.1585731
-                ],
-                [
-                    50.1015707,
-                    57.4905648
-                ],
-                [
-                    48.9214244,
-                    52.0711538
-                ],
-                [
-                    47.4763487,
-                    46.9406189
-                ],
-                [
-                    45.7935181,
-                    42.1186894
-                ],
-                [
-                    43.8986719,
-                    37.6106335
-                ],
-                [
-                    41.8182714,
-                    33.4077396
-                ],
-                [
-                    39.5757225,
-                    29.4937108
-                ],
-                [
-                    37.1932254,
-                    25.8465441
-                ],
-                [
-                    34.689305,
-                    22.442235
-                ],
-                [
-                    32.0816387,
-                    19.2550737
-                ],
-                [
-                    29.3850463,
-                    16.2598944
-                ],
-                [
-                    26.6126275,
-                    13.4337206
-                ],
-                [
-                    23.7760066,
-                    10.7530123
-                ],
-                [
-                    20.885204,
-                    8.197866
-                ],
-                [
-                    17.9493436,
-                    5.748683
-                ],
-                [
-                    14.9767598,
-                    3.3869977
-                ],
-                [
-                    11.9745821,
-                    1.0962992
-                ],
-                [
-                    8.9492949,
-                    -1.1383706
-                ],
-                [
-                    5.9077824,
-                    -3.3328705
-                ],
-                [
-                    2.855375,
-                    -5.5001079
-                ],
-                [
-                    -0.2019723,
-                    -7.6545299
-                ],
-                [
-                    -0.2640931,
-                    -7.5942986
+                    -2.0677778,
+                    9.1694444
                 ]
                 ]
             ],
@@ -415,40 +214,40 @@ if __name__ == "__main__":
             "links": [
             {
                 "rel": "self",
-                "href": "s3://nasa-maap-data-store/file-staging/nasa-map/GEDI02_B___002/2020.12.31/GEDI02_B_2020366232302_O11636_02_T08595_02_003_01_V002.h5",
+                "href": "s3://nasa-maap-data-store/file-staging/circleci/AfriSAR_UAVSAR_Coreg_SLC___1/uavsar_AfriSAR_v1_SLC-twenty_14044_16008_003_160225_L090.vrt",
                 "type": "application/json"
             }
             ],
             "assets": {
             "data": {
-                "href": "s3://nasa-maap-data-store/file-staging/nasa-map/GEDI02_B___002/2020.12.31/GEDI02_B_2020366232302_O11636_02_T08595_02_003_01_V002.h5",
-                "type": "application/x-hdf5",
+                "href": "s3://nasa-maap-data-store/file-staging/circleci/AfriSAR_UAVSAR_Coreg_SLC___1/uavsar_AfriSAR_v1_SLC-twenty_14044_16008_003_160225_L090.vrt",
                 "roles": [
                 "data"
                 ]
             },
             "metadata": {
-                "href": "https://doi.org/10.5067/GEDI/GEDI02_B.002",
+                "href": "https://api.maap.xyz/api/wms/GetMap?SERVICE=WMS&VERSION=1.1.0&REQUEST=GetMap&LAYERS=uavsar_AfriSAR_v1_SLC-twenty_14044_16008_003_160225_L090.vrt",
                 "roles": [
                 "metadata"
                 ]
             },
             "documentation": {
-                "href": "https://lpdaac.usgs.gov/documents/587/gedi_l2b_dictionary_P001_v1.html",
+                "href": "https://ieeexplore.ieee.org/document/8469014",
                 "roles": [
                 "documentation"
                 ]
             }
             },
             "bbox": [
-            -0.2640931,
-            -7.6545299,
-            51.8427388,
-            75.987172
+            -2.0677778,
+            9.1694444,
+            0.61,
+            11.8641667
             ],
             "stac_extensions": [],
-            "collection": "GEDI02_B"
+            "collection": "AfriSAR_UAVSAR_Coreg_SLC",
+            "test_links": True
         }
-        }
+    }
 
     handler(sample_event, {})

@@ -32,14 +32,16 @@ def cmr_records(collection):
     url = f"{CMR_STAC_ENDPOINT}/{provider}/collections/{collection}"
     print(url)
     response = requests.get(url)
-    print(response.status_code)
-    filename = f"../data/collections/{collection}.json"
-    with open(filename, "w+") as f:
-        data = json.loads(response.text)
-        json.dump(data, f, indent=2)
-        f.close()
-    print (f"Wrote to file {filename}")
-    return filename
+    if response.status_code == 200:
+        filename = f"../data/collections/{collection}.json"
+        with open(filename, "w+") as f:
+            data = json.loads(response.text)
+            json.dump(data, f, indent=2)
+            f.close()
+        print (f"Wrote to file {filename}")
+        return filename
+    else:
+        print(f"Got {response.status_code} resonse for {url}")
 
 def data_files(data, data_path):
     files = []

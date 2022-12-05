@@ -20,6 +20,7 @@ class BaseEvent(BaseModel, frozen=True):
     asset_media_type: Optional[Union[str, pystac.MediaType]] = None
     assets: Optional[List[Dict]] = None
     mode: Optional[str] = None
+    test_links: Optional[bool] = False
 
     def item_id(self: "BaseEvent") -> str:
         if self.id_regex:

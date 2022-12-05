@@ -1,0 +1,11 @@
+{
+    "queue_messages": "true",
+    "collection": "GEDI02_A",
+    "version": "002",
+    "discovery": "cmr",
+    "temporal": ["2020-01-01T00:00:00Z", "2020-01-31T23:59:59Z"],
+    "mode": "cmr",
+    "asset_name": "data",
+    "asset_roles": ["data"],
+    "asset_media_type": "application/x-hdf5"
+}

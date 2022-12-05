@@ -57,15 +57,15 @@ def handler(event: Dict[str, Any], context) -> Union[S3LinkOutput, StacItemOutpu
 
 if __name__ == "__main__":
     sample_event = {
-        "collection": "GEDI02_B",
-        "remote_fileurl": "s3://nasa-maap-data-store/file-staging/nasa-map/GEDI02_B___002/2020.12.31/GEDI02_B_2020366232302_O11636_02_T08595_02_003_01_V002.h5",
-        "granule_id": "G1201538384-NASA_MAAP",
-        "id": "G1201538384-NASA_MAAP",
+        "collection": "AfriSAR_UAVSAR_Coreg_SLC",
+        "remote_fileurl": "s3://nasa-maap-data-store/file-staging/circleci/AfriSAR_UAVSAR_Coreg_SLC___1/uavsar_AfriSAR_v1_SLC-localInc.rdr",
+        "granule_id": "G1200040223-NASA_MAAP",
+        "id": "G1200040223-NASA_MAAP",
         "mode": "cmr",
         "asset_name": "data",
         "asset_roles": [
             "data"
         ],
-        "asset_media_type": "application/x-hdf5"
+        "test_links": True
     }
     print(json.dumps(handler(sample_event, {}), indent=2))
