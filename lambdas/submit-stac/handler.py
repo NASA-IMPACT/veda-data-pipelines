@@ -245,8 +245,7 @@ if __name__ == "__main__":
             11.8641667
             ],
             "stac_extensions": [],
-            "collection": "AfriSAR_UAVSAR_Coreg_SLC",
-            "test_links": True
+            "collection": "AfriSAR_UAVSAR_Coreg_SLC"
         }
     }
 

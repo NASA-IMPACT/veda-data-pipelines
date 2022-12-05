@@ -58,9 +58,9 @@ def handler(event: Dict[str, Any], context) -> Union[S3LinkOutput, StacItemOutpu
 if __name__ == "__main__":
     sample_event = {
         "collection": "AfriSAR_UAVSAR_Coreg_SLC",
-        "remote_fileurl": "s3://nasa-maap-data-store/file-staging/circleci/AfriSAR_UAVSAR_Coreg_SLC___1/uavsar_AfriSAR_v1_SLC-localInc.rdr",
-        "granule_id": "G1200040223-NASA_MAAP",
-        "id": "G1200040223-NASA_MAAP",
+        "remote_fileurl": "s3://nasa-maap-data-store/file-staging/circleci/AfriSAR_UAVSAR_Coreg_SLC___1/uavsar_AfriSAR_v1_SLC-height_14051_16015_010_160308_L090.vrt",
+        "granule_id": "G1200040278-NASA_MAAP",
+        "id": "G1200040278-NASA_MAAP",
         "mode": "cmr",
         "asset_name": "data",
         "asset_roles": [

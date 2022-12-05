@@ -62,7 +62,8 @@ def handler(event, context):
                         "remote_fileurl": href,
                         "granule_id": granule["id"],
                         "id": granule["id"],
-                        "mode": event.get("mode")
+                        "mode": event.get("mode"),
+                        "test_links": event.get("test_links")
                     }
                     # don't overwrite the fileurl if it's already been discovered.
                     for key, value in event.items():

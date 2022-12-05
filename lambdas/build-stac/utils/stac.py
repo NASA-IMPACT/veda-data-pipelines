@@ -186,9 +186,10 @@ def generate_geometry_from_cmr(cmr_json) -> dict:
 
 def gen_asset(role: str, link: dict, item: dict) -> pystac.Asset:
     if item.test_links and 'http' in link.get('href'):
-        response = requests.head(link.get('href'))
-        if response.status_code != 200:
-            print(f"Got error for link {link}")
+        try:
+            requests.head(link.get('href'))
+        except Exception as e:
+            print(f"Caught error for link {link}: {e}")
             return None
     return pystac.Asset(
         roles=[role],
@@ -215,11 +216,17 @@ def get_assets_from_cmr(cmr_json, item) -> dict[pystac.Asset]:
                     media_type=link.get('type')
                 )
         if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/s3#":
-            assets['data'] = gen_asset('data', link, item)
+            asset = gen_asset('data', link, item)
+            if asset:
+                assets['data'] = asset
         if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/metadata#" and 'metadata' not in assets:
-            assets['metadata'] = gen_asset('metadata', link, item)
+            asset = gen_asset('metadata', link, item)
+            if asset:
+                assets['metadata'] = asset
         if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/documentation#" and 'documentation' not in assets:
-            assets['documentation'] = gen_asset('documentation', link, item)
+            asset = gen_asset('documentation', link, item)
+            if asset:
+                assets['documentation'] = asset
     return assets
 
 def cmr_api_url() -> str:
