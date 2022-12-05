@@ -18,7 +18,7 @@ def create_item(
     assets=None,
     asset_name=None,
     asset_roles=None,
-    asset_media_type=None
+    asset_media_type=None,
 ) -> pystac.Item:
     """
     Function to create a stac item from a COG using rio_stac
@@ -37,8 +37,8 @@ def create_item(
             asset_name=asset_name or "cog_default",
             asset_roles=asset_roles or ["data", "layer"],
             asset_media_type=(
-                    asset_media_type
-                    or "image/tiff; application=geotiff; profile=cloud-optimized"
+                asset_media_type
+                or "image/tiff; application=geotiff; profile=cloud-optimized"
             ),
         )
         return create_stac_item_respose
@@ -50,16 +50,14 @@ def create_item(
     if role_arn := os.environ.get("EXTERNAL_ROLE_ARN"):
         creds = role.assume_role(role_arn, "veda-data-pipelines_build-stac")
     rasterio_kwargs["session"] = AWSSession(
-            aws_access_key_id=creds["AccessKeyId"],
-            aws_secret_access_key=creds["SecretAccessKey"],
-            aws_session_token=creds["SessionToken"],
-        )
+        aws_access_key_id=creds["AccessKeyId"],
+        aws_secret_access_key=creds["SecretAccessKey"],
+        aws_session_token=creds["SessionToken"],
+    )
     with rasterio.Env(
         session=rasterio_kwargs["session"],
-        options={
-                **rasterio_kwargs
-            },
-        ):
+        options={**rasterio_kwargs},
+    ):
         create_stac_item_resp = create_stac_item()
         return create_stac_item_resp
 
@@ -97,7 +95,7 @@ def generate_stac_regexevent(item: events.RegexEvent) -> pystac.Item:
         collection=item.collection,
         asset_name=item.asset_name,
         asset_roles=item.asset_roles,
-        asset_media_type=item.asset_media_type
+        asset_media_type=item.asset_media_type,
     )
     return create_item_response
 

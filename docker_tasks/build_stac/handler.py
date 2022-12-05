@@ -72,42 +72,49 @@ def write_outputs_to_s3(key, payload_success, payload_failures):
 
 
 def stac_handler(payload_event):
-    s3_event = payload_event.pop('payload')
-    collection = payload_event.get('collection', 'not_provided')
-    bucket_output = os.environ['EVENT_BUCKET']
+    s3_event = payload_event.pop("payload")
+    collection = payload_event.get("collection", "not_provided")
+    bucket_output = os.environ["EVENT_BUCKET"]
     key = f"s3://{bucket_output}/events/{collection}"
     payload_success = []
     payload_failures = []
     with smart_open.open(s3_event, "r") as _file:
         s3_event_read = _file.read()
     event_received = json.loads(s3_event_read)
-    objects = event_received['objects']
+    objects = event_received["objects"]
     payloads = using_pool(objects)
     for payload in payloads:
-        stac_item = payload['stac_item']
+        stac_item = payload["stac_item"]
         if "error" in stac_item:
             payload_failures.append(stac_item)
         else:
             payload_success.append(stac_item)
-    success_key, dead_letter_key = write_outputs_to_s3(key=key, payload_success=payload_success,
-                                                       payload_failures=payload_failures)
+    success_key, dead_letter_key = write_outputs_to_s3(
+        key=key, payload_success=payload_success, payload_failures=payload_failures
+    )
 
-    return {"payload": {"success_event_key": success_key, "failed_event_key": dead_letter_key,
-            "status": {"successes": len(payload_success), "failures": len(payload_failures)}}}
+    return {
+        "payload": {
+            "success_event_key": success_key,
+            "failed_event_key": dead_letter_key,
+            "status": {
+                "successes": len(payload_success),
+                "failures": len(payload_failures),
+            },
+        }
+    }
 
 
 if __name__ == "__main__":
     parser = ArgumentParser(
         prog="build_stac",
         description="Build STAC",
-        epilog="Contact Abdelhak Marouane for extra help"
+        epilog="Contact Abdelhak Marouane for extra help",
     )
-    parser.add_argument('--payload', dest='payload',
-                        help="Events to pass to ")
+    parser.add_argument("--payload", dest="payload", help="Events to pass to ")
     args = parser.parse_args()
 
     payload_event = ast.literal_eval(args.payload)
     building_stac_response = stac_handler(payload_event)
     response = {**payload_event, **building_stac_response}
     print(response)
-

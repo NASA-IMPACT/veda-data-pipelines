@@ -8,19 +8,22 @@ import json
 import time
 
 
+group_kwgs = {"group_id": "Discover", "tooltip": "Discover"}
 
-group_kwgs = {
-    "group_id": "Discover",
-    "tooltip": "Discover"
-}
 
 def get_payload(ti_xcom_pull):
-    task_ids=[f"{group_kwgs['group_id']}.discover_from_s3", f"{group_kwgs['group_id']}.discover_from_cmr"]
-    return [ payload for payload in ti_xcom_pull(task_ids=task_ids) if payload is not None][0]
+    task_ids = [
+        f"{group_kwgs['group_id']}.discover_from_s3",
+        f"{group_kwgs['group_id']}.discover_from_cmr",
+    ]
+    return [
+        payload for payload in ti_xcom_pull(task_ids=task_ids) if payload is not None
+    ][0]
 
 
 def discover_from_cmr_task(text):
     return {"place_holder": text}
+
 
 def discover_from_s3_task(ti):
     config = ti.dag_run.conf
@@ -30,65 +33,61 @@ def discover_from_s3_task(ti):
 def run_process_task(ti, dag_id):
     payload = get_payload(ti.xcom_pull)
     os.environ["PYTHONWARNINGS"] = "ignore"
-    payloads_xcom = payload.pop('payload', [])
+    payloads_xcom = payload.pop("payload", [])
     successes = []
     failures = []
     for payload_xcom in payloads_xcom:
         time.sleep(2)
-        dag_conf = {**payload, 'payload': payload_xcom}
-        out = subprocess.run(["airflow", 'dags', 'trigger', '-c', json.dumps(dag_conf), dag_id],
-                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+        dag_conf = {**payload, "payload": payload_xcom}
+        out = subprocess.run(
+            ["airflow", "dags", "trigger", "-c", json.dumps(dag_conf), dag_id],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
         if out.stderr:
-            failures.append(f'failed to run {dag_id}: {out.stderr}')
+            failures.append(f"failed to run {dag_id}: {out.stderr}")
         else:
             successes.append(f"message: {out.stdout}")
-    return {"payload": {"failure_msg": failures,
-                        "stats": {"success": len(successes), "failure": len(failures)}}}
-
+    return {
+        "payload": {
+            "failure_msg": failures,
+            "stats": {"success": len(successes), "failure": len(failures)},
+        }
+    }
 
 
 def discover_choice(ti):
 
     config = ti.dag_run.conf
 
-    supported_discoveries = {
-        "s3": "discover_from_s3",
-        "cmr": "discover_from_cmr"
-    }
-    
-    
+    supported_discoveries = {"s3": "discover_from_s3", "cmr": "discover_from_cmr"}
+
     return f"{group_kwgs['group_id']}.{supported_discoveries[config['discovery']]}"
 
 
 def subdag_discover():
-    with TaskGroup(
-        **group_kwgs
-    ) as discover_grp:
+    with TaskGroup(**group_kwgs) as discover_grp:
         discover_branching = BranchPythonOperator(
-        task_id="discover_branching",
-        python_callable = discover_choice
-    )
+            task_id="discover_branching", python_callable=discover_choice
+        )
 
         discover_from_cmr = PythonOperator(
             task_id="discover_from_cmr",
             python_callable=discover_from_cmr_task,
-            op_kwargs={'text': "Discover from CMR"}
-
-    )
+            op_kwargs={"text": "Discover from CMR"},
+        )
         discover_from_s3 = PythonOperator(
             task_id="discover_from_s3",
             python_callable=discover_from_s3_task,
-            op_kwargs={'text': "Discover from S3"}
-      
-    )
+            op_kwargs={"text": "Discover from S3"},
+        )
         run_process = PythonOperator(
             task_id="parallel_run_process_tasks",
             python_callable=run_process_task,
             op_kwargs={"dag_id": "veda_ingest_pipeline"},
-            trigger_rule=TriggerRule.ONE_SUCCESS
-
+            trigger_rule=TriggerRule.ONE_SUCCESS,
         )
-
 
         discover_branching >> [discover_from_cmr, discover_from_s3] >> run_process
         return discover_grp

@@ -5,21 +5,14 @@ from airflow.utils.trigger_rule import TriggerRule
 import pendulum
 
 dag_args = {
-    "start_date": pendulum.today('UTC').add(days=-1),
+    "start_date": pendulum.today("UTC").add(days=-1),
     "schedule_interval": None,
-    "catchup": False
+    "catchup": False,
 }
 
-with DAG('veda_ingest_pipeline', **dag_args) as dag:
-    start = DummyOperator(
-        task_id="Start",
-        dag=dag
-    )
-    end = DummyOperator(
-        task_id="End",
-        trigger_rule=TriggerRule.ONE_SUCCESS,
-        dag=dag
-    )
+with DAG("veda_ingest_pipeline", **dag_args) as dag:
+    start = DummyOperator(task_id="Start", dag=dag)
+    end = DummyOperator(task_id="End", trigger_rule=TriggerRule.ONE_SUCCESS, dag=dag)
 
     process_grp = subdag_process()
 
