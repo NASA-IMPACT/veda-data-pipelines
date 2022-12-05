@@ -3,6 +3,15 @@
 This repo houses function code and deployment code for producing cloud-optimized
 data products and STAC metadata for interfaces such as https://github.com/NASA-IMPACT/delta-ui.
 
+## Project layout
+
+- [dags](./dags/) contains the Directed Acyclic Graphs which constitute Airflow state machines. This includes the python for running each task as well as the python definitions of the structure of these DAGs
+- [data](./data/) contains JSON files which define ingests of collections and items
+- [docker_tasks](./docker_tasks/) contains definitions tasks which we want to run in docker containers either because these tasks have special, unique dependencies or for the sake of performance (e.g. using multiprocessing)
+- [infrastructure](./infrastructure/) contains the terraform necessary to deploy all resources to AWS
+- [scripts](./scripts/) contains bash and python scripts useful for deploying and for running ingests
+
+
 ## Requirements
 
 ### Docker
