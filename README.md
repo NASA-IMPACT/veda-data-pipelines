@@ -9,15 +9,13 @@ data products and STAC metadata for interfaces such as https://github.com/NASA-I
 
 See [get-docker](https://docs.docker.com/get-docker/)
 
-### AWS CDK
+### Terraform 
 
-See [cdk-getting-started](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html)
+See [terraform-getting-started](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
 
-```bash
-nvm install 17.3.0
-nvm use 17.3.0
-npm install -g aws-cdk
-```
+### AWS CLI
+
+See [getting-started-install](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 
 ### Poetry
 
@@ -29,48 +27,25 @@ pip install poetry
 
 ## Deployment
 
-This project uses AWS CDK to deploy AWS resources to the cloud.
+This project uses Terraform modules to deploy Apache Airflow and related AWS resources using Amazon's managed Airflow provider.
 
-### Make sure the following environment variables are set
+### Make sure that environment variables are set
 
-```bash
-ENV="<dev/staging/prod>"
-SECRET_NAME="<secret-name-for-database>"
-COGNITO_APP_SECRET="<secret-name-for-pgstac-access>"
-APP_NAME="veda-data-pipelines"
-STAC_INGESTOR_URL="<url-for-ingestor-api>"
-EXTERNAL_ROLE_ARN="<arn-for-external-role-permissions>"
-```
-
-**Note:** You can use the handy `env.sample.sh` script to set these variables. Just rename the file to `env.sh` and populate it with appropriate values. Then run the following commands:
+[.env.example`](./.env.example) contains the environment variables which are necessary to deploy. Copy this file and update its contents with actual values. The deploy script will `source` and use this file during deployment when provided through the command line:
 
 ```bash
-chmod +x env.sh
-source env.sh <dev/staging>
+# Copy .env.example to a new file
+$cp .env.example .env
+# Fill values for the environments variables
+
+# Init terraform modules
+$bash ./scripts/deploy.sh .env <<< init
+
+# Deploy
+$bash ./scripts/deploy.sh .env <<< deploy
 ```
 
-> If anything other than dev/stage is provided as the env, the dev credentials are used (for now).
-
-## To deploy
-
-### Using poetry
-
-```bash
-# deploy
-poetry run deploy
-
-# destroy
-poetry run destroy
-```
-
-### Else
-
-1. Go to `deploy/` directory
-2. Create a virtual environment with `python -m venv venv`
-3. Activate the virtual environment with `source venv/bin/activate`
-4. Install the requirements with `pip install -r requirements.txt`
-5. Run `cdk deploy --all`
-6. Useful: `cdk destroy --all` to destroy the infrastructure
+**Note:** Be careful not to check in `.env` (or whatever you called your env file) when committing work.
 
 # License
 This project is licensed under **Apache 2**, see the [LICENSE](LICENSE) file for more details.

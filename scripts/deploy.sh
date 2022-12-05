@@ -2,15 +2,13 @@
 # Check .env file
 
 
-
-
 DOT_ENV=$1
 
 if [ -f $DOT_ENV ]
 then
   set -a; source $DOT_ENV; set +a
 else
-  echo "Run: bash deploy.sh <.env_file>"
+  echo "Run: ./scripts/deploy.sh <.env_file>"
   echo "Please create $DOT_ENV file first and try again"
   exit 1
 fi
