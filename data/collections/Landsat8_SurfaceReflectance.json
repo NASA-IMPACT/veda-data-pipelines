@@ -1,0 +1,28 @@
+{
+  "id": "Landsat8_SurfaceReflectance",
+  "stac_version": "1.0.0",
+  "license": "not-provided",
+  "title": "Landsat 8 Operational Land Imager (OLI) Surface Reflectance Analysis Ready Data (ARD) V1, Peru and Equatorial Western Africa, April 2013-January 2020",
+  "type": "Collection",
+  "description": "Landsat Analysis Ready Data (ARD) are consistently processed to the highest scientific standards and level of processing required for direct use in monitoring and assessing landscape change. A fundamental goal for Landsat ARD is to significantly reduce the magnitude of data processing for application scientists, who currently have to download and prepare large amounts of Landsat scene-based data for time-series investigative analysis.This Landsat ARD dataset consists of Landsat 8 Operational Land Imager (OLI) Surface Reflectance are generated using the Landsat Surface Reflectance Code (LaSRC) code. Surface reflectance (SR) is generated for the AfriSAR region of interest and consistently processed using per pixel solar zenith angle corrections and gridded to a common cartographic projection.This collection is a subset over Peru (N: -4.73978, S: -9.72818, E: -75.58157, W: -79.80472) and equatorial western Africa (N: 3.93979, S: -5.39294, E: 16.50647, W: 7.9348) for 12 April 2013 to 29 January 2020.",
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [
+          -79.80472,
+          -9.72818,
+          16.50647,
+          3.93979
+        ]
+      ]
+    },
+    "temporal": {
+      "interval": [
+        [
+          "2013-04-12T09:28:35.404Z",
+          "2020-01-29T00:00:00.000Z"
+        ]
+      ]
+    }
+  }
+}

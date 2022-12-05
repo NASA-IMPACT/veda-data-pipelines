@@ -1,0 +1,31 @@
+{
+    "id": "aimeeb-shared",
+    "type": "Collection",
+    "links": [],
+    "title": "Data in aimeeb's workspace",
+    "extent": {
+        "spatial": {
+            "bbox": [
+                [
+                    -180, -90, 180, 90
+                ]
+            ]
+        }
+    },
+    "license": "MIT",
+    "description": "Data in aimeeb's workspace",
+    "item_assets": {
+        "cog_default": {
+            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+            "roles": [
+                "data",
+                "layer"
+            ],
+            "title": "Default COG Layer",
+            "description": "Cloud optimized default layer to display on map"
+        }
+    },
+    "stac_version": "1.0.0",
+    "dashboard:is_periodic": false,
+    "dashboard:time_density": null
+}
