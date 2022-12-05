@@ -19,7 +19,7 @@ resource "aws_ecs_task_definition" "veda_task_definition" {
       }
     }
   ])
-  family                   = "veda_tasks"
+  family                   = "${var.prefix}-veda-tasks"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = 1024

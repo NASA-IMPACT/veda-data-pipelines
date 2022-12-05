@@ -47,23 +47,23 @@ def subdag_process():
             trigger_rule='one_success',
             python_callable=cogify_choice
         )
-
+        mwaa_stack_conf = Variable.get('MWAA_STACK_CONF', deserialize_json=True)
         build_stac = ECSOperator(
             task_id='build_stac',
-            cluster="veda-uah-dev-cluster",
-            task_definition="veda_tasks",
+            cluster=f"{mwaa_stack_conf.get('PREFIX')}-cluster",
+            task_definition=f"{mwaa_stack_conf.get('PREFIX')}-veda-tasks",
             launch_type="FARGATE",
             do_xcom_push=True,
             overrides={
                 "containerOverrides": [
                     {
-                        "name": f"{Variable.get('PREFIX')}-veda-stac-build",
+                        "name": f"{mwaa_stack_conf.get('PREFIX')}-veda-stac-build",
                         "command": ["/usr/local/bin/python", "handler.py", "--payload",
                                     '{}'.format("{{ task_instance.dag_run.conf }}")],
                         "environment": [{"name": "EXTERNAL_ROLE_ARN",
-                                         "value": "arn:aws:iam::114506680961:role/veda-data-store-read-staging"},
+                                         "value": mwaa_stack_conf.get('ASSUME_ROLE_ARN')},
                                         {"name": "BUCKET", "value": "veda-data-pipelines-staging-lambda-ndjson-bucket"},
-                                        {"name": "EVENT_BUCKET", "value": Variable.get('EVENT_BUCKET')}
+                                        {"name": "EVENT_BUCKET", "value": mwaa_stack_conf.get('EVENT_BUCKET')}
                                         ],
                         "memory": 2048,
                         "cpu": 1024
@@ -72,12 +72,12 @@ def subdag_process():
             },
             network_configuration={
                 "awsvpcConfiguration": {
-                    "securityGroups": ["sg-0a60e15209e381cef"],
-                    "subnets": ["subnet-050c11a80c47b50e9", "subnet-0f3643ae200be05af"],
+                    "securityGroups": mwaa_stack_conf.get('SECURITYGROUPS'),
+                    "subnets": mwaa_stack_conf.get('SUBNETS'),
                 },
             },
-            awslogs_group=f"{Variable.get('PREFIX')}-stac_tasks",
-            awslogs_stream_prefix=f"ecs/{Variable.get('PREFIX')}-veda-stac-build",  # prefix with container name
+            awslogs_group=f"{mwaa_stack_conf.get('PREFIX')}-stac_tasks",
+            awslogs_stream_prefix=f"ecs/{mwaa_stack_conf.get('PREFIX')}-veda-stac-build",  # prefix with container name
         )
         cogify = PythonOperator(
             task_id="cogify",
