@@ -1,6 +1,6 @@
 import os
 import re
-
+import json
 import boto3
 
 
@@ -67,12 +67,12 @@ def handler(event, context):
 
 if __name__ == "__main__":
     sample_event = {
-        "bucket": "climatedashboard-data",
-        "prefix": "social_vulnerability_index/",
-        "filename_regex": "^(.*)_housing_(.*)$",
-        "collection": "social-vulnerability-index-housing",
-        "upload": True,
-        "cogify": False,
+        "collection": "aimeeb-shared",
+        "prefix": "aimeeb/my-shared-collection/",
+        "bucket": "maap-ops-workspace",
+        "filename_regex": "^(.*).tif$",
+        "discovery": "s3",
+        "upload": True
     }
 
-    handler(sample_event, {})
+    print(json.dumps(handler(sample_event, {}), indent=2))

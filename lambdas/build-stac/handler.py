@@ -57,15 +57,9 @@ def handler(event: Dict[str, Any], context) -> Union[S3LinkOutput, StacItemOutpu
 
 if __name__ == "__main__":
     sample_event = {
-        "collection": "AfriSAR_UAVSAR_Coreg_SLC",
-        "remote_fileurl": "s3://nasa-maap-data-store/file-staging/circleci/AfriSAR_UAVSAR_Coreg_SLC___1/uavsar_AfriSAR_v1_SLC-height_14051_16015_010_160308_L090.vrt",
-        "granule_id": "G1200040278-NASA_MAAP",
-        "id": "G1200040278-NASA_MAAP",
-        "mode": "cmr",
-        "asset_name": "data",
-        "asset_roles": [
-            "data"
-        ],
-        "test_links": True
+        'collection': 'aimeeb-shared',
+        'discovery': 's3',
+        'upload': True,
+        'remote_fileurl': 's3://maap-user-shared-data/aimeeb-shared/boreal_agb_202205071651900000_26827_cog.tif'
     }
     print(json.dumps(handler(sample_event, {}), indent=2))

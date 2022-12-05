@@ -130,123 +130,183 @@ def handler(event: Union[S3LinkInput, StacItemInput], context) -> None:
 if __name__ == "__main__":
     filename = "example.ndjson"
     sample_event = {
-         "stac_item": {
+        "stac_item": {
             "type": "Feature",
             "stac_version": "1.0.0",
-            "id": "uavsar_AfriSAR_v1_SLC-twenty_14044_16008_003_160225_L090",
+            "id": "boreal_agb_202205071651900000_26827_cog",
             "properties": {
-            "boxes": [
-                "-2.0677778 9.1694444 0.61 11.8641667"
+            "proj:epsg": 3857,
+            "proj:geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                [
+                    [
+                    3414594.9275553934,
+                    5762740.436476009
+                    ],
+                    [
+                    3600489.7803449407,
+                    5762740.436476009
+                    ],
+                    [
+                    3600489.7803449407,
+                    5958419.228886059
+                    ],
+                    [
+                    3414594.9275553934,
+                    5958419.228886059
+                    ],
+                    [
+                    3414594.9275553934,
+                    5762740.436476009
+                    ]
+                ]
+                ]
+            },
+            "proj:bbox": [
+                3414594.9275553934,
+                5762740.436476009,
+                3600489.7803449407,
+                5958419.228886059
             ],
-            "time_start": "2016-02-25T00:00:00.000Z",
-            "updated": "2019-03-07T21:22:05.563Z",
-            "dataset_id": "AfriSAR UAVSAR Coregistered SLCs Generated Using NISAR Tools",
-            "data_center": "NASA_MAAP",
-            "title": "uavsar_AfriSAR_v1_SLC-twenty_14044_16008_003_160225_L090.vrt",
-            "coordinate_system": "CARTESIAN",
-            "time_end": "2016-03-08T00:00:00.000Z",
-            "original_format": "ECHO10",
-            "browse_flag": True,
-            "collection_concept_id": "C1200000308-NASA_MAAP",
-            "online_access_flag": False,
-            "links": [
-                {
-                "rel": "http://esipfed.org/ns/fedsearch/1.1/s3#",
-                "title": "File to download",
-                "hreflang": "en-US",
-                "href": "s3://nasa-maap-data-store/file-staging/circleci/AfriSAR_UAVSAR_Coreg_SLC___1/uavsar_AfriSAR_v1_SLC-twenty_14044_16008_003_160225_L090.vrt"
-                },
-                {
-                "rel": "http://esipfed.org/ns/fedsearch/1.1/browse#",
-                "title": "(BROWSE)",
-                "hreflang": "en-US",
-                "href": "s3://nasa-maap-data-store/file-staging/circleci/AfriSAR_UAVSAR_Coreg_SLC___1/uavsar_AfriSAR_v1_SLC-twenty_14044_16008_003_160225_L090.vrt.cog.tif"
-                },
-                {
-                "rel": "http://esipfed.org/ns/fedsearch/1.1/metadata#",
-                "title": "WMS GetMap Resource (VisualizationURL)",
-                "hreflang": "en-US",
-                "href": "https://api.maap.xyz/api/wms/GetMap?SERVICE=WMS&VERSION=1.1.0&REQUEST=GetMap&LAYERS=uavsar_AfriSAR_v1_SLC-twenty_14044_16008_003_160225_L090.vrt"
-                },
-                {
-                "inherited": True,
-                "rel": "http://esipfed.org/ns/fedsearch/1.1/data#",
-                "hreflang": "en-US",
-                "href": "s3://nasa-maap-data-store/file-staging/nasa-map/AfriSAR_UAVSAR_Coreg_SLC___1"
-                },
-                {
-                "inherited": True,
-                "rel": "http://esipfed.org/ns/fedsearch/1.1/documentation#",
-                "hreflang": "en-US",
-                "href": "https://ieeexplore.ieee.org/document/8469014"
-                }
+            "proj:shape": [
+                5120,
+                4864
             ],
-            "concept_id": "G1200040264-NASA_MAAP",
-            "datetime": "2016-02-25T00:00:00Z"
+            "proj:transform": [
+                38.21851414258785,
+                0.0,
+                3414594.9275553934,
+                0.0,
+                -38.21851414258781,
+                5958419.228886059,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "datetime": "2022-05-07T00:00:00Z"
             },
             "geometry": {
+            "type": "Polygon",
             "coordinates": [
                 [
                 [
-                    -2.0677778,
-                    9.1694444
+                    30.673828125,
+                    45.89000815866183
                 ],
                 [
-                    0.61,
-                    9.1694444
+                    32.343749999999986,
+                    45.89000815866183
                 ],
                 [
-                    0.61,
-                    11.8641667
+                    32.343749999999986,
+                    47.10004469402519
                 ],
                 [
-                    -2.0677778,
-                    11.8641667
+                    30.673828125,
+                    47.10004469402519
                 ],
                 [
-                    -2.0677778,
-                    9.1694444
+                    30.673828125,
+                    45.89000815866183
                 ]
                 ]
-            ],
-            "type": "Polygon"
+            ]
             },
             "links": [
             {
-                "rel": "self",
-                "href": "s3://nasa-maap-data-store/file-staging/circleci/AfriSAR_UAVSAR_Coreg_SLC___1/uavsar_AfriSAR_v1_SLC-twenty_14044_16008_003_160225_L090.vrt",
+                "rel": "collection",
+                "href": "aimeeb-shared",
                 "type": "application/json"
             }
             ],
             "assets": {
-            "data": {
-                "href": "s3://nasa-maap-data-store/file-staging/circleci/AfriSAR_UAVSAR_Coreg_SLC___1/uavsar_AfriSAR_v1_SLC-twenty_14044_16008_003_160225_L090.vrt",
+            "cog_default": {
+                "href": "s3://maap-user-shared-data/aimeeb-shared/boreal_agb_202205071651900000_26827_cog.tif",
+                "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+                "raster:bands": [
+                {
+                    "data_type": "float32",
+                    "scale": 1.0,
+                    "offset": 0.0,
+                    "sampling": "area",
+                    "nodata": "nan",
+                    "statistics": {
+                    "mean": 13.947627564862637,
+                    "minimum": -5.202122211456299,
+                    "maximum": 94.9677734375,
+                    "stddev": 6.586425725599481,
+                    "valid_percent": 14.982355633350464
+                    },
+                    "histogram": {
+                    "count": 11,
+                    "min": -5.202122211456299,
+                    "max": 94.9677734375,
+                    "buckets": [
+                        64,
+                        105970,
+                        34194,
+                        6370,
+                        1815,
+                        563,
+                        193,
+                        74,
+                        23,
+                        11
+                    ]
+                    }
+                },
+                {
+                    "data_type": "float32",
+                    "scale": 1.0,
+                    "offset": 0.0,
+                    "sampling": "area",
+                    "nodata": "nan",
+                    "statistics": {
+                    "mean": 2.483518266377272,
+                    "minimum": -1.3178435564041138,
+                    "maximum": 15.769033432006836,
+                    "stddev": 1.2959685027687635,
+                    "valid_percent": 14.982355633350464
+                    },
+                    "histogram": {
+                    "count": 11,
+                    "min": -1.3178435564041138,
+                    "max": 15.769033432006836,
+                    "buckets": [
+                        15,
+                        72678,
+                        58335,
+                        12392,
+                        4473,
+                        951,
+                        299,
+                        116,
+                        15,
+                        3
+                    ]
+                    }
+                }
+                ],
                 "roles": [
-                "data"
-                ]
-            },
-            "metadata": {
-                "href": "https://api.maap.xyz/api/wms/GetMap?SERVICE=WMS&VERSION=1.1.0&REQUEST=GetMap&LAYERS=uavsar_AfriSAR_v1_SLC-twenty_14044_16008_003_160225_L090.vrt",
-                "roles": [
-                "metadata"
-                ]
-            },
-            "documentation": {
-                "href": "https://ieeexplore.ieee.org/document/8469014",
-                "roles": [
-                "documentation"
+                "data",
+                "layer"
                 ]
             }
             },
             "bbox": [
-            -2.0677778,
-            9.1694444,
-            0.61,
-            11.8641667
+            30.673828125,
+            45.89000815866183,
+            32.343749999999986,
+            47.10004469402519
             ],
-            "stac_extensions": [],
-            "collection": "AfriSAR_UAVSAR_Coreg_SLC"
+            "stac_extensions": [
+            "https://stac-extensions.github.io/projection/v1.0.0/schema.json",
+            "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
+            ],
+            "collection": "aimeeb-shared"
         }
-    }
+        }
+
 
     handler(sample_event, {})

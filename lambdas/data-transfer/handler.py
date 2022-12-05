@@ -26,7 +26,7 @@ def handler(event, context):
             "aws_secret_access_key": creds["SecretAccessKey"],
             "aws_session_token": creds["SessionToken"],
         }
-    source_s3 = boto3.client("s3")
+    source_s3 = boto3.client("s3", **kwargs)
     target_s3 = boto3.client("s3", **kwargs)
 
     for object in event:
@@ -61,3 +61,15 @@ def handler(event, context):
         object["remote_fileurl"] = target_url
 
     return event
+
+if __name__ == '__main__':
+    sample_event = [
+            {
+            "collection": "aimeeb-shared",
+            "discovery": "s3",
+            "upload": True,
+            "remote_fileurl": "s3://maap-ops-workspace/aimeeb/my-shared-collection/boreal_agb_202205071651900000_26827_cog.tif"
+            }
+        ]
+
+    print(handler(sample_event, {}))

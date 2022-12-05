@@ -72,7 +72,7 @@ def handler(event, context):
         granules_to_insert.append(file_obj)
 
     # Useful for testing locally with build-stac/handler.py
-    # print(json.dumps(granules_to_insert[0], indent=2))
+    print(json.dumps(granules_to_insert[0], indent=2))
     return_obj = {
         **event,
         "cogify": event.get("cogify", False),
@@ -84,9 +84,10 @@ def handler(event, context):
 if __name__ == "__main__":
     sample_event = {
         "queue_messages": "true",
-        "collection": "AfriSAR_UAVSAR_Coreg_SLC",
+        "collection": "Landsat8_SurfaceReflectance",
         "version": "1",
         "discovery": "cmr",
+        "mode": "cmr",
         "asset_name": "data",
         "asset_roles": ["data"]
     }

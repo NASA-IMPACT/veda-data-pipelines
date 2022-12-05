@@ -19,12 +19,12 @@ from . import regex, events, role
 def create_item(
     id,
     properties,
-    mode,
     datetime,
     item_url,
     collection,
-    bbox,
-    geometry,
+    mode=None,
+    bbox=None,
+    geometry=None,
     assets=None,
     asset_name=None,
     asset_roles=None,
@@ -172,7 +172,6 @@ def generate_geometry_from_cmr(cmr_json) -> dict:
 
     if str_coords:
         polygon_coords = [(float(x), float(y)) for x,y in pairwise(str_coords)]
-        print(polygon_coords)
         if len(polygon_coords) == 2:
             polygon_coords.insert(1, (polygon_coords[1][0], polygon_coords[0][1]))
             polygon_coords.insert(3, (polygon_coords[0][0], polygon_coords[2][1]))
@@ -191,10 +190,14 @@ def gen_asset(role: str, link: dict, item: dict) -> pystac.Asset:
         except Exception as e:
             print(f"Caught error for link {link}: {e}")
             return None
+    asset_media_type = link.get('type')
+    # Fallback to asset_media_type defined in the item
+    if asset_media_type == None and role == 'data':
+        asset_media_type = item.asset_media_type
     return pystac.Asset(
         roles=[role],
         href=link.get('href'),
-        media_type=link.get('type', item.asset_media_type)
+        media_type=asset_media_type
     )
 
 def get_assets_from_cmr(cmr_json, item) -> dict[pystac.Asset]:
@@ -209,12 +212,12 @@ def get_assets_from_cmr(cmr_json, item) -> dict[pystac.Asset]:
             extension = os.path.splitext(link['href'])[-1].replace('.', '')
             if extension == 'prj':
                 role = 'metadata'
-            if extension != '':
-                assets[extension] = pystac.Asset(
-                    roles=['data'],
-                    href=link.get('href'),
-                    media_type=link.get('type')
-                )
+                asset = gen_asset('metadata', link, item)
+                if asset:
+                    assets['metadata'] = asset
+            asset = gen_asset('data', link, item)
+            if asset:
+                assets['data'] = asset
         if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/s3#":
             asset = gen_asset('data', link, item)
             if asset:
