@@ -35,7 +35,7 @@ def run_process_task(ti, dag_id):
     failures = []
     for payload_xcom in payloads_xcom:
         time.sleep(2)
-        dag_conf = {**payload, 'payload': [payload_xcom]}
+        dag_conf = {**payload, 'payload': payload_xcom}
         out = subprocess.run(["airflow", 'dags', 'trigger', '-c', json.dumps(dag_conf), dag_id],
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
         if out.stderr:
@@ -84,7 +84,7 @@ def subdag_discover():
         run_process = PythonOperator(
             task_id="parallel_run_process_tasks",
             python_callable=run_process_task,
-            op_kwargs={"dag_id": "example_etl_flow"},
+            op_kwargs={"dag_id": "veda_ingest_pipeline"},
             trigger_rule=TriggerRule.ONE_SUCCESS
 
         )

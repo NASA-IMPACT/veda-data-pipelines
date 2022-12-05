@@ -52,7 +52,7 @@ def handler(event: Dict[str, Any]) -> Union[S3LinkOutput, StacItemOutput]:
 
 def using_pool(objects):
     returned_results = []
-    with closing(Pool(processes=10)) as pool:
+    with closing(Pool(processes=15)) as pool:
         results = pool.imap_unordered(handler, objects)
         for result in results:
             returned_results.append(result)
@@ -72,7 +72,7 @@ def write_outputs_to_s3(key, payload_success, payload_failures):
 
 
 def stac_handler(payload_event):
-    s3_event = payload_event.pop('payload', "")
+    s3_event = payload_event.pop('payload')
     collection = payload_event.get('collection', 'not_provided')
     bucket_output = os.environ['EVENT_BUCKET']
     key = f"s3://{bucket_output}/events/{collection}"

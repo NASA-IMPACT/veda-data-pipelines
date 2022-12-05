@@ -65,8 +65,8 @@ def subdag_process():
                                         {"name": "BUCKET", "value": "veda-data-pipelines-staging-lambda-ndjson-bucket"},
                                         {"name": "EVENT_BUCKET", "value": Variable.get('EVENT_BUCKET')}
                                         ],
-                        "memory": 16384,
-                        "cpu": 8192
+                        "memory": 2048,
+                        "cpu": 1024
                     },
                 ],
             },
@@ -76,8 +76,8 @@ def subdag_process():
                     "subnets": ["subnet-050c11a80c47b50e9", "subnet-0f3643ae200be05af"],
                 },
             },
-            awslogs_group="veda_stac_tasks",
-            awslogs_stream_prefix="ecs/veda-stac-build",  # prefix with container name
+            awslogs_group=f"{Variable.get('PREFIX')}-stac_tasks",
+            awslogs_stream_prefix=f"ecs/{Variable.get('PREFIX')}-veda-stac-build",  # prefix with container name
         )
         cogify = PythonOperator(
             task_id="cogify",

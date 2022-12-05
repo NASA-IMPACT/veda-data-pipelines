@@ -45,6 +45,13 @@ def discover_from_s3(response_iterator):
     for page in response_iterator:
         for s3_object in page.get('Contents', {}):
             yield s3_object
+def generate_payload(s3_prefix_key, payload, limit = None):
+    if limit:
+        payload['objects'] = payload['objects'][:limit]
+    output_key = f"{s3_prefix_key}/s3_discover_output_{uuid4()}.json"
+    with smart_open.open(output_key, "w") as file:
+        file.write(json.dumps(payload))
+    return output_key
 
 
 def s3_discovery_handler(event, chunk_size=2800):
@@ -55,6 +62,7 @@ def s3_discovery_handler(event, chunk_size=2800):
     properties = event.get("properties", {})
     event['cogify'] = event.pop("cogify", False)
     payload = {**event, "objects": []}
+    limit = event.get('limit')
     # Propagate forward optional datetime arguments
     date_fields = {}
     if "single_datetime" in event:
@@ -76,7 +84,6 @@ def s3_discovery_handler(event, chunk_size=2800):
     records = 0
     out_keys = []
     discovered = 0
-    limit = event.get('limit')
     for s3_object in discover_from_s3(s3_iterator):
         filename = s3_object["Key"]
         if filename_regex and not re.match(filename_regex, filename):
@@ -91,22 +98,15 @@ def s3_discovery_handler(event, chunk_size=2800):
 
         payload["objects"].append(file_obj)
         if records == chunk_size:
-            output_key = f"{key}/s3_discover_output_{uuid4()}.json"
-            with smart_open.open(output_key, "w") as file:
-                file.write(json.dumps(payload))
-            out_keys.append(output_key)
+            out_keys.append(generate_payload(s3_prefix_key=key, payload=payload, limit=limit))
             records = 0
             discovered += len(payload["objects"])
             payload["objects"] = []
+            if limit:
+                return {**event, 'payload': out_keys, 'discovered': discovered}
         records += 1
-        if limit and discovered >= limit:
-            break
 
     if payload["objects"]:
-        output_key = f"{key}/s3_discover_output_{uuid4()}.json"
+        out_keys.append(generate_payload(s3_prefix_key=key, payload=payload, limit=limit))
         discovered += len(payload["objects"])
-        with smart_open.open(output_key, "w") as file:
-            file.write(json.dumps(payload))
-        out_keys.append(output_key)
-
     return {**event, 'payload': out_keys, 'discovered': discovered}
