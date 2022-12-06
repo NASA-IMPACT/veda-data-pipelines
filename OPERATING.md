@@ -59,9 +59,9 @@ Should follow the following format:
 
 ```
 
-### `step_function_inputs/`
+### `items/`
 
-The `step_function_inputs/` directory holds json files representing the step function inputs for initiating the discovery, ingest and publication workflows.
+The `items/` directory holds json files representing the airflow inputs for initiating discovery, ingest and publication workflows for ingesting items.
 Can either be a single input event or a list of input events.
 
 Should follow the following format:
@@ -100,8 +100,6 @@ poetry install
 
 ### Ingesting a collection
 
-Done by passing the collection json to the `submit-stac` lambda.
-
 Create a collection json file in the `data/collections/` directory. For format, check the [data](#data) section.
 
 ```bash
@@ -110,9 +108,7 @@ poetry run insert-collection <collection-name-start-pattern>
 
 ### Ingesting items to a collection
 
-Done by passing an input json to the discovery step function workflow.
-
-Create an input json file in the `data/step_function_inputs/` directory. For format, check the [data](#data) section.
+Create an input json file in the `data/items/` directory. For format, check the [data](#data) section.
 
 ```bash
 poetry run insert-item <event-json-start-pattern>
@@ -122,11 +118,9 @@ poetry run insert-item <event-json-start-pattern>
 ### Updating collection summaries
 
 
-Login in...
-
 ## Glossary
 
-### Lambdas
+### Tasks
 
 #### 1. s3-discovery
 
@@ -152,11 +146,7 @@ Given an object received from the `STAC_READY_QUEUE`, builds a STAC Item, writes
 
 Submits STAC items to STAC Ingestor system via POST requests.
 
-#### 7. proxy
-
-Reads objects from the specified queue in batches and invokes the specified step function workflow with the objects from the queue as the input.
-
-### Step Function Workflows
+### MWAA Workflows
 
 #### 1. Discover
 

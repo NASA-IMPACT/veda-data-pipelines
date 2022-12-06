@@ -25,6 +25,7 @@ exceptiongroup = "1.0.0rc9"
 psycopg = "3.1"
 psycopg-pool = "3.1.1"
 pypgstac = "0.6.6"
+airflow-provider-great-expectations = "0.1.1"
 
 [tool.poetry.dev-dependencies]
 "aws_cdk.core" = "^1.151.0"
