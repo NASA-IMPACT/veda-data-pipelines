@@ -21,6 +21,7 @@ class BaseEvent(BaseModel, frozen=True):
     assets: Optional[List[Dict]] = None
     mode: Optional[str] = None
     test_links: Optional[bool] = False
+    reverse_coords: Optional[bool]
 
     def item_id(self: "BaseEvent") -> str:
         if self.id_regex:

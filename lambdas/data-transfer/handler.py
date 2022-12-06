@@ -33,6 +33,9 @@ def handler(event, context):
         if not object.get("upload"):
             continue
 
+        if object.get('user_shared'):
+            TARGET_BUCKET = os.environ.get('USER_SHARED_BUCKET')
+            
         url = urllib.parse.urlparse(object["remote_fileurl"])
         src_bucket = url.hostname
         src_key = url.path.strip("/")

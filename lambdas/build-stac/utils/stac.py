@@ -160,13 +160,15 @@ def get_bbox(coord_list) -> list[float]:
     ret = [box[0][0], box[1][0], box[0][1], box[1][1]]
     return ret
 
-def generate_geometry_from_cmr(cmr_json) -> dict:
+def generate_geometry_from_cmr(cmr_json, item) -> dict:
     """
     Generates geoJSON object from list of coordinates provided in CMR JSON
     """
     str_coords = None
     if cmr_json.get('polygons'):
         str_coords = cmr_json['polygons'][0][0].split()
+        if item.reverse_coords:
+            str_coords.reverse()
     elif cmr_json.get("boxes"):
         str_coords = cmr_json['boxes'][0].split()
 
@@ -244,7 +246,7 @@ def generate_stac_cmrevent(item: events.CmrEvent) -> pystac.Item:
     """
     cmr_json = GranuleQuery(mode=f"{cmr_api_url()}/search/").concept_id(item.granule_id).get(1)[0]
     cmr_json['concept_id'] = cmr_json.pop('id')
-    geometry = generate_geometry_from_cmr(cmr_json)
+    geometry = generate_geometry_from_cmr(cmr_json, item)
     if geometry:
         bbox = get_bbox(list(geojson.utils.coords(geometry['coordinates'])))
     else:

@@ -4,5 +4,6 @@
     "bucket": "maap-ops-workspace",
     "filename_regex": "^(.*).tif$",
     "discovery": "s3",
-    "upload": true
+    "upload": true,
+    "user_shared": true
 }

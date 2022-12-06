@@ -108,6 +108,7 @@ class LambdaStack(core.Stack):
                 "BUCKET": config.MCP_BUCKETS.get(
                     config.ENV, config.MCP_BUCKETS.get("stage")
                 ),
+                "USER_SHARED_BUCKET": config.USER_SHARED_BUCKET,
                 "DATA_MANAGEMENT_ROLE_ARN": config.DATA_MANAGEMENT_ROLE_ARN,
             },
             role=external_role,

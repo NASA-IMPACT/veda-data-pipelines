@@ -6,5 +6,7 @@
     "asset_name": "data",
     "mode": "cmr",
     "asset_roles": ["data"],
-    "asset_media_type": "image/tiff"
+    "asset_media_type": "image/tiff",
+    "reverse_coords": true,
+    "link_rel": "http://esipfed.org/ns/fedsearch/1.1/data#"
 }

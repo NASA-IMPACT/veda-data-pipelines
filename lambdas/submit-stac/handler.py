@@ -129,184 +129,116 @@ def handler(event: Union[S3LinkInput, StacItemInput], context) -> None:
 
 if __name__ == "__main__":
     filename = "example.ndjson"
-    sample_event = {
-        "stac_item": {
-            "type": "Feature",
-            "stac_version": "1.0.0",
-            "id": "boreal_agb_202205071651900000_26827_cog",
-            "properties": {
-            "proj:epsg": 3857,
-            "proj:geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                [
-                    [
-                    3414594.9275553934,
-                    5762740.436476009
-                    ],
-                    [
-                    3600489.7803449407,
-                    5762740.436476009
-                    ],
-                    [
-                    3600489.7803449407,
-                    5958419.228886059
-                    ],
-                    [
-                    3414594.9275553934,
-                    5958419.228886059
-                    ],
-                    [
-                    3414594.9275553934,
-                    5762740.436476009
-                    ]
-                ]
-                ]
-            },
-            "proj:bbox": [
-                3414594.9275553934,
-                5762740.436476009,
-                3600489.7803449407,
-                5958419.228886059
-            ],
-            "proj:shape": [
-                5120,
-                4864
-            ],
-            "proj:transform": [
-                38.21851414258785,
-                0.0,
-                3414594.9275553934,
-                0.0,
-                -38.21851414258781,
-                5958419.228886059,
-                0.0,
-                0.0,
-                1.0
-            ],
-            "datetime": "2022-05-07T00:00:00Z"
-            },
-            "geometry": {
-            "type": "Polygon",
-            "coordinates": [
-                [
-                [
-                    30.673828125,
-                    45.89000815866183
-                ],
-                [
-                    32.343749999999986,
-                    45.89000815866183
-                ],
-                [
-                    32.343749999999986,
-                    47.10004469402519
-                ],
-                [
-                    30.673828125,
-                    47.10004469402519
-                ],
-                [
-                    30.673828125,
-                    45.89000815866183
-                ]
-                ]
+    sample_event = {"stac_item": {
+        "type": "Feature",
+        "stac_version": "1.0.0",
+        "id": "biosar1_SA_406_kz",
+        "properties": {
+          "time_start": "2007-04-02T11:27:00.000Z",
+          "updated": "2021-07-21T17:50:16.000Z",
+          "dataset_id": "BIOSAR1",
+          "data_center": "ESA_MAAP",
+          "title": "biosar1_SA_406_kz.tiff",
+          "coordinate_system": "CARTESIAN",
+          "day_night_flag": "BOTH",
+          "time_end": "2007-04-02T11:27:00.000Z",
+          "original_format": "ECHO10",
+          "granule_size": "45.834049224853516",
+          "browse_flag": False,
+          "polygons": [
+            [
+              "58.4992142 13.5745907 58.4284134 13.5745907 58.4284134 13.6912403 58.4992142 13.6912403 58.4992142 13.5745907"
             ]
-            },
-            "links": [
+          ],
+          "collection_concept_id": "C1200015072-ESA_MAAP",
+          "online_access_flag": True,
+          "links": [
             {
-                "rel": "collection",
-                "href": "aimeeb-shared",
-                "type": "application/json"
-            }
-            ],
-            "assets": {
-            "cog_default": {
-                "href": "s3://maap-user-shared-data/aimeeb-shared/boreal_agb_202205071651900000_26827_cog.tif",
-                "type": "image/tiff; application=geotiff; profile=cloud-optimized",
-                "raster:bands": [
-                {
-                    "data_type": "float32",
-                    "scale": 1.0,
-                    "offset": 0.0,
-                    "sampling": "area",
-                    "nodata": "nan",
-                    "statistics": {
-                    "mean": 13.947627564862637,
-                    "minimum": -5.202122211456299,
-                    "maximum": 94.9677734375,
-                    "stddev": 6.586425725599481,
-                    "valid_percent": 14.982355633350464
-                    },
-                    "histogram": {
-                    "count": 11,
-                    "min": -5.202122211456299,
-                    "max": 94.9677734375,
-                    "buckets": [
-                        64,
-                        105970,
-                        34194,
-                        6370,
-                        1815,
-                        563,
-                        193,
-                        74,
-                        23,
-                        11
-                    ]
-                    }
-                },
-                {
-                    "data_type": "float32",
-                    "scale": 1.0,
-                    "offset": 0.0,
-                    "sampling": "area",
-                    "nodata": "nan",
-                    "statistics": {
-                    "mean": 2.483518266377272,
-                    "minimum": -1.3178435564041138,
-                    "maximum": 15.769033432006836,
-                    "stddev": 1.2959685027687635,
-                    "valid_percent": 14.982355633350464
-                    },
-                    "histogram": {
-                    "count": 11,
-                    "min": -1.3178435564041138,
-                    "max": 15.769033432006836,
-                    "buckets": [
-                        15,
-                        72678,
-                        58335,
-                        12392,
-                        4473,
-                        951,
-                        299,
-                        116,
-                        15,
-                        3
-                    ]
-                    }
-                }
-                ],
-                "roles": [
-                "data",
-                "layer"
-                ]
-            }
+              "rel": "http://esipfed.org/ns/fedsearch/1.1/data#",
+              "type": "image/tiff",
+              "hreflang": "en-US",
+              "href": "https://bmap-catalogue-data.oss.eu-west-0.prod-cloud-ocb.orange-business.com/Campaign_data/biosar1/biosar1_SA_406_kz.tiff"
             },
-            "bbox": [
-            30.673828125,
-            45.89000815866183,
-            32.343749999999986,
-            47.10004469402519
-            ],
-            "stac_extensions": [
-            "https://stac-extensions.github.io/projection/v1.0.0/schema.json",
-            "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
-            ],
-            "collection": "aimeeb-shared"
-        }
-        }
-
-
+            {
+              "rel": "http://esipfed.org/ns/fedsearch/1.1/metadata#",
+              "title": "WMS GetMap Resource (VisualizationURL)",
+              "hreflang": "en-US",
+              "href": "https://edav-ui.val.esa-maap.org"
+            },
+            {
+              "inherited": True,
+              "rel": "http://esipfed.org/ns/fedsearch/1.1/documentation#",
+              "hreflang": "en-US",
+              "href": "https://earth.esa.int/c/document_library/get_file?folderId=21020&name=DLFE-387.pdf"
+            }
+          ],
+          "concept_id": "G1201298559-ESA_MAAP",
+          "datetime": "2007-04-02T11:27:00Z"
+        },
+        "geometry": {
+          "coordinates": [
+            [
+              [
+                13.5745907,
+                58.4992142
+              ],
+              [
+                13.6912403,
+                58.4992142
+              ],
+              [
+                13.6912403,
+                58.4284134
+              ],
+              [
+                13.5745907,
+                58.4284134
+              ],
+              [
+                13.5745907,
+                58.4992142
+              ]
+            ]
+          ],
+          "type": "Polygon"
+        },
+        "links": [
+          {
+            "rel": "self",
+            "href": "https://bmap-catalogue-data.oss.eu-west-0.prod-cloud-ocb.orange-business.com/Campaign_data/biosar1/biosar1_SA_406_kz.tiff",
+            "type": "application/json"
+          }
+        ],
+        "assets": {
+          "data": {
+            "href": "https://bmap-catalogue-data.oss.eu-west-0.prod-cloud-ocb.orange-business.com/Campaign_data/biosar1/biosar1_SA_406_kz.tiff",
+            "type": "image/tiff",
+            "roles": [
+              "data"
+            ]
+          },
+          "metadata": {
+            "href": "https://edav-ui.val.esa-maap.org",
+            "roles": [
+              "metadata"
+            ]
+          },
+          "documentation": {
+            "href": "https://earth.esa.int/c/document_library/get_file?folderId=21020&name=DLFE-387.pdf",
+            "roles": [
+              "documentation"
+            ]
+          }
+        },
+        "bbox": [
+          13.5745907,
+          58.4284134,
+          13.6912403,
+          58.4992142
+        ],
+        "stac_extensions": [],
+        "collection": "BIOSAR1"
+      }
+    }
+    
     handler(sample_event, {})

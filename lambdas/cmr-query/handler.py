@@ -55,7 +55,7 @@ def handler(event, context):
                 if link["href"][-9:] == "stac.json" and link["href"][0:5] == "https":
                     granules_to_insert.append(link)
             else:
-                if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/s3#":
+                if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/s3#" or link["rel"] == event.get('link_rel'):
                     href = link["href"]
                     file_obj = {
                         "collection": collection,
@@ -63,7 +63,8 @@ def handler(event, context):
                         "granule_id": granule["id"],
                         "id": granule["id"],
                         "mode": event.get("mode"),
-                        "test_links": event.get("test_links")
+                        "test_links": event.get("test_links"),
+                        "reverse_coords": event.get("reverse_coords")
                     }
                     # don't overwrite the fileurl if it's already been discovered.
                     for key, value in event.items():
@@ -84,11 +85,14 @@ def handler(event, context):
 if __name__ == "__main__":
     sample_event = {
         "queue_messages": "true",
-        "collection": "Landsat8_SurfaceReflectance",
+        "collection": "BIOSAR1",
         "version": "1",
         "discovery": "cmr",
-        "mode": "cmr",
         "asset_name": "data",
-        "asset_roles": ["data"]
+        "mode": "cmr",
+        "asset_roles": ["data"],
+        "asset_media_type": "image/tiff",
+        "link_rel": "http://esipfed.org/ns/fedsearch/1.1/data#"
     }
+
     handler(sample_event, {})
