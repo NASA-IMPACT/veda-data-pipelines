@@ -1,19 +1,27 @@
 {
-    "id": "aimeeb-shared",
+    "id": "icesat2-boreal",
     "type": "Collection",
     "links": [],
-    "title": "Data in aimeeb's workspace",
+    "title": "ATL08 Biomass 30m segments",
     "extent": {
         "spatial": {
             "bbox": [
                 [
-                    -180, -90, 180, 90
+                    -180, 45, 180, 70
                 ]
             ]
-        }
+        },
+        "temporal": {
+            "interval": [
+              [
+                "2019-01-01T00:00:00.000Z",
+                "2022-01-01T00:00:00.000Z"
+              ]
+            ]
+          }        
     },
     "license": "MIT",
-    "description": "Data in aimeeb's workspace",
+    "description": "AGBD and associated SE assigned at 30-m segment level to ICESat-2 ATL08 height product, Mg/ha",
     "item_assets": {
         "cog_default": {
             "type": "image/tiff; application=geotiff; profile=cloud-optimized",

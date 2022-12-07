@@ -129,116 +129,153 @@ def handler(event: Union[S3LinkInput, StacItemInput], context) -> None:
 
 if __name__ == "__main__":
     filename = "example.ndjson"
-    sample_event = {"stac_item": {
+    sample_event = {
+      "stac_item": {
         "type": "Feature",
         "stac_version": "1.0.0",
-        "id": "biosar1_SA_406_kz",
+        "id": "boreal_agb_202212051670264409_2112",
         "properties": {
-          "time_start": "2007-04-02T11:27:00.000Z",
-          "updated": "2021-07-21T17:50:16.000Z",
-          "dataset_id": "BIOSAR1",
-          "data_center": "ESA_MAAP",
-          "title": "biosar1_SA_406_kz.tiff",
-          "coordinate_system": "CARTESIAN",
-          "day_night_flag": "BOTH",
-          "time_end": "2007-04-02T11:27:00.000Z",
-          "original_format": "ECHO10",
-          "granule_size": "45.834049224853516",
-          "browse_flag": False,
-          "polygons": [
-            [
-              "58.4992142 13.5745907 58.4284134 13.5745907 58.4284134 13.6912403 58.4992142 13.6912403 58.4992142 13.5745907"
+          "proj:epsg": None,
+          "proj:geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  -2961478.0,
+                  4473304.0
+                ],
+                [
+                  -2871478.0,
+                  4473304.0
+                ],
+                [
+                  -2871478.0,
+                  4563304.0
+                ],
+                [
+                  -2961478.0,
+                  4563304.0
+                ],
+                [
+                  -2961478.0,
+                  4473304.0
+                ]
+              ]
             ]
+          },
+          "proj:bbox": [
+            -2961478.0,
+            4473304.0,
+            -2871478.0,
+            4563304.0
           ],
-          "collection_concept_id": "C1200015072-ESA_MAAP",
-          "online_access_flag": True,
-          "links": [
-            {
-              "rel": "http://esipfed.org/ns/fedsearch/1.1/data#",
-              "type": "image/tiff",
-              "hreflang": "en-US",
-              "href": "https://bmap-catalogue-data.oss.eu-west-0.prod-cloud-ocb.orange-business.com/Campaign_data/biosar1/biosar1_SA_406_kz.tiff"
-            },
-            {
-              "rel": "http://esipfed.org/ns/fedsearch/1.1/metadata#",
-              "title": "WMS GetMap Resource (VisualizationURL)",
-              "hreflang": "en-US",
-              "href": "https://edav-ui.val.esa-maap.org"
-            },
-            {
-              "inherited": True,
-              "rel": "http://esipfed.org/ns/fedsearch/1.1/documentation#",
-              "hreflang": "en-US",
-              "href": "https://earth.esa.int/c/document_library/get_file?folderId=21020&name=DLFE-387.pdf"
-            }
+          "proj:shape": [
+            3000,
+            3000
           ],
-          "concept_id": "G1201298559-ESA_MAAP",
-          "datetime": "2007-04-02T11:27:00Z"
+          "proj:transform": [
+            30.0,
+            0.0,
+            -2961478.0,
+            0.0,
+            -30.0,
+            4563304.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "datetime": "2022-12-05T00:00:00Z"
         },
         "geometry": {
+          "type": "Polygon",
           "coordinates": [
             [
               [
-                13.5745907,
-                58.4992142
+                104.86110644433832,
+                63.53882062284371
               ],
               [
-                13.6912403,
-                58.4992142
+                105.68371316442243,
+                64.25250527759168
               ],
               [
-                13.6912403,
-                58.4284134
+                103.97974230345058,
+                64.60012611711596
               ],
               [
-                13.5745907,
-                58.4284134
+                103.18984743000539,
+                63.8776409949251
               ],
               [
-                13.5745907,
-                58.4992142
+                104.86110644433832,
+                63.53882062284371
               ]
             ]
-          ],
-          "type": "Polygon"
+          ]
         },
         "links": [
           {
-            "rel": "self",
-            "href": "https://bmap-catalogue-data.oss.eu-west-0.prod-cloud-ocb.orange-business.com/Campaign_data/biosar1/biosar1_SA_406_kz.tiff",
+            "rel": "collection",
+            "href": "icesat2-boreal",
             "type": "application/json"
           }
         ],
         "assets": {
-          "data": {
-            "href": "https://bmap-catalogue-data.oss.eu-west-0.prod-cloud-ocb.orange-business.com/Campaign_data/biosar1/biosar1_SA_406_kz.tiff",
-            "type": "image/tiff",
+          "cog_default": {
+            "href": "s3://maap-ops-workspace/lduncanson/dps_output/run_boreal_biomass_quick_v2_ubuntu/map_boreal_2022_rh_noground_v1/2022/12/05/18/21/43/408047/boreal_agb_202212051670264409_2112.tif",
+            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+            "raster:bands": [
+              {
+                "data_type": "float32",
+                "scale": 1.0,
+                "offset": 0.0,
+                "sampling": "area",
+                "nodata": "nan",
+                "statistics": {
+                  "mean": 31.942728162205626,
+                  "minimum": 3.376779079437256,
+                  "maximum": 150.87786865234375,
+                  "stddev": 10.524873722675382,
+                  "valid_percent": 98.44493865966797
+                },
+                "histogram": {
+                  "count": 11,
+                  "min": 3.376779079437256,
+                  "max": 150.87786865234375,
+                  "buckets": [
+                    73947,
+                    524791,
+                    353092,
+                    70303,
+                    8732,
+                    1121,
+                    214,
+                    48,
+                    17,
+                    5
+                  ]
+                }
+              }
+            ],
             "roles": [
-              "data"
-            ]
-          },
-          "metadata": {
-            "href": "https://edav-ui.val.esa-maap.org",
-            "roles": [
-              "metadata"
-            ]
-          },
-          "documentation": {
-            "href": "https://earth.esa.int/c/document_library/get_file?folderId=21020&name=DLFE-387.pdf",
-            "roles": [
-              "documentation"
+              "data",
+              "layer"
             ]
           }
         },
         "bbox": [
-          13.5745907,
-          58.4284134,
-          13.6912403,
-          58.4992142
+          103.18984743000539,
+          63.53882062284371,
+          105.68371316442243,
+          64.60012611711596
         ],
-        "stac_extensions": [],
-        "collection": "BIOSAR1"
+        "stac_extensions": [
+          "https://stac-extensions.github.io/projection/v1.0.0/schema.json",
+          "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
+        ],
+        "collection": "icesat2-boreal"
       }
     }
+
     
     handler(sample_event, {})

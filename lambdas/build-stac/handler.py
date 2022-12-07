@@ -57,17 +57,9 @@ def handler(event: Dict[str, Any], context) -> Union[S3LinkOutput, StacItemOutpu
 
 if __name__ == "__main__":
     sample_event = {
-        "collection": "BIOSAR1",
-        "remote_fileurl": "https://bmap-catalogue-data.oss.eu-west-0.prod-cloud-ocb.orange-business.com/Campaign_data/biosar1/biosar1_105_kz.tiff",
-        "granule_id": "G1200110598-ESA_MAAP",
-        "id": "G1200110598-ESA_MAAP",
-        "mode": "cmr",
-        "test_links": None,
-        "asset_name": "data",
-        "asset_roles": [
-            "data"
-        ],
-        "asset_media_type": "image/tiff",
-        "reverse_coords": True
+        'collection': 'icesat2-boreal',
+        'remote_fileurl': 's3://maap-ops-workspace/lduncanson/dps_output/run_boreal_biomass_quick_v2_ubuntu/map_boreal_2022_rh_noground_v1/2022/12/05/16/26/54/515992/boreal_agb_202212051670257540_1920.tif',
+        'upload': True,
+        'properties': {}
     }
     print(json.dumps(handler(sample_event, {}), indent=2))
