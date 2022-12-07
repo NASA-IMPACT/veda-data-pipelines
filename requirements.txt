@@ -1,3 +1,5 @@
-smart-open==6.2.0
-pydantic==1.9.1
 airflow-provider-great-expectations==0.1.1
+orjson==3.8.3
+pydantic==1.9.1
+smart-open==6.2.0
+typing_extensions==4.3.0

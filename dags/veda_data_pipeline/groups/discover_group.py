@@ -1,12 +1,12 @@
-from airflow.utils.task_group import TaskGroup
-from airflow.operators.python import PythonOperator, BranchPythonOperator
-from veda_data_pipeline.src.s3_discovery import s3_discovery_handler
-from airflow.utils.trigger_rule import TriggerRule
 import os
 import subprocess
-import json
 import time
 
+from airflow.utils.task_group import TaskGroup
+from airflow.operators.python import PythonOperator, BranchPythonOperator
+import orjson
+from veda_data_pipeline.src.s3_discovery import s3_discovery_handler
+from airflow.utils.trigger_rule import TriggerRule
 
 group_kwgs = {"group_id": "Discover", "tooltip": "Discover"}
 
@@ -40,7 +40,7 @@ def run_process_task(ti, dag_id):
         time.sleep(2)
         dag_conf = {**payload, "payload": payload_xcom}
         out = subprocess.run(
-            ["airflow", "dags", "trigger", "-c", json.dumps(dag_conf), dag_id],
+            ["airflow", "dags", "trigger", "-c", orjson.dumps(dag_conf).decode("utf8"), dag_id],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False,
@@ -62,6 +62,8 @@ def discover_choice(ti):
     config = ti.dag_run.conf
 
     supported_discoveries = {"s3": "discover_from_s3", "cmr": "discover_from_cmr"}
+
+    print(f"CONFIG: {config}")
 
     return f"{group_kwgs['group_id']}.{supported_discoveries[config['discovery']]}"
 
@@ -85,7 +87,7 @@ def subdag_discover():
         run_process = PythonOperator(
             task_id="parallel_run_process_tasks",
             python_callable=run_process_task,
-            op_kwargs={"dag_id": "veda_ingest_pipeline"},
+            op_kwargs={"dag_id": "veda_ingest_process_pipeline"},
             trigger_rule=TriggerRule.ONE_SUCCESS,
         )
 

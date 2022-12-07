@@ -3,9 +3,9 @@ import functools
 import glob
 import os
 import base64
-import json
 
 import boto3
+import orjson
 
 DATA_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "data")
 
@@ -67,6 +67,6 @@ def get_secret(secret_name: str) -> None:
     # Decrypts secret using the associated KMS key.
     # Depending on whether the secret is a string or binary, one of these fields will be populated.
     if "SecretString" in get_secret_value_response:
-        return json.loads(get_secret_value_response["SecretString"])
+        return orjson.loads(get_secret_value_response["SecretString"])
     else:
-        return json.loads(base64.b64decode(get_secret_value_response["SecretBinary"]))
+        return orjson.loads(base64.b64decode(get_secret_value_response["SecretBinary"]))

@@ -1,6 +1,7 @@
 import os
-import json
 import boto3
+
+import orjson
 
 from .utils import args_handler, data_files, DATA_PATH, INGESTION_STEP_MACHINE_ARN
 
@@ -12,12 +13,13 @@ def insert_items(files):
     print("Inserting items:")
     for filename in files:
         print(filename)
-        events = json.load(open(filename))
+        events = orjson.load(open(filename))
         if type(events) != list:
             events = [events]
         for event in events:
             response = sf_client.start_execution(
-                stateMachineArn=INGESTION_STEP_MACHINE_ARN, input=json.dumps(event)
+                stateMachineArn=INGESTION_STEP_MACHINE_ARN,
+                input=orjson.dumps(event).decode("utf8")
             )
             print(response)
 

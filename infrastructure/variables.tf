@@ -15,8 +15,12 @@ variable "iam_role_permissions_boundary" {
   description = "Permission boundaries"
 }
 
-variable "assume_role_arn" {
-  description = "Assume role ARN from MCP"
+variable "assume_role_write_arn" {
+  description = "Assume role ARN for writing to MCP"
+}
+
+variable "assume_role_read_arn" {
+  description = "Assume role ARN for reading from MCP"
 }
 # Optional variables
 

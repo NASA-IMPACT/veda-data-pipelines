@@ -52,6 +52,7 @@ module "custom_policy" {
   aws_log_group_name = module.veda_ecs_cluster.log_group_name
   aws_log_stream_name = module.veda_ecs_cluster.stream_log_name
   cluster_name = module.veda_ecs_cluster.cluster_name
-  assume_role_arn = var.assume_role_arn
+  assume_role_write_arn = var.assume_role_write_arn
+  assume_role_read_arn = var.assume_role_read_arn
   region = local.aws_region
 }
