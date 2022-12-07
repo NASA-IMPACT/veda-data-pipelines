@@ -13,7 +13,8 @@ dag_args = {
 with DAG("veda_ingest_pipeline", **dag_args) as dag:
     start = DummyOperator(task_id="Start", dag=dag)
     end = DummyOperator(task_id="End", trigger_rule=TriggerRule.ONE_SUCCESS, dag=dag)
+    test = DummyOperator(task_id="test", dag=dag)
 
     process_grp = subdag_process()
 
-    start >> process_grp >> end
+    start >> process_grp >> end >> test

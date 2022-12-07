@@ -5,6 +5,8 @@ import time
 import logging
 from airflow.models.variable import Variable
 
+from veda_data_pipeline.src.submit_stac import submission_handler
+
 group_kwgs = {"group_id": "Process", "tooltip": "Process"}
 
 
@@ -15,6 +17,9 @@ def log_task(text: str):
 def submit_to_stac_ingestor_task(ti):
     print("Submit STAC ingestor")
     events = ti.xcom_pull(task_ids=f"{group_kwgs['group_id']}.build_stac")
+    for event in events:
+        submission_handler(event)
+    print("EVENTS", events)
     return events
 
 
@@ -94,5 +99,5 @@ def subdag_process():
             python_callable=submit_to_stac_ingestor_task,
         )
         cogify_branching >> build_stac >> submit_to_stac_ingestor
-        cogify_branching >> cogify
+        cogify_branching >> cogify >> build_stac >> submit_to_stac_ingestor
         return process_grp

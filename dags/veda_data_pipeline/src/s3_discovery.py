@@ -5,6 +5,7 @@ import json
 from uuid import uuid4
 from airflow.models.variable import Variable
 
+MWAA_STAC_CONF = Variable.get("MWAA_STACK_CONF", deserialize_json=True)
 
 def assume_role(role_arn, session_name="veda-data-pipelines_s3-discovery"):
     sts = boto3.client("sts")
@@ -74,14 +75,16 @@ def s3_discovery_handler(event, chunk_size=2800):
     if "datetime_range" in event:
         date_fields["datetime_range"] = event["datetime_range"]
 
-    role_arn = Variable.get("ASSUME_ROLE_ARN", default_var=False)
+    
+
+    role_arn = MWAA_STAC_CONF.get("ASSUME_ROLE_ARN")
     kwargs = assume_role(role_arn=role_arn) if role_arn else {}
     s3client = boto3.client("s3", **kwargs)
 
     s3_iterator = get_s3_resp_iterator(
         bucket_name=bucket, prefix=prefix, s3_client=s3client
     )
-    bucket_output = Variable.get("EVENT_BUCKET")
+    bucket_output = MWAA_STAC_CONF.get("EVENT_BUCKET")
     key = f"s3://{bucket_output}/events/{collection}"
     records = 0
     out_keys = []
