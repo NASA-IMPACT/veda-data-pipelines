@@ -1,0 +1,66 @@
+[
+    {
+        "collection": "snow-projections-diff",
+        "prefix": "EIS/snowProjections/",
+        "bucket": "veda-data-store-staging",
+        "filename_regex": "^(.*)ssp245(.*)2017(.*)_percChange.cog.tif$",
+        "discovery": "s3",
+        "upload": false
+    },
+    {
+        "collection": "snow-projections-diff",
+        "prefix": "EIS/snowProjections/",
+        "bucket": "veda-data-store-staging",
+        "filename_regex": "^(.*)ssp585(.*)2017(.*)_percChange.cog.tif$",
+        "discovery": "s3",
+        "upload": false
+    },
+    {   
+        "collection": "snow-projections-diff",
+        "prefix": "EIS/snowProjections/",
+        "bucket": "veda-data-store-staging",
+        "filename_regex": "^(.*)ssp245(.*)2037(.*)_percChange.cog.tif$",
+        "discovery": "s3",
+        "upload": false
+    },
+    {   
+        "collection": "snow-projections-diff",
+        "prefix": "EIS/snowProjections/",
+        "bucket": "veda-data-store-staging",
+        "filename_regex": "^(.*)ssp585(.*)2037(.*)_percChange.cog.tif$",
+        "discovery": "s3",
+        "upload": false
+    },
+    {   
+        "collection": "snow-projections-diff",
+        "prefix": "EIS/snowProjections/",
+        "bucket": "veda-data-store-staging",
+        "filename_regex": "^(.*)ssp245(.*)2057(.*)_percChange.cog.tif$",
+        "discovery": "s3",
+        "upload": false
+    },
+    {   
+        "collection": "snow-projections-diff",
+        "prefix": "EIS/snowProjections/",
+        "bucket": "veda-data-store-staging",
+        "filename_regex": "^(.*)ssp585(.*)2057(.*)_percChange.cog.tif$",
+        "discovery": "s3",
+        "upload": false
+    },
+    {   
+        "collection": "snow-projections-diff",
+        "prefix": "EIS/snowProjections/",
+        "bucket": "veda-data-store-staging",
+        "filename_regex": "^(.*)ssp245(.*)2077(.*)_percChange.cog.tif$",
+        "discovery": "s3",
+        "upload": false
+    },
+    {   
+        "collection": "snow-projections-diff",
+        "prefix": "EIS/snowProjections/",
+        "bucket": "veda-data-store-staging",
+        "filename_regex": "^(.*)ssp585(.*)2077(.*)_percChange.cog.tif$",
+        "discovery": "s3",
+        "upload": false
+    }
+]
