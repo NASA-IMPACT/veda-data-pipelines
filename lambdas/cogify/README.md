@@ -17,9 +17,9 @@ export EARTHDATA_PASSWORD=XXX
 export AWS_ACCESS_KEY_ID=XXX
 export AWS_SECRET_ACCESS_KEY=XXX
 
-docker build -t cogify .
+docker build -t cogify --build-arg EARTHDATA_USERNAME --build-arg EARTHDATA_PASSWORD .
 # Runs an example in handler.py
-docker run --env EARTHDATA_USERNAME --env EARTHDATA_PASSWORD cogify python -m handler 
+docker run cogify python -m handler 
 ```
 
 
@@ -48,9 +48,17 @@ Example Output
 
 ## Other supported collections
 
-### GPM IMERG Example
+### GPM IMERG or OMI OAO3 Example
 
-[Update me]
+Access to Earthdata requires a `.netrc` file. See https://disc.gsfc.nasa.gov/data-access#python for details on configuration. For local development use:
+
+```bash
+cd ~
+touch .netrc
+echo "machine urs.earthdata.nasa.gov login <uid> password <password>" >> .netrc
+chmod 0600 .netrc
+```
+
 
 ### ERA5 Cloud Base Height Example
 

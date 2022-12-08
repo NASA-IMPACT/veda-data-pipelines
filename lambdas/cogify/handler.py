@@ -14,7 +14,6 @@ from rasterio.warp import calculate_default_transform
 from rio_cogeo.cogeo import cog_translate
 from rio_cogeo.profiles import cog_profiles
 
-
 config = configparser.ConfigParser()
 config.read("example.ini")
 s3 = boto3.client(
@@ -28,7 +27,6 @@ output_profile = cog_profiles.get(
 output_profile["blockxsize"] = 256
 output_profile["blockysize"] = 256
 output_bucket = config["DEFAULT"]["output_bucket"]
-output_dir = config["DEFAULT"]["output_dir"]
 
 
 def upload_file(outfilename, collection):
@@ -47,20 +45,32 @@ def upload_file(outfilename, collection):
 
 
 def download_file(file_uri: str):
-    filename = os.path.splitext(os.path.basename(file_uri))[0]
+    filename = os.path.basename(file_uri)
     filename = f"/tmp/{filename}"
+    # filename = f"./{filename}"
     if "http" in file_uri:
-        # This isn't working for GPMIMERG, need to use .netrc
-        username = os.environ.get("EARTHDATA_USERNAME")
-        password = os.environ.get("EARTHDATA_PASSWORD")
-        with requests.Session() as session:
-            session.auth = (username, password)
-            request = session.request("get", file_uri)
-            response = session.get(request.url, auth=(username, password))
-            print("RESPONSE IS")
-            print(response.status_code)
-            with open(filename, "wb") as f:
-                f.write(response.content)
+        # Requires .netrc file for download from Earthdata
+        # See: https://disc.gsfc.nasa.gov/data-access#python
+        result = requests.get(file_uri)
+        try:
+            result.raise_for_status()
+            f = open(filename,'wb')
+            f.write(result.content)
+            f.close()
+            print('contents of URL written to '+filename)
+        except:
+            print('requests.get() returned an error code '+str(result.status_code))
+        
+        # username = os.environ.get("EARTHDATA_USERNAME")
+        # password = os.environ.get("EARTHDATA_PASSWORD")
+        # with requests.Session() as session:
+        #     session.auth = (username, password)
+        #     request = session.request("get", file_uri)
+        #     response = session.get(request.url, auth=(username, password))
+        #     print("RESPONSE IS")
+        #     print(response.status_code)
+        #     with open(filename, "wb") as f:
+        #         f.write(response.content)
     elif "s3://" in file_uri:
         path_parts = file_uri.split("://")[1].split("/")
         bucket = path_parts[0]
@@ -87,8 +97,8 @@ def to_cog(upload, **config):
         variable = src.groups[group][variable_name]
         nodata_value = variable._FillValue
     # This may be just what we need for IMERG
-    if config["collection"] == "GPM_3IMERGM":
-        variable = np.transpose(variable[0])
+    if config["collection"] == "GPM_3IMERGHHE":
+        variable = np.flipud(np.transpose(variable[0]))
     if config["collection"] == "OMDOAO3e":
         variable = np.flipud(variable)
 
@@ -108,7 +118,7 @@ def to_cog(upload, **config):
     else:
         src_crs = CRS.from_epsg(4326)
 
-    dst_crs = CRS.from_epsg(3857)
+    dst_crs = CRS.from_epsg(4326)
 
     # calculate dst transform
     dst_transform, dst_width, dst_height = calculate_default_transform(
@@ -175,7 +185,7 @@ def handler(event, context):
     to_cog_config["filename"] = downloaded_filename
     to_cog_config["collection"] = collection
 
-    return_obj = {"granule_id": event["granule_id"], "collection": event["collection"]}
+    return_obj = {"granule_id": event.get("granule_id"), "collection": event["collection"]}
 
     output_locations = to_cog(upload=event.get("upload", False), **to_cog_config)
 
@@ -193,3 +203,21 @@ if __name__ == "__main__":
         "granule_id": "G2205784904-GES_DISC",
     }
     handler(sample_event, {})
+    
+    # url = "https://acdisc.gesdisc.eosdis.nasa.gov/data//Aura_OMI_Level3/OMDOAO3e.003/2022/OMI-Aura_L3-OMDOAO3e_2022m0120_v003-2022m0122t021759.he5"
+    # download_file(url)
+    
+
+    #Testing COG output for GPM_3IMERGHHE
+    # url_base = "https://gpm1.gesdisc.eosdis.nasa.gov/data/GPM_L3/GPM_3IMERGHHE.06/2022/001/"
+    # files = np.loadtxt("2022-001.txt",dtype='str')
+    
+    # for file in files:
+    #     url = url_base+file
+    #     sample_event = {
+    #         "collection": "GPM_3IMERGHHE",
+    #         "href": url,
+    #         "upload": True
+    #     }
+    #     handler(sample_event, {})
+    #     print(f'{file} uploaded...')

@@ -1,4 +1,10 @@
-FROM python:3.9-slim-bullseye
+FROM --platform=linux/amd64 python:3.9-slim-bullseye
+
+# Earthdata requires a .netrc file
+ARG EARTHDATA_USERNAME
+ARG EARTHDATA_PASSWORD
+RUN touch /root/.netrc
+RUN echo "machine urs.earthdata.nasa.gov login ${EARTHDATA_USERNAME} password ${EARTHDATA_PASSWORD}" >> /root/.netrc
 
 WORKDIR /app
 
