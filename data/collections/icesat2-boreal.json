@@ -2,7 +2,7 @@
     "id": "icesat2-boreal",
     "type": "Collection",
     "links": [],
-    "title": "ATL08 Biomass 30m segments",
+    "title": "2019-2021 Gridded 30m Boreal Aboveground Biomass using ICESat-2 and Harmonized Landsat Sentinel",
     "extent": {
         "spatial": {
             "bbox": [
@@ -21,7 +21,7 @@
           }        
     },
     "license": "MIT",
-    "description": "AGBD and associated SE assigned at 30-m segment level to ICESat-2 ATL08 height product, Mg/ha",
+    "description": "2019-2021 Gridded 30m Boreal Aboveground Biomass using ICESat-2 and Harmonized Landsat Sentinel",
     "item_assets": {
         "cog_default": {
             "type": "image/tiff; application=geotiff; profile=cloud-optimized",
@@ -31,9 +31,16 @@
             ],
             "title": "Default COG Layer",
             "description": "Cloud optimized default layer to display on map"
-        }
+        },
+        "documentation": {
+            "type": "text/html",
+            "roles": [
+                "documentation"
+            ],
+            "title": "Find and open data with STAC",
+            "description": "Find and open data with STAC",
+            "href": "https://docs.maap-project.org/en/stac/tutorials/stac-icesat2-boreal-example.html"
+        }        
     },
-    "stac_version": "1.0.0",
-    "dashboard:is_periodic": false,
-    "dashboard:time_density": null
+    "stac_version": "1.0.0"
 }

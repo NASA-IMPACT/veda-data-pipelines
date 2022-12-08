@@ -222,7 +222,7 @@ if __name__ == "__main__":
         ],
         "assets": {
           "cog_default": {
-            "href": "s3://maap-ops-workspace/lduncanson/dps_output/run_boreal_biomass_quick_v2_ubuntu/map_boreal_2022_rh_noground_v1/2022/12/05/18/21/43/408047/boreal_agb_202212051670264409_2112.tif",
+            "href": "s3://maap-user-shared-data/icesat2-boreal/boreal_agb_202212051670264409_2112.tif",
             "type": "image/tiff; application=geotiff; profile=cloud-optimized",
             "raster:bands": [
               {
@@ -277,5 +277,4 @@ if __name__ == "__main__":
       }
     }
 
-    
     handler(sample_event, {})

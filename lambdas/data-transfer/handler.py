@@ -1,3 +1,4 @@
+import json
 import os
 import urllib.parse
 import tempfile
@@ -68,11 +69,12 @@ def handler(event, context):
 if __name__ == '__main__':
     sample_event = [
             {
-            "collection": "aimeeb-shared",
-            "discovery": "s3",
+            "collection": "icesat2-boreal",
+            "remote_fileurl": "s3://maap-ops-workspace/lduncanson/dps_output/run_boreal_biomass_quick_v2_ubuntu/map_boreal_2022_rh_noground_v1/2022/12/05/18/21/43/408047/boreal_agb_202212051670264409_2112.tif",
             "upload": True,
-            "remote_fileurl": "s3://maap-ops-workspace/aimeeb/my-shared-collection/boreal_agb_202205071651900000_26827_cog.tif"
+            "user_shared": True,
+            "properties": {}
             }
         ]
 
-    print(handler(sample_event, {}))
+    print(json.dumps(handler(sample_event, {}), indent=2))

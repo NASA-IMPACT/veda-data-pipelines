@@ -57,9 +57,11 @@ def handler(event: Dict[str, Any], context) -> Union[S3LinkOutput, StacItemOutpu
 
 if __name__ == "__main__":
     sample_event = {
-        'collection': 'icesat2-boreal',
-        'remote_fileurl': 's3://maap-ops-workspace/lduncanson/dps_output/run_boreal_biomass_quick_v2_ubuntu/map_boreal_2022_rh_noground_v1/2022/12/05/16/26/54/515992/boreal_agb_202212051670257540_1920.tif',
-        'upload': True,
-        'properties': {}
+        "collection": "icesat2-boreal",
+        "remote_fileurl": "s3://maap-user-shared-data/icesat2-boreal/boreal_agb_202212051670264409_2112.tif",
+        "upload": True,
+        "user_shared": True,
+        "properties": {}
     }
+    
     print(json.dumps(handler(sample_event, {}), indent=2))
