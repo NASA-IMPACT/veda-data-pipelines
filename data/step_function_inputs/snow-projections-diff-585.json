@@ -1,0 +1,10 @@
+[
+    {
+        "collection": "snow-projections-diff-585",
+        "prefix": "EIS/snowProjections/",
+        "bucket": "veda-data-store-staging",
+        "filename_regex": "^(.*)ssp585(.*)percChange.cog.tif$",
+        "discovery": "s3",
+        "upload": false
+    }
+]

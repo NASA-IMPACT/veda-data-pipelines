@@ -1,9 +1,9 @@
 {
-    "id": "snow-projections-median",
+    "id": "snow-projections-median-585",
     "type": "Collection",
     "links":[
     ],
-    "title":"Projections of Snow Water Equivalent (SWE)",
+    "title":"Projections of Snow Water Equivalent (SWE) - SSP5-8.5",
     "extent":{
         "spatial":{
             "bbox":[
@@ -11,7 +11,7 @@
                     -125,
                     34,
                     -104,
-                    50,
+                    50
                 ]
             ]
         },
@@ -19,13 +19,13 @@
             "interval":[
                 [
                     "1995-04-01T00:00:00Z",
-                    "2095-05-01T00:00:00Z",
+                    "2095-05-01T00:00:00Z"
                 ]
             ]
         }
     },
-    "license":"MIT",
-    "description": "Historical (1995 - 2014) and future SWE simulated using the LIS framework and CMIP6 climate projections downscaled by NASA Earth Exchange (NEX-GDDP-CMIP6)",
+    "license":"CC0-1.0",
+    "description": "Historical (1995 - 2014) and future SWE simulated using the LIS framework and CMIP6 climate projections (SSP5-8.5 scenario) downscaled by NASA Earth Exchange (NEX-GDDP-CMIP6)",
     "stac_version": "1.0.0",
     "dashboard:is_periodic": false,
     "dashboard:time_density": null,

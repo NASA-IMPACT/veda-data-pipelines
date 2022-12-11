@@ -1,0 +1,10 @@
+[
+    {
+        "collection": "snow-projections-median-245",
+        "prefix": "EIS/snowProjections/",
+        "bucket": "veda-data-store-staging",
+        "filename_regex": "^(.*)ssp245(.*)median.cog.tif$",
+        "discovery": "s3",
+        "upload": false
+    }
+]
