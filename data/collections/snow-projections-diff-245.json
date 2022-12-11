@@ -1,0 +1,44 @@
+{
+    "id": "snow-projections-diff-245",
+    "type": "Collection",
+    "links":[
+    ],
+    "title":"Projections of Snow Water Equivalent (SWE) Losses - SSP2-4.5",
+    "extent":{
+        "spatial":{
+            "bbox":[
+                [
+                    -125,
+                    34,
+                    -104,
+                    50
+                ]
+            ]
+        },
+        "temporal":{
+            "interval":[
+                [
+                    "1995-04-01T00:00:00Z",
+                    "2095-05-01T00:00:00Z"
+                ]
+            ]
+        }
+    },
+    "license":"CC0-1.0",
+    "description": "Percent-change to future SWE, relative to the historical period (1995 - 2014), simulated using the LIS framework and CMIP6 climate projections (SSP2-4.5 scenario) downscaled by NASA Earth Exchange (NEX-GDDP-CMIP6)",
+    "stac_version": "1.0.0",
+    "dashboard:is_periodic": false,
+    "dashboard:time_density": null,
+    "item_assets": {
+        "cog_default": {
+            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+            "roles": [
+                "data",
+                "layer"
+            ],
+            "title": "Default COG Layer",
+            "description": "Cloud optimized default layer to display on map"
+        }
+    }
+}
+
