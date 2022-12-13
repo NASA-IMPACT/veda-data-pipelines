@@ -1,10 +1,10 @@
+import json
 import os
 import subprocess
 import time
 
 from airflow.utils.task_group import TaskGroup
 from airflow.operators.python import PythonOperator, BranchPythonOperator
-import orjson
 from veda_data_pipeline.src.s3_discovery import s3_discovery_handler
 from airflow.utils.trigger_rule import TriggerRule
 
@@ -40,7 +40,7 @@ def run_process_task(ti, dag_id):
         time.sleep(2)
         dag_conf = {**payload, "payload": payload_xcom}
         out = subprocess.run(
-            ["airflow", "dags", "trigger", "-c", orjson.dumps(dag_conf).decode("utf8"), dag_id],
+            ["airflow", "dags", "trigger", "-c", json.dumps(dag_conf).decode("utf8"), dag_id],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False,
@@ -90,6 +90,7 @@ def subdag_discover():
             op_kwargs={"dag_id": "veda_ingest_process_pipeline"},
             trigger_rule=TriggerRule.ONE_SUCCESS,
         )
+
 
         discover_branching >> [discover_from_cmr, discover_from_s3] >> run_process
         return discover_grp

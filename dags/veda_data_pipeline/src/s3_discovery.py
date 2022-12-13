@@ -1,10 +1,9 @@
 import re
 import boto3
-import smart_open
+import json
 from uuid import uuid4
 
 from airflow.models.variable import Variable
-import orjson
 
 MWAA_STAC_CONF = Variable.get("MWAA_STACK_CONF", deserialize_json=True)
 
@@ -48,11 +47,12 @@ def discover_from_s3(response_iterator):
 
 
 def generate_payload(s3_prefix_key, payload, limit=None):
+    from smart_open import open
     if limit:
         payload["objects"] = payload["objects"][:limit]
     output_key = f"{s3_prefix_key}/s3_discover_output_{uuid4()}.json"
-    with smart_open.open(output_key, "w") as file:
-        file.write(orjson.dumps(payload).decode("utf8"))
+    with open(output_key, "w") as file:
+        file.write(json.dumps(payload))
     return output_key
 
 

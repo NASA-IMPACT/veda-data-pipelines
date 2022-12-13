@@ -1,12 +1,12 @@
 from argparse import ArgumentParser
 import ast
 from contextlib import closing
+import json
 from multiprocessing import Pool
 import os
 from typing import Any, Dict, TypedDict, Union
 from uuid import uuid4
 
-import orjson
 import smart_open
 
 from utils import stac as stac, events
@@ -64,12 +64,12 @@ def using_pool(objects):
 def write_outputs_to_s3(key, payload_success, payload_failures):
     success_key = f"{key}/build_stac_output_{uuid4()}.json"
     with smart_open.open(success_key, "w") as _file:
-        _file.write(orjson.dumps(payload_success).decode("utf8"))
+        _file.write(json.dumps(payload_success)
     dead_letter_key = ""
     if payload_failures:
         dead_letter_key = f"{key}/dead_letter_events/build_stac_failed_{uuid4()}.json"
         with smart_open.open(dead_letter_key, "w") as _file:
-            _file.write(orjson.dumps(payload_failures).decode("utf8"))
+            _file.write(json.dumps(payload_failures))
     return [success_key, dead_letter_key]
 
 
@@ -82,7 +82,7 @@ def stac_handler(payload_event):
     payload_failures = []
     with smart_open.open(s3_event, "r") as _file:
         s3_event_read = _file.read()
-    event_received = orjson.loads(s3_event_read)
+    event_received = json.loads(s3_event_read)
     objects = event_received["objects"]
     payloads = using_pool(objects)
     for payload in payloads:
@@ -118,8 +118,8 @@ if __name__ == "__main__":
 
     payload_event = ast.literal_eval(args.payload)
     building_stac_response = stac_handler(payload_event)
-    response = orjson.dumps({
+    response = json.dumps({
         **payload_event,
         **building_stac_response
-    }).decode("utf8")
+    })
     print(response)

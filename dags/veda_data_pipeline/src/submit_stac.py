@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-import os
+import json
 from urllib.parse import urlparse
 import sys
 if sys.version_info >= (3, 8):
@@ -10,7 +10,6 @@ from typing import Any, Dict, Optional, Union
 
 from airflow.models.variable import Variable
 import boto3
-import orjson
 import requests
 
 
@@ -56,7 +55,7 @@ class IngestionApi:
     def _get_cognito_service_details(secret_id: str) -> AppConfig:
         client = boto3.client("secretsmanager")
         response = client.get_secret_value(SecretId=secret_id)
-        return orjson.loads(response["SecretString"])
+        return json.loads(response["SecretString"])
 
     @staticmethod
     def _get_app_credentials(
@@ -107,7 +106,7 @@ def submission_handler(event: Union[S3LinkInput, StacItemInput]) -> None:
 
     if event.get("dry_run"):
         print("Dry run, not inserting, would have inserted:")
-        print(orjson.dumps(stac_item, option=orjson.OPT_INDENT_2))
+        print(json.dumps(stac_item, indent=2))
         return
 
     ingestor.submit(stac_item)
