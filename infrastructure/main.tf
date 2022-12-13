@@ -5,7 +5,7 @@ module "mwaa" {
   iam_role_additional_arn_policies = merge(module.custom_policy.custom_policy_arns_map)
   permissions_boundary_arn         = var.iam_role_permissions_boundary
   subnet_tagname = var.subnet_tagname
-  local_requirement_file_path = "${path.module}/../requirements.txt"
+  local_requirement_file_path = "${path.module}/../dags/requirements.txt"
   local_dag_folder = "${path.module}/../dags/"
 }
 

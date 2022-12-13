@@ -4,7 +4,6 @@ import subprocess
 import time
 
 from airflow.utils.task_group import TaskGroup
-from airflow_multi_dagrun.operators import TriggerMultiDagRunOperator
 from airflow.operators.python import PythonOperator, BranchPythonOperator
 from airflow.utils.trigger_rule import TriggerRule
 
@@ -47,7 +46,7 @@ def run_process_task(ti, dag_id):
                 "dags",
                 "trigger",
                 "-c",
-                json.dumps(dag_conf).decode("utf8"),
+                json.dumps(dag_conf),
                 dag_id,
             ],
             stdout=subprocess.PIPE,

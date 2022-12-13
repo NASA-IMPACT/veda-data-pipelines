@@ -103,7 +103,7 @@ poetry install
 Create a collection json file in the `data/collections/` directory. For format, check the [data](#data) section.
 
 ```bash
-poetry run insert-collection <collection-name-start-pattern>
+./scripts/collection.sh .env <event-json-start-pattern>
 ```
 
 ### Ingesting items to a collection
@@ -111,7 +111,7 @@ poetry run insert-collection <collection-name-start-pattern>
 Create an input json file in the `data/items/` directory. For format, check the [data](#data) section.
 
 ```bash
-poetry run insert-item <event-json-start-pattern>
+./scripts/item.sh .env <event-json-start-pattern>
 ```
 
 
