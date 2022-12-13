@@ -4,9 +4,11 @@ import subprocess
 import time
 
 from airflow.utils.task_group import TaskGroup
+from airflow_multi_dagrun.operators import TriggerMultiDagRunOperator
 from airflow.operators.python import PythonOperator, BranchPythonOperator
-from veda_data_pipeline.src.s3_discovery import s3_discovery_handler
 from airflow.utils.trigger_rule import TriggerRule
+
+from veda_data_pipeline.src.s3_discovery import s3_discovery_handler
 
 group_kwgs = {"group_id": "Discover", "tooltip": "Discover"}
 

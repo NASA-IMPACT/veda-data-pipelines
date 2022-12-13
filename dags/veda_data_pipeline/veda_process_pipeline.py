@@ -1,8 +1,10 @@
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
-from veda_data_pipeline.groups.processing_group import subdag_process
 from airflow.utils.trigger_rule import TriggerRule
 import pendulum
+
+from veda_data_pipeline.groups.processing_group import subdag_process
+
 
 dag_args = {
     "start_date": pendulum.today("UTC").add(days=-1),

@@ -1,10 +1,12 @@
 import json
 import logging
+
 from airflow.utils.task_group import TaskGroup
 from airflow.providers.amazon.aws.operators.ecs import ECSOperator
 from airflow.operators.python import PythonOperator, BranchPythonOperator
 from airflow.models.variable import Variable
 import smart_open
+
 from veda_data_pipeline.src.submit_stac import submission_handler
 from veda_data_pipeline.src.cogify import cogify_handler
 

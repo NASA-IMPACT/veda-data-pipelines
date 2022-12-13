@@ -1,8 +1,9 @@
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
-from veda_data_pipeline.groups.discover_group import subdag_discover
-
+from airflow.utils.trigger_rule import TriggerRule
 import pendulum
+
+from veda_data_pipeline.groups.discover_group import subdag_discover
 
 
 dag_args = {
@@ -11,10 +12,9 @@ dag_args = {
     "catchup": False,
 }
 
-
 with DAG("veda_discover", **dag_args) as dag:
     start = DummyOperator(task_id="Start", dag=dag)
-    end = DummyOperator(task_id="End", trigger_rule="one_success", dag=dag)
+    end = DummyOperator(task_id="End", trigger_rule=TriggerRule.ONE_SUCCESS, dag=dag)
 
     discover_grp = subdag_discover()
 
