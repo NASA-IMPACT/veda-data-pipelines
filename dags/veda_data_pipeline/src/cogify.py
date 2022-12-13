@@ -13,23 +13,23 @@ from rio_cogeo.profiles import cog_profiles
 
 
 config = {
-    "DEFAULT": { "output_bucket": "climatedashboard-data", "output_dir": "OMDOAO3e_003"},
-    "GPM_3IMERGM": { "group": "Grid", "variable_name": "precipitation"},
-    "ERA5": { "variable_name": "cbh"},
+    "DEFAULT": {"output_bucket": "climatedashboard-data", "output_dir": "OMDOAO3e_003"},
+    "GPM_3IMERGM": {"group": "Grid", "variable_name": "precipitation"},
+    "ERA5": {"variable_name": "cbh"},
     "NISAR": {
         "variable_name": "science/LSAR/GCOV/grids/frequencyA/HHHH",
         "src_crs": "+proj=utm +zone=32S +datum=WGS84",
         "x_variable": "science/LSAR/GCOV/metadata/radarGrid/xCoordinates",
-        "y_variable": "science/LSAR/GCOV/metadata/radarGrid/yCoordinates"
-    }, # WIP
+        "y_variable": "science/LSAR/GCOV/metadata/radarGrid/yCoordinates",
+    },  # WIP
     "OMNO2d": {
         "variable_name": "HDFEOS/GRIDS/ColumnAmountNO2/Data Fields/ColumnAmountNO2TropCloudScreened",
-        "affine_transformation": "(xmin, xres, 0, ymax, 0, -yres)"
+        "affine_transformation": "(xmin, xres, 0, ymax, 0, -yres)",
     },
     "OMDOAO3e": {
         "variable_name": "HDFEOS/GRIDS/ColumnAmountO3/Data Fields/ColumnAmountO3",
-        "affine_transformation": "(xmin, xres, 0, ymax, 0, -yres)%"
-    }
+        "affine_transformation": "(xmin, xres, 0, ymax, 0, -yres)%",
+    },
 }
 
 s3 = boto3.client(

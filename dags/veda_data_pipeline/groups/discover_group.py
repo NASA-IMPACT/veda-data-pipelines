@@ -42,7 +42,14 @@ def run_process_task(ti, dag_id):
         time.sleep(2)
         dag_conf = {**payload, "payload": payload_xcom}
         out = subprocess.run(
-            ["airflow", "dags", "trigger", "-c", json.dumps(dag_conf).decode("utf8"), dag_id],
+            [
+                "airflow",
+                "dags",
+                "trigger",
+                "-c",
+                json.dumps(dag_conf).decode("utf8"),
+                dag_id,
+            ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False,
@@ -92,7 +99,6 @@ def subdag_discover():
             op_kwargs={"dag_id": "veda_ingest"},
             trigger_rule=TriggerRule.ONE_SUCCESS,
         )
-
 
         discover_branching >> [discover_from_cmr, discover_from_s3] >> run_process
         return discover_grp

@@ -7,6 +7,7 @@ from airflow.models.variable import Variable
 
 MWAA_STAC_CONF = Variable.get("MWAA_STACK_CONF", deserialize_json=True)
 
+
 def assume_role(role_arn, session_name="veda-data-pipelines_s3-discovery"):
     sts = boto3.client("sts")
     credentials = sts.assume_role(
@@ -48,6 +49,7 @@ def discover_from_s3(response_iterator):
 
 def generate_payload(s3_prefix_key, payload, limit=None):
     from smart_open import open
+
     if limit:
         payload["objects"] = payload["objects"][:limit]
     output_key = f"{s3_prefix_key}/s3_discover_output_{uuid4()}.json"
@@ -75,8 +77,6 @@ def s3_discovery_handler(event, chunk_size=2800):
         date_fields["end_datetime"] = event["end_datetime"]
     if "datetime_range" in event:
         date_fields["datetime_range"] = event["datetime_range"]
-
-    
 
     role_arn = MWAA_STAC_CONF.get("ASSUME_ROLE_ARN")
     kwargs = assume_role(role_arn=role_arn) if role_arn else {}

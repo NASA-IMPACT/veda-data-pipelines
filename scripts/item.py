@@ -18,8 +18,7 @@ def insert_items(files):
             events = [events]
         for event in events:
             response = sf_client.start_execution(
-                stateMachineArn=INGESTION_STEP_MACHINE_ARN,
-                input=json.dumps(event)
+                stateMachineArn=INGESTION_STEP_MACHINE_ARN, input=json.dumps(event)
             )
             print(response)
 

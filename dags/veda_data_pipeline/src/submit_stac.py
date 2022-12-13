@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import json
 from urllib.parse import urlparse
 import sys
+
 if sys.version_info >= (3, 8):
     from typing import TypedDict
 else:
@@ -14,6 +15,7 @@ import requests
 
 
 MWAA_STAC_CONF = Variable.get("MWAA_STACK_CONF", deserialize_json=True)
+
 
 class InputBase(TypedDict):
     dry_run: Optional[Any]
@@ -95,10 +97,12 @@ class IngestionApi:
 
         return response.json()
 
+
 ingestor = IngestionApi.from_veda_auth_secret(
     secret_id=MWAA_STAC_CONF.get("COGNITO_APP_SECRET"),
     base_url=MWAA_STAC_CONF.get("STAC_INGESTOR_API_URL"),
 )
+
 
 def submission_handler(event: Union[S3LinkInput, StacItemInput]) -> None:
     print(f"SUBMISSION EVENT {event}")
