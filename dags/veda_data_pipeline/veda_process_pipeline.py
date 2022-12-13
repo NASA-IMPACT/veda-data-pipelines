@@ -10,7 +10,7 @@ dag_args = {
     "catchup": False,
 }
 
-with DAG("veda_ingest_pipeline", **dag_args) as dag:
+with DAG("veda_ingest", **dag_args) as dag:
     start = DummyOperator(task_id="Start", dag=dag)
     end = DummyOperator(task_id="End", trigger_rule=TriggerRule.ONE_SUCCESS, dag=dag)
 

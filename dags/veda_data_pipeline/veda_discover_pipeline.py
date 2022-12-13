@@ -12,7 +12,7 @@ dag_args = {
 }
 
 
-with DAG("veda_pipeline_discover", **dag_args) as dag:
+with DAG("veda_discover", **dag_args) as dag:
     start = DummyOperator(task_id="Start", dag=dag)
     end = DummyOperator(task_id="End", trigger_rule="one_success", dag=dag)
 

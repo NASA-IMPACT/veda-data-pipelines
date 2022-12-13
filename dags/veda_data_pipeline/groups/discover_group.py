@@ -87,7 +87,7 @@ def subdag_discover():
         run_process = PythonOperator(
             task_id="parallel_run_process_tasks",
             python_callable=run_process_task,
-            op_kwargs={"dag_id": "veda_ingest_process_pipeline"},
+            op_kwargs={"dag_id": "veda_ingest"},
             trigger_rule=TriggerRule.ONE_SUCCESS,
         )
 

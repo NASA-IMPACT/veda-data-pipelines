@@ -1,12 +1,10 @@
 import json
-import time
 import logging
-
 from airflow.utils.task_group import TaskGroup
 from airflow.providers.amazon.aws.operators.ecs import ECSOperator
 from airflow.operators.python import PythonOperator, BranchPythonOperator
 from airflow.models.variable import Variable
-
+import smart_open
 from veda_data_pipeline.src.submit_stac import submission_handler
 from veda_data_pipeline.src.cogify import cogify_handler
 
@@ -18,11 +16,11 @@ def log_task(text: str):
 
 
 def submit_to_stac_ingestor_task(ti):
-    from smart_open import open
+
     print("Submit STAC ingestor")
     event = json.loads(ti.xcom_pull(task_ids=f"{group_kwgs['group_id']}.build_stac"))
     success_file = event["payload"]["success_event_key"]
-    with open(success_file, "r") as _file:
+    with smart_open.open(success_file, "r") as _file:
         stac_items = json.loads(_file.read())
 
     for item in stac_items:

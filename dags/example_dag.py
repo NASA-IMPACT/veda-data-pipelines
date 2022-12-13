@@ -5,7 +5,6 @@ import pendulum
 import logging
 import time
 
-
 def log_task(text: str):
     logging.info(text)
 
