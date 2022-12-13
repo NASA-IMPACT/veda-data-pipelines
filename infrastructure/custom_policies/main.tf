@@ -64,10 +64,7 @@ data "aws_iam_policy_document" "docker_images_policies" {
     actions = [
       "sts:AssumeRole"
     ]
-    resources = [
-      var.assume_role_read_arn,
-      var.assume_role_write_arn
-    ]
+    resources = var.assume_role_arns
   }
     statement {
     effect = "Allow"
