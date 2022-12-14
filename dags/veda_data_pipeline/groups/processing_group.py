@@ -57,7 +57,6 @@ def subdag_process():
             task_id="build_stac",
             trigger_rule=TriggerRule.NONE_FAILED,
             execution_timeout=timedelta(minutes=15),
-            timeout=900,
             cluster=f"{mwaa_stack_conf.get('PREFIX')}-cluster",
             task_definition=f"{mwaa_stack_conf.get('PREFIX')}-veda-tasks",
             launch_type="FARGATE",
