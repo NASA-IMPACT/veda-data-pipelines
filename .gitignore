@@ -44,3 +44,6 @@ env.sh
 
 .hypothesis
 Makefile
+
+# Local mwaa
+aws-mwaa-local-runner/
