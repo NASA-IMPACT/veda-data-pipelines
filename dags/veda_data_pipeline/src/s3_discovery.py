@@ -52,6 +52,8 @@ def generate_payload(s3_prefix_key, payload, limit=None):
 
     if limit:
         payload["objects"] = payload["objects"][:limit]
+
+
     output_key = f"{s3_prefix_key}/s3_discover_output_{uuid4()}.json"
     with open(output_key, "w") as file:
         file.write(json.dumps(payload))

@@ -10,7 +10,8 @@ def log_task(text: str):
     logging.info(text)
 
 
-def discover_from_cmr_task(text):
+def discover_from_cmr_task(ti,text):
+    print(ti.dag_run.conf)
     log_task(text)
 
 
