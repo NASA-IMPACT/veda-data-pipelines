@@ -1,11 +1,12 @@
 import json
 import logging
-
+from datetime import timedelta
 from airflow.utils.task_group import TaskGroup
 from airflow.providers.amazon.aws.operators.ecs import ECSOperator
 from airflow.operators.python import PythonOperator, BranchPythonOperator
 from airflow.models.variable import Variable
 import smart_open
+from airflow.utils.trigger_rule import TriggerRule
 
 from veda_data_pipeline.src.submit_stac import submission_handler
 from veda_data_pipeline.src.cogify import cogify_handler
@@ -48,13 +49,15 @@ def subdag_process():
     with TaskGroup(**group_kwgs) as process_grp:
         cogify_branching = BranchPythonOperator(
             task_id="cogify_branching",
-            trigger_rule="one_success",
+            trigger_rule=TriggerRule.ONE_SUCCESS,
             python_callable=cogify_choice,
         )
         mwaa_stack_conf = Variable.get("MWAA_STACK_CONF", deserialize_json=True)
         build_stac = ECSOperator(
             task_id="build_stac",
-            trigger_rule="none_failed",
+            trigger_rule=TriggerRule.NONE_FAILED,
+            execution_timeout=timedelta(minutes=15),
+            timeout=900,
             cluster=f"{mwaa_stack_conf.get('PREFIX')}-cluster",
             task_definition=f"{mwaa_stack_conf.get('PREFIX')}-veda-tasks",
             launch_type="FARGATE",

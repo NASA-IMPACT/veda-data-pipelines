@@ -3,8 +3,9 @@ data "aws_iam_policy_document" "docker_images_policies" {
   statement {
     effect = "Allow"
     actions = [
-        "ecs:RunTask",
-        "ecs:DescribeTasks"
+      "ecs:RunTask",
+      "ecs:DescribeTasks",
+      "ecs:StopTask"
     ]
     resources = [
       "arn:aws:ecs:${var.region}:${var.account_id}:cluster/${var.cluster_name}",
