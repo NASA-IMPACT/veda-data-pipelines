@@ -85,14 +85,14 @@ def handler(event, context):
 if __name__ == "__main__":
     sample_event = {
         "queue_messages": "true",
-        "collection": "BIOSAR1",
-        "version": "1",
+        "collection": "GEDI02_B",
+        "version": "002",
         "discovery": "cmr",
-        "asset_name": "data",
+        "temporal": ["2021-11-01T00:00:00Z", "2021-12-31T23:59:59Z"],
         "mode": "cmr",
+        "asset_name": "data",
         "asset_roles": ["data"],
-        "asset_media_type": "image/tiff",
-        "link_rel": "http://esipfed.org/ns/fedsearch/1.1/data#"
+        "asset_media_type": "application/x-hdf5"
     }
 
     handler(sample_event, {})
