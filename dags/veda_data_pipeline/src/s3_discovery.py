@@ -2,7 +2,7 @@ import re
 import boto3
 import json
 from uuid import uuid4
-
+from smart_open import open as smrt_open
 from airflow.models.variable import Variable
 
 MWAA_STAC_CONF = Variable.get("MWAA_STACK_CONF", deserialize_json=True)
@@ -37,23 +37,42 @@ def get_s3_resp_iterator(bucket_name, prefix, s3_client, page_size=1000):
 
 
 def discover_from_s3(response_iterator):
-    """
-    Fetch the link of the granules in the host url_path
-    :return: Returns a dictionary containing the path, etag, and the last modified date of a granule
+    """Iterate through pages of S3 objects returned by a ListObjectsV2 operation.
+    The discover_from_s3 function takes in an iterator over the pages of S3 objects returned
+    by a ListObjectsV2 operation. It iterates through the pages and yields each S3 object in the page as a dictionary.
+    This function can be used to iterate through a large number of S3 objects returned by a ListObjectsV2 operation
+    without having to load all the objects into memory at once.
 
+    Parameters:
+    response_iterator (iter): An iterator over the pages of S3 objects returned by a ListObjectsV2 operation.
+
+    Yields:
+    dict: A dictionary representing an S3 object.
     """
     for page in response_iterator:
         for s3_object in page.get("Contents", {}):
             yield s3_object
 
 
-def generate_payload(s3_prefix_key, payload, limit=None):
-    from smart_open import open
+def generate_payload(s3_prefix_key: str, payload: dict, limit: int = None):
+    """Generate a payload and write it to an S3 file.
+    This function takes in a prefix for an S3 key, a dictionary containing a payload,
+    and an optional limit on the number of objects in the payload. If a limit is provided,
+    the function will slice the objects list in the payload dictionary to include only the specified number
+    of objects. The function then writes the payload to an S3 file using the provided prefix and a randomly
+    generated UUID as the key. The key of the output file is then returned.
+    Parameters:
+    s3_prefix_key (str): The prefix for the S3 key where the output file will be written.
+    payload (dict): A dictionary containing the payload to be written to the output file.
+    limit (int, optional): The maximum number of objects to include in the payload. If not provided, all objects will be included.
 
+    Returns:
+    str: The S3 key of the output file.
+    """
     if limit:
         payload["objects"] = payload["objects"][:limit]
     output_key = f"{s3_prefix_key}/s3_discover_output_{uuid4()}.json"
-    with open(output_key, "w") as file:
+    with smrt_open(output_key, "w") as file:
         file.write(json.dumps(payload))
     return output_key
 
