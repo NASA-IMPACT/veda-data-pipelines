@@ -133,147 +133,381 @@ if __name__ == "__main__":
       "stac_item": {
         "type": "Feature",
         "stac_version": "1.0.0",
-        "id": "boreal_agb_202212051670264409_2112",
+        "id": "GEDI02_A_2020366232302_O11636_02_T08595_02_003_02_V002",
         "properties": {
-          "proj:epsg": None,
-          "proj:geometry": {
-            "type": "Polygon",
-            "coordinates": [
-              [
-                [
-                  -2961478.0,
-                  4473304.0
-                ],
-                [
-                  -2871478.0,
-                  4473304.0
-                ],
-                [
-                  -2871478.0,
-                  4563304.0
-                ],
-                [
-                  -2961478.0,
-                  4563304.0
-                ],
-                [
-                  -2961478.0,
-                  4473304.0
-                ]
-              ]
+          "producer_granule_id": "GEDI02_A_2020366232302_O11636_02_T08595_02_003_02_V002.h5",
+          "time_start": "2020-12-31T23:23:02.000Z",
+          "updated": "2021-09-16T13:39:42.918Z",
+          "dataset_id": "GEDI L2A Elevation and Height Metrics Data Global Footprint Level V002",
+          "data_center": "NASA_MAAP",
+          "title": "SC:GEDI02_A.002:2479422824",
+          "coordinate_system": "GEODETIC",
+          "day_night_flag": "UNSPECIFIED",
+          "time_end": "2021-01-01T00:55:54.000Z",
+          "original_format": "ECHO10",
+          "granule_size": "2769.65",
+          "browse_flag": False,
+          "polygons": [
+            [
+              "-0.2387289 -7.5971209 2.8189966 -5.4423856 5.8716528 -3.2747626 8.9132468 -1.0797761 11.9384815 1.1554717 14.9404437 3.4468156 17.9126576 5.8092283 20.8479939 8.259201 23.7380778 10.8151833 26.5736864 13.4966606 29.3450799 16.3238182 32.0403274 19.319827 34.6464371 22.5076979 37.1492987 25.9115612 39.5291864 29.5597367 41.7696059 33.4734198 43.8475875 37.6754714 45.7399801 42.1817944 47.4203727 47.001753 48.8627759 52.1285012 50.0402224 57.5428327 50.9290227 63.2044527 51.5085858 69.0547511 51.7642443 75.0176386 51.7746316 75.9956659 51.8249909 75.994814 51.8145864 75.015351 51.5586036 69.0453025 50.9783437 63.1882822 50.0885272 57.5206382 48.9098095 52.1011197 47.4659638 46.9701174 45.7840169 42.1467687 43.8900371 37.6378822 41.8104732 33.4339463 39.5685347 29.5189717 37.1871726 25.8699043 34.6829653 22.4655454 32.0756085 19.2774222 29.379222 16.2813389 26.6068138 13.4542411 23.7703001 10.7728961 20.879429 8.2170933 17.9434253 5.7673228 14.9706524 3.4051068 11.9682326 1.1139361 8.9426599 -1.1211578 5.9008172 -3.3160383 2.8480234 -5.4835915 -0.209737 -7.6383013 -0.2387289 -7.5971209"
             ]
-          },
-          "proj:bbox": [
-            -2961478.0,
-            4473304.0,
-            -2871478.0,
-            4563304.0
           ],
-          "proj:shape": [
-            3000,
-            3000
+          "collection_concept_id": "C1201746156-NASA_MAAP",
+          "online_access_flag": False,
+          "links": [
+            {
+              "rel": "http://esipfed.org/ns/fedsearch/1.1/s3#",
+              "title": "File to download",
+              "hreflang": "en-US",
+              "href": "s3://nasa-maap-data-store/file-staging/nasa-map/GEDI02_A___002/2020.12.31/GEDI02_A_2020366232302_O11636_02_T08595_02_003_02_V002.h5"
+            },
+            {
+              "inherited": True,
+              "rel": "http://esipfed.org/ns/fedsearch/1.1/data#",
+              "hreflang": "en-US",
+              "href": "https://search.earthdata.nasa.gov/search?q=C1908348134-LPDAAC_ECS"
+            },
+            {
+              "inherited": True,
+              "rel": "http://esipfed.org/ns/fedsearch/1.1/data#",
+              "hreflang": "en-US",
+              "href": "https://e4ftl01.cr.usgs.gov/GEDI/GEDI02_A.002/"
+            },
+            {
+              "inherited": True,
+              "rel": "http://esipfed.org/ns/fedsearch/1.1/metadata#",
+              "hreflang": "en-US",
+              "href": "https://lpdaac.usgs.gov/"
+            },
+            {
+              "inherited": True,
+              "rel": "http://esipfed.org/ns/fedsearch/1.1/metadata#",
+              "hreflang": "en-US",
+              "href": "https://doi.org/10.5067/GEDI/GEDI02_A.002"
+            },
+            {
+              "inherited": True,
+              "rel": "http://esipfed.org/ns/fedsearch/1.1/documentation#",
+              "hreflang": "en-US",
+              "href": "https://lpdaac.usgs.gov/documents/982/gedi_l2a_dictionary_P003_v2.html"
+            },
+            {
+              "inherited": True,
+              "rel": "http://esipfed.org/ns/fedsearch/1.1/documentation#",
+              "hreflang": "en-US",
+              "href": "https://doi.org/10.5067/DOC/GEDI/GEDI_WF_ATBD.001"
+            },
+            {
+              "inherited": True,
+              "rel": "http://esipfed.org/ns/fedsearch/1.1/documentation#",
+              "hreflang": "en-US",
+              "href": "https://doi.org/10.5067/DOC/GEDI/GEDI_WFGEO_ATBD.001"
+            },
+            {
+              "inherited": True,
+              "rel": "http://esipfed.org/ns/fedsearch/1.1/metadata#",
+              "hreflang": "en-US",
+              "href": "https://gedi.umd.edu/"
+            },
+            {
+              "inherited": True,
+              "rel": "http://esipfed.org/ns/fedsearch/1.1/metadata#",
+              "hreflang": "en-US",
+              "href": "https://gedi.umd.edu/"
+            },
+            {
+              "inherited": True,
+              "rel": "http://esipfed.org/ns/fedsearch/1.1/documentation#",
+              "hreflang": "en-US",
+              "href": "https://lpdaac.usgs.gov/documents/998/GEDI02_UserGuide_V21.pdf"
+            },
+            {
+              "inherited": True,
+              "rel": "http://esipfed.org/ns/fedsearch/1.1/documentation#",
+              "hreflang": "en-US",
+              "href": "https://git.earthdata.nasa.gov/projects/LPDUR/repos/gedi-subsetter/browse"
+            },
+            {
+              "inherited": True,
+              "rel": "http://esipfed.org/ns/fedsearch/1.1/documentation#",
+              "hreflang": "en-US",
+              "href": "https://lpdaac.usgs.gov/resources/e-learning/accessing-and-analyzing-gedi-lidar-data-for-vegetation-studies/"
+            },
+            {
+              "inherited": True,
+              "rel": "http://esipfed.org/ns/fedsearch/1.1/documentation#",
+              "hreflang": "en-US",
+              "href": "https://lpdaac.usgs.gov/documents/989/GEDI_Quick_Guide_V2.pdf"
+            },
+            {
+              "inherited": True,
+              "rel": "http://esipfed.org/ns/fedsearch/1.1/documentation#",
+              "hreflang": "en-US",
+              "href": "https://lpdaac.usgs.gov/resources/e-learning/getting-started-gedi-l2a-version-2-data-python/"
+            },
+            {
+              "inherited": True,
+              "rel": "http://esipfed.org/ns/fedsearch/1.1/documentation#",
+              "hreflang": "en-US",
+              "href": "https://git.earthdata.nasa.gov/projects/LPDUR/repos/gedi-finder-tutorial-r/browse"
+            },
+            {
+              "inherited": True,
+              "rel": "http://esipfed.org/ns/fedsearch/1.1/documentation#",
+              "hreflang": "en-US",
+              "href": "https://git.earthdata.nasa.gov/projects/LPDUR/repos/gedi-finder-tutorial-python/browse"
+            }
           ],
-          "proj:transform": [
-            30.0,
-            0.0,
-            -2961478.0,
-            0.0,
-            -30.0,
-            4563304.0,
-            0.0,
-            0.0,
-            1.0
-          ],
-          "datetime": "2022-12-05T00:00:00Z"
+          "concept_id": "G1201782029-NASA_MAAP",
+          "datetime": "2020-12-31T23:23:02Z"
         },
         "geometry": {
-          "type": "Polygon",
           "coordinates": [
             [
               [
-                104.86110644433832,
-                63.53882062284371
+                -0.2387289,
+                -7.5971209
               ],
               [
-                105.68371316442243,
-                64.25250527759168
+                2.8189966,
+                -5.4423856
               ],
               [
-                103.97974230345058,
-                64.60012611711596
+                5.8716528,
+                -3.2747626
               ],
               [
-                103.18984743000539,
-                63.8776409949251
+                8.9132468,
+                -1.0797761
               ],
               [
-                104.86110644433832,
-                63.53882062284371
+                11.9384815,
+                1.1554717
+              ],
+              [
+                14.9404437,
+                3.4468156
+              ],
+              [
+                17.9126576,
+                5.8092283
+              ],
+              [
+                20.8479939,
+                8.259201
+              ],
+              [
+                23.7380778,
+                10.8151833
+              ],
+              [
+                26.5736864,
+                13.4966606
+              ],
+              [
+                29.3450799,
+                16.3238182
+              ],
+              [
+                32.0403274,
+                19.319827
+              ],
+              [
+                34.6464371,
+                22.5076979
+              ],
+              [
+                37.1492987,
+                25.9115612
+              ],
+              [
+                39.5291864,
+                29.5597367
+              ],
+              [
+                41.7696059,
+                33.4734198
+              ],
+              [
+                43.8475875,
+                37.6754714
+              ],
+              [
+                45.7399801,
+                42.1817944
+              ],
+              [
+                47.4203727,
+                47.001753
+              ],
+              [
+                48.8627759,
+                52.1285012
+              ],
+              [
+                50.0402224,
+                57.5428327
+              ],
+              [
+                50.9290227,
+                63.2044527
+              ],
+              [
+                51.5085858,
+                69.0547511
+              ],
+              [
+                51.7642443,
+                75.0176386
+              ],
+              [
+                51.7746316,
+                75.9956659
+              ],
+              [
+                51.8249909,
+                75.994814
+              ],
+              [
+                51.8145864,
+                75.015351
+              ],
+              [
+                51.5586036,
+                69.0453025
+              ],
+              [
+                50.9783437,
+                63.1882822
+              ],
+              [
+                50.0885272,
+                57.5206382
+              ],
+              [
+                48.9098095,
+                52.1011197
+              ],
+              [
+                47.4659638,
+                46.9701174
+              ],
+              [
+                45.7840169,
+                42.1467687
+              ],
+              [
+                43.8900371,
+                37.6378822
+              ],
+              [
+                41.8104732,
+                33.4339463
+              ],
+              [
+                39.5685347,
+                29.5189717
+              ],
+              [
+                37.1871726,
+                25.8699043
+              ],
+              [
+                34.6829653,
+                22.4655454
+              ],
+              [
+                32.0756085,
+                19.2774222
+              ],
+              [
+                29.379222,
+                16.2813389
+              ],
+              [
+                26.6068138,
+                13.4542411
+              ],
+              [
+                23.7703001,
+                10.7728961
+              ],
+              [
+                20.879429,
+                8.2170933
+              ],
+              [
+                17.9434253,
+                5.7673228
+              ],
+              [
+                14.9706524,
+                3.4051068
+              ],
+              [
+                11.9682326,
+                1.1139361
+              ],
+              [
+                8.9426599,
+                -1.1211578
+              ],
+              [
+                5.9008172,
+                -3.3160383
+              ],
+              [
+                2.8480234,
+                -5.4835915
+              ],
+              [
+                -0.209737,
+                -7.6383013
+              ],
+              [
+                -0.2387289,
+                -7.5971209
               ]
             ]
-          ]
+          ],
+          "type": "Polygon"
         },
         "links": [
           {
-            "rel": "collection",
-            "href": "icesat2-boreal",
+            "rel": "self",
+            "href": "s3://nasa-maap-data-store/file-staging/nasa-map/GEDI02_A___002/2020.12.31/GEDI02_A_2020366232302_O11636_02_T08595_02_003_02_V002.h5",
             "type": "application/json"
           }
         ],
         "assets": {
-          "cog_default": {
-            "href": "s3://maap-user-shared-data/icesat2-boreal/boreal_agb_202212051670264409_2112.tif",
-            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
-            "raster:bands": [
-              {
-                "data_type": "float32",
-                "scale": 1.0,
-                "offset": 0.0,
-                "sampling": "area",
-                "nodata": "nan",
-                "statistics": {
-                  "mean": 31.942728162205626,
-                  "minimum": 3.376779079437256,
-                  "maximum": 150.87786865234375,
-                  "stddev": 10.524873722675382,
-                  "valid_percent": 98.44493865966797
-                },
-                "histogram": {
-                  "count": 11,
-                  "min": 3.376779079437256,
-                  "max": 150.87786865234375,
-                  "buckets": [
-                    73947,
-                    524791,
-                    353092,
-                    70303,
-                    8732,
-                    1121,
-                    214,
-                    48,
-                    17,
-                    5
-                  ]
-                }
-              }
-            ],
+          "data": {
+            "href": "s3://nasa-maap-data-store/file-staging/nasa-map/GEDI02_A___002/2020.12.31/GEDI02_A_2020366232302_O11636_02_T08595_02_003_02_V002.h5",
+            "type": "application/x-hdf5",
             "roles": [
-              "data",
-              "layer"
+              "data"
+            ]
+          },
+          "metadata": {
+            "href": "https://lpdaac.usgs.gov/",
+            "roles": [
+              "metadata"
+            ]
+          },
+          "documentation": {
+            "href": "https://lpdaac.usgs.gov/documents/982/gedi_l2a_dictionary_P003_v2.html",
+            "roles": [
+              "documentation"
             ]
           }
         },
         "bbox": [
-          103.18984743000539,
-          63.53882062284371,
-          105.68371316442243,
-          64.60012611711596
+          -0.2387289,
+          -7.6383013,
+          51.8249909,
+          75.9956659
         ],
-        "stac_extensions": [
-          "https://stac-extensions.github.io/projection/v1.0.0/schema.json",
-          "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
-        ],
-        "collection": "icesat2-boreal"
+        "stac_extensions": [],
+        "collection": "GEDI02_A"
       }
     }
 

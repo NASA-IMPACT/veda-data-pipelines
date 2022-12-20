@@ -196,11 +196,15 @@ def gen_asset(role: str, link: dict, item: dict) -> pystac.Asset:
     # Fallback to asset_media_type defined in the item
     if asset_media_type == None and role == 'data':
         asset_media_type = item.asset_media_type
-    return pystac.Asset(
-        roles=[role],
-        href=link.get('href'),
-        media_type=asset_media_type
-    )
+
+    if role == 'data' and 's3://' not in link.get('href'):
+        pass
+    else:
+        return pystac.Asset(
+            roles=[role],
+            href=link.get('href'),
+            media_type=asset_media_type
+        )
 
 def get_assets_from_cmr(cmr_json, item) -> dict[pystac.Asset]:
     """

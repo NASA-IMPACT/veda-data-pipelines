@@ -57,11 +57,17 @@ def handler(event: Dict[str, Any], context) -> Union[S3LinkOutput, StacItemOutpu
 
 if __name__ == "__main__":
     sample_event = {
-        "collection": "icesat2-boreal",
-        "remote_fileurl": "s3://maap-user-shared-data/icesat2-boreal/boreal_agb_202212051670264409_2112.tif",
-        "upload": True,
-        "user_shared": True,
-        "properties": {}
-    }
-    
+        "collection": "GEDI02_A",
+        "remote_fileurl": "s3://nasa-maap-data-store/file-staging/nasa-map/GEDI02_A___002/2020.12.31/GEDI02_A_2020366232302_O11636_02_T08595_02_003_02_V002.h5",
+        "granule_id": "G1201782029-NASA_MAAP",
+        "id": "G1201782029-NASA_MAAP",
+        "mode": "cmr",
+        "test_links": None,
+        "reverse_coords": None,
+        "asset_name": "data",
+        "asset_roles": [
+            "data"
+        ],
+        "asset_media_type": "application/x-hdf5"
+        }
     print(json.dumps(handler(sample_event, {}), indent=2))

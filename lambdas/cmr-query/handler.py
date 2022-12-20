@@ -85,10 +85,10 @@ def handler(event, context):
 if __name__ == "__main__":
     sample_event = {
         "queue_messages": "true",
-        "collection": "GEDI02_B",
+        "collection": "GEDI02_A",
         "version": "002",
         "discovery": "cmr",
-        "temporal": ["2021-11-01T00:00:00Z", "2021-12-31T23:59:59Z"],
+         "temporal": ["2019-04-01T00:00:00Z", "2019-07-31T23:59:59Z"],
         "mode": "cmr",
         "asset_name": "data",
         "asset_roles": ["data"],
