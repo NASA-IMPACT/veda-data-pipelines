@@ -1,5 +1,5 @@
 {
-    "id": "nex-gddp-cmip6-cog-monthly-ensemble-median-pr",
+    "id": "nex-gddp-cmip6-cog-monthly-ensemble",
     "type": "Collection",
     "links": [
         {
@@ -13,7 +13,7 @@
             "href": "https://www.nccs.nasa.gov/services/data-collections/land-based-products/nex-gddp-cmip6"
         }
     ],
-    "title": "CMIP6 Precipitation Rate Monthly Median Ensemble",
+    "title": "CMIP6 Monthly Historical, SSP245, and SSP585 (Aggregated GFDL-CM4 and GISS-E2-1 Models)",
     "extent": {
         "spatial": {
             "bbox": [
@@ -35,7 +35,7 @@
         }
     },
     "license": "CC0-1.0",
-    "description": "Precipitation rate (pr) monthly median ensemble aggregation across GFDL-CM4 and GISS-E2-1 models",
+    "description": "Monthly ensemble historical and projected (ssp245 and ssp585 experiments) aggregated GFDL-CM4 and GISS-E2-1 models",
     "item_assets": {
         "cog_default": {
             "type": "image/tiff; application=geotiff; profile=cloud-optimized",
@@ -56,8 +56,6 @@
     },
     "stac_version": "1.0.0",
     "dashboard:is_periodic": true,
-    "dashboard:time_density": "day",
-    "cmip6:ensemble": "median",
-    "cmip6:variable_id": "pr",
+    "dashboard:time_density": "month",
     "sci:doi": "https://www.nccs.nasa.gov/services/data-collections/land-based-products/nex-gddp-cmip6"
 }

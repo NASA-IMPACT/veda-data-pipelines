@@ -1,5 +1,5 @@
 {
-    "id": "nex-gddp-cmip6-cog-monthly-ensemble-median-hurs",
+    "id": "nex-gddp-cmip6-cog-monthly-ensemble-median-historical-hurs",
     "type": "Collection",
     "links": [
         {
@@ -13,7 +13,7 @@
             "href": "https://www.nccs.nasa.gov/services/data-collections/land-based-products/nex-gddp-cmip6"
         }
     ],
-    "title": "CMIP6 Relative Humidity Monthly Median Historical, SSP245, and SSP585 (Aggregated GFDL-CM4 and GISS-E2-1 Models)",
+    "title": "CMIP6 Relative Humidity Monthly Median Historical (Aggregated GFDL-CM4 and GISS-E2-1 Models)",
     "extent": {
         "spatial": {
             "bbox": [
@@ -35,7 +35,7 @@
         }
     },
     "license": "CC0-1.0",
-    "description": "Near-surface relative humidity (hurs) monthly median historical and projected (ssp245 and ssp585 experiments) aggregated GFDL-CM4 and GISS-E2-1 models",
+    "description": "Near-surface relative humidity (hurs) monthly median historical aggregated GFDL-CM4 and GISS-E2-1 models",
     "item_assets": {
         "cog_default": {
             "type": "image/tiff; application=geotiff; profile=cloud-optimized",
