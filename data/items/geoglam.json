@@ -5,6 +5,5 @@
     "filename_regex": "^(.*).tif$",
     "discovery": "s3",
     "datetime_range": "month",
-    "upload": false,
-    "limit": 10
+    "upload": false
 }
