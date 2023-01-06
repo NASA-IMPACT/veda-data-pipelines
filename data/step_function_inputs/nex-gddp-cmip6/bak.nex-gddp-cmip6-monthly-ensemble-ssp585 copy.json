@@ -1,0 +1,254 @@
+[
+    {
+        "collection": "nex-gddp-cmip6-cog-monthly-ensemble-ssp585",
+        "prefix": "monthly/CMIP6_ensemble_median/hurs/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^(.*)_historical_(.*).tif",
+        "discovery": "s3",
+        "datetime_range": "month",
+        "start_datetime": "1950-01-01T00:00:00Z",
+        "properties": {
+            "cmip6:ensemble": "median",
+            "cmip6:experiment_id": "historical",
+            "cmip6:variable_id": "hurs"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-cog-monthly-ensemble-ssp585",
+        "prefix": "monthly/CMIP6_ensemble_median/hurs/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^(.*)_ssp585_(.*).tif",
+        "discovery": "s3",
+        "datetime_range": "month",
+        "start_datetime": "2015-01-01T00:00:00Z",
+        "properties": {
+            "cmip6:ensemble": "median",
+            "cmip6:experiment_id": "ssp585",
+            "cmip6:variable_id": "hurs"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-cog-monthly-ensemble-ssp585",
+        "prefix": "monthly/CMIP6_ensemble_median/huss/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^(.*)_historical_(.*).tif",
+        "discovery": "s3",
+        "datetime_range": "month",
+        "start_datetime": "1950-01-01T00:00:00Z",
+        "properties": {
+            "cmip6:ensemble": "median",
+            "cmip6:experiment_id": "historical",
+            "cmip6:variable_id": "huss"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-cog-monthly-ensemble-ssp585",
+        "prefix": "monthly/CMIP6_ensemble_median/huss/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^(.*)_ssp585_(.*).tif",
+        "discovery": "s3",
+        "datetime_range": "month",
+        "start_datetime": "2015-01-01T00:00:00Z",
+        "properties": {
+            "cmip6:ensemble": "median",
+            "cmip6:experiment_id": "ssp585",
+            "cmip6:variable_id": "huss"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-cog-monthly-ensemble-ssp585",
+        "prefix": "monthly/CMIP6_ensemble_median/pr/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^(.*)_historical_(.*).tif",
+        "discovery": "s3",
+        "datetime_range": "month",
+        "start_datetime": "1950-01-01T00:00:00Z",
+        "properties": {
+            "cmip6:ensemble": "median",
+            "cmip6:experiment_id": "historical",
+            "cmip6:variable_id": "pr"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-cog-monthly-ensemble-ssp585",
+        "prefix": "monthly/CMIP6_ensemble_median/pr/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^(.*)_ssp585_(.*).tif",
+        "discovery": "s3",
+        "datetime_range": "month",
+        "start_datetime": "2015-01-01T00:00:00Z",
+        "properties": {
+            "cmip6:ensemble": "median",
+            "cmip6:experiment_id": "ssp585",
+            "cmip6:variable_id": "pr"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-cog-monthly-ensemble-ssp585",
+        "prefix": "monthly/CMIP6_ensemble_median/rlds/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^(.*)_historical_(.*).tif",
+        "discovery": "s3",
+        "datetime_range": "month",
+        "start_datetime": "1950-01-01T00:00:00Z",
+        "properties": {
+            "cmip6:ensemble": "median",
+            "cmip6:experiment_id": "historical",
+            "cmip6:variable_id": "rlds"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-cog-monthly-ensemble-ssp585",
+        "prefix": "monthly/CMIP6_ensemble_median/rlds/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^(.*)_ssp585_(.*).tif",
+        "discovery": "s3",
+        "datetime_range": "month",
+        "start_datetime": "2015-01-01T00:00:00Z",
+        "properties": {
+            "cmip6:ensemble": "median",
+            "cmip6:experiment_id": "ssp585",
+            "cmip6:variable_id": "rlds"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-cog-monthly-ensemble-ssp585",
+        "prefix": "monthly/CMIP6_ensemble_median/rsds/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^(.*)_historical_(.*).tif",
+        "discovery": "s3",
+        "datetime_range": "month",
+        "start_datetime": "1950-01-01T00:00:00Z",
+        "properties": {
+            "cmip6:ensemble": "median",
+            "cmip6:experiment_id": "historical",
+            "cmip6:variable_id": "rsds"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-cog-monthly-ensemble-ssp585",
+        "prefix": "monthly/CMIP6_ensemble_median/rsds/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^(.*)_ssp585_(.*).tif",
+        "discovery": "s3",
+        "datetime_range": "month",
+        "start_datetime": "2015-01-01T00:00:00Z",
+        "properties": {
+            "cmip6:ensemble": "median",
+            "cmip6:experiment_id": "ssp585",
+            "cmip6:variable_id": "rsds"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-cog-monthly-ensemble-ssp585",
+        "prefix": "monthly/CMIP6_ensemble_median/sfcWind/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^(.*)_historical_(.*).tif",
+        "discovery": "s3",
+        "datetime_range": "month",
+        "start_datetime": "1950-01-01T00:00:00Z",
+        "properties": {
+            "cmip6:ensemble": "median",
+            "cmip6:experiment_id": "historical",
+            "cmip6:variable_id": "sfcWind"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-cog-monthly-ensemble-ssp585",
+        "prefix": "monthly/CMIP6_ensemble_median/sfcWind/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^(.*)_ssp585_(.*).tif",
+        "discovery": "s3",
+        "datetime_range": "month",
+        "start_datetime": "2015-01-01T00:00:00Z",
+        "properties": {
+            "cmip6:ensemble": "median",
+            "cmip6:experiment_id": "ssp585",
+            "cmip6:variable_id": "sfcWind"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-cog-monthly-ensemble-ssp585",
+        "prefix": "monthly/CMIP6_ensemble_median/tas/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^(.*)_historical_(.*).tif",
+        "discovery": "s3",
+        "datetime_range": "month",
+        "start_datetime": "1950-01-01T00:00:00Z",
+        "properties": {
+            "cmip6:ensemble": "median",
+            "cmip6:experiment_id": "historical",
+            "cmip6:variable_id": "tas"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-cog-monthly-ensemble-ssp585",
+        "prefix": "monthly/CMIP6_ensemble_median/tas/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^(.*)_ssp585_(.*).tif",
+        "discovery": "s3",
+        "datetime_range": "month",
+        "start_datetime": "2015-01-01T00:00:00Z",
+        "properties": {
+            "cmip6:ensemble": "median",
+            "cmip6:experiment_id": "ssp585",
+            "cmip6:variable_id": "tas"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-cog-monthly-ensemble-ssp585",
+        "prefix": "monthly/CMIP6_ensemble_median/tasmax/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^(.*)_historical_(.*).tif",
+        "discovery": "s3",
+        "datetime_range": "month",
+        "start_datetime": "1950-01-01T00:00:00Z",
+        "properties": {
+            "cmip6:ensemble": "median",
+            "cmip6:experiment_id": "historical",
+            "cmip6:variable_id": "tasmax"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-cog-monthly-ensemble-ssp585",
+        "prefix": "monthly/CMIP6_ensemble_median/tasmax/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^(.*)_ssp585_(.*).tif",
+        "discovery": "s3",
+        "datetime_range": "month",
+        "start_datetime": "2015-01-01T00:00:00Z",
+        "properties": {
+            "cmip6:ensemble": "median",
+            "cmip6:experiment_id": "ssp585",
+            "cmip6:variable_id": "tasmax"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-cog-monthly-ensemble-ssp585",
+        "prefix": "monthly/CMIP6_ensemble_median/tasmin/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^(.*)_historical_(.*).tif",
+        "discovery": "s3",
+        "datetime_range": "month",
+        "start_datetime": "1950-01-01T00:00:00Z",
+        "properties": {
+            "cmip6:ensemble": "median",
+            "cmip6:experiment_id": "historical",
+            "cmip6:variable_id": "tasmin"
+        }
+    },
+    {
+        "collection": "nex-gddp-cmip6-cog-monthly-ensemble-ssp585",
+        "prefix": "monthly/CMIP6_ensemble_median/tasmin/",
+        "bucket": "nex-gddp-cmip6-cog",
+        "filename_regex": "^(.*)_ssp585_(.*).tif",
+        "discovery": "s3",
+        "datetime_range": "month",
+        "start_datetime": "2015-01-01T00:00:00Z",
+        "properties": {
+            "cmip6:ensemble": "median",
+            "cmip6:experiment_id": "ssp585",
+            "cmip6:variable_id": "tasmin"
+        }
+    }
+]
