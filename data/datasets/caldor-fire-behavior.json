@@ -4,7 +4,7 @@
     "description": "`.geojson` and `tif` files describing the progression and active fire behavior of the 2021 Caldor Fire in California via the algorithm detailed in https://www.nature.com/articles/s41597-022-01343-0. This includes an extra `.tif` file detailing the soil burn severity (SBS) conditions provided by the [Burned Area Emergency Response](https://burnseverity.cr.usgs.gov/baer/) team.",
     "license": "CC0",
     "dashboard_is_periodic": false,
-    "dashboard_time_density": "null",
+    "dashboard_time_density": null,
     "spatial_extent": {
         "xmin": -180,
         "ymin": -90,

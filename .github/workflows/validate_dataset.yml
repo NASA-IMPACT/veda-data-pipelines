@@ -57,15 +57,16 @@ jobs:
             echo "Validating $file"
             token=$(cat token.txt | jq -r '.access_token')
             # if 200 not returned, set outputs to print code and message
-            http_response=$(curl -N -s -o response-${file}.txt -w "%{http_code}" -X POST \
+            http_response=$(curl -N -s -o response.txt -w "%{http_code}" -X POST \
               -H "Content-Type: application/json" \
-              -H "Authorization: Bearer: $token" \
+              -H "Authorization: Bearer $token" \
+              -H "accept: application/json"\
               -d @$file \
-              "$STAC_INGESTOR_URL/datasets/validate")
+              "$STAC_INGESTOR_URL/dataset/validate")
             if [ $http_response -ne 200 ]; then
               echo "Error validating $file"
               echo "HTTP Response: $http_response"
-              echo "Response Body: $(cat response-${file}.txt)"
+              echo "Response Body: $(cat response.txt)"
               error_flag=1
             fi
           done
