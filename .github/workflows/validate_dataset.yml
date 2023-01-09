@@ -4,12 +4,6 @@ name: Validate Datasets
 on: 
   push:
     secrets:
-      aws_access_key_id:
-        required: true
-      aws_secret_access_key:
-        required: true
-      cognito_app_secret:
-        required: true
       stac_ingestor_url:
         required: true
       client_id:
@@ -41,7 +35,6 @@ jobs:
       - name: Validate datasets using API
         if: steps.filter.outputs.dataset == 'true'
         env:
-          COGNITO_APP_SECRET: ${{ secrets.COGNITO_APP_SECRET }}
           STAC_INGESTOR_URL: ${{ secrets.STAC_INGESTOR_URL }}
         shell: bash
         # LIMITATION - only reports errors in first CURL that fails
