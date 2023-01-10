@@ -1,9 +1,10 @@
 import os
+import sys
 
 from pypgstac.load import Loader, Methods
 from pypgstac.db import PgstacDB
 
-from .utils import args_handler, data_files, DATA_PATH, get_secret
+from utils import args_handler, data_files, DATA_PATH, get_secret
 
 
 collections_path = os.path.join(DATA_PATH, "collections")
@@ -50,17 +51,7 @@ def insert_collections(files):
             raise
 
 
-@args_handler
-def insert(collections):
-    files = data_files(collections, collections_path)
+if __name__ == "__main__":
+    collection_regex = sys.argv[1]
+    files = data_files(collection_regex, collections_path)
     insert_collections(files)
-
-
-@args_handler
-def delete(collections):
-    print("Function not implemented")
-
-
-@args_handler
-def update(collections):
-    print("Function not implemented")

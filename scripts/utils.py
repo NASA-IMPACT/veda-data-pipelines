@@ -1,9 +1,9 @@
-from sys import argv
+import base64
+import json
 import functools
 import glob
 import os
-import base64
-import json
+from sys import argv
 
 import boto3
 
@@ -13,11 +13,10 @@ DATA_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "dat
 sts = boto3.client("sts")
 ACCOUNT_ID = sts.get_caller_identity().get("Account")
 REGION = os.environ.get("AWS_REGION", "us-east-1")
-APP_NAME = os.environ.get("APP_NAME")
-ENV = os.environ.get("ENV", "dev")
-
-SUBMIT_STAC_FUNCTION_NAME = f"{APP_NAME}-{ENV}-lambda-submit-stac-fn"
-INGESTION_STEP_MACHINE_ARN = f"arn:aws:states:{REGION}:{ACCOUNT_ID}:stateMachine:{APP_NAME}-{ENV}-stepfunction-discover"
+ENV = os.environ.get("STAGE")
+PREFIX = os.environ.get("PREFIX")
+MWAA_NAME = f"{PREFIX}-mwaa"
+MWAA_ARN = f"arn:aws:airflow:{REGION}:{ACCOUNT_ID}:environment/{MWAA_NAME}"
 
 
 def arguments():
@@ -29,8 +28,7 @@ def arguments():
 
 def data_files(data, data_path):
     files = []
-    for item in data:
-        files.extend(glob.glob(os.path.join(data_path, f"{item}*.json")))
+    files.extend(glob.glob(os.path.join(data_path, f"{data}*.json")))
     return files
 
 

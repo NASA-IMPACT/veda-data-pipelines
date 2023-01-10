@@ -1,12 +1,14 @@
-import json
-import os
+from argparse import ArgumentParser
+import ast
 from contextlib import closing
+import json
+from multiprocessing import Pool, cpu_count
+import os
 from typing import Any, Dict, TypedDict, Union
 from uuid import uuid4
-from argparse import ArgumentParser
+
 import smart_open
-from multiprocessing import Pool
-import ast
+
 from utils import stac as stac, events
 
 
@@ -50,12 +52,23 @@ def handler(event: Dict[str, Any]) -> Union[S3LinkOutput, StacItemOutput]:
     return output
 
 
-def using_pool(objects):
+def using_pool(objects, workers_count: int):
     returned_results = []
-    with closing(Pool(processes=15)) as pool:
+    with closing(Pool(processes=workers_count)) as pool:
         results = pool.imap_unordered(handler, objects)
         for result in results:
-            returned_results.append(result)
+            try:
+                returned_results.append(result)
+            except:
+                print("Error")
+    return returned_results
+
+
+def sequential_processing(objects):
+    returned_results = []
+    for _object in objects:
+        result = handler(_object)
+        returned_results.append(result)
     return returned_results
 
 
@@ -76,13 +89,15 @@ def stac_handler(payload_event):
     collection = payload_event.get("collection", "not_provided")
     bucket_output = os.environ["EVENT_BUCKET"]
     key = f"s3://{bucket_output}/events/{collection}"
+    use_multiprocessing = payload_event.get("use_multiprocessing", True)
+    workers_count = payload_event.get("cpu_count", cpu_count())
     payload_success = []
     payload_failures = []
     with smart_open.open(s3_event, "r") as _file:
         s3_event_read = _file.read()
     event_received = json.loads(s3_event_read)
     objects = event_received["objects"]
-    payloads = using_pool(objects)
+    payloads = using_pool(objects, workers_count=workers_count) if use_multiprocessing else sequential_processing(objects)
     for payload in payloads:
         stac_item = payload["stac_item"]
         if "error" in stac_item:
@@ -116,5 +131,8 @@ if __name__ == "__main__":
 
     payload_event = ast.literal_eval(args.payload)
     building_stac_response = stac_handler(payload_event)
-    response = {**payload_event, **building_stac_response}
+    response = json.dumps({
+        **payload_event,
+        **building_stac_response
+    })
     print(response)

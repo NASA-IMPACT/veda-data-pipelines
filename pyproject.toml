@@ -49,12 +49,3 @@ black = "^22.8.0"
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.scripts]
-insert-collection = "scripts.collection:insert"
-delete-collection = "scripts.collection:delete"
-update-collection = "scripts.collection:update"
-insert-item = "scripts.item:insert"
-delete-item = "scripts.item:delete"
-update-item = "scripts.item:update"
-deploy = "scripts.cdk:deploy"
-destroy = "scripts.cdk:destroy"

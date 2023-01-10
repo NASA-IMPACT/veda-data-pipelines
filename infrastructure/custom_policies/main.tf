@@ -64,9 +64,7 @@ data "aws_iam_policy_document" "docker_images_policies" {
     actions = [
       "sts:AssumeRole"
     ]
-    resources = [
-      var.assume_role_arn
-    ]
+    resources = var.assume_role_arns
   }
     statement {
     effect = "Allow"
@@ -85,6 +83,8 @@ data "aws_iam_policy_document" "docker_images_policies" {
     resources = [
       "arn:aws:s3:::veda-data-pipelines-staging-lambda-ndjson-bucket",
       "arn:aws:s3:::veda-data-pipelines-staging-lambda-ndjson-bucket/*",
+      "arn:aws:s3:::veda-data-read-staging",
+      "arn:aws:s3:::veda-data-read-staging/*",
       "arn:aws:s3:::veda-data-store-staging",
       "arn:aws:s3:::veda-data-store-staging/*",
       "arn:aws:s3:::nex-gddp-cmip6-cog",
@@ -117,7 +117,7 @@ data "aws_iam_policy_document" "docker_images_policies" {
 
 
 resource "aws_iam_policy" "read_data" {
-  name        = "${var.prefix}_docker"
+  name        = "${var.prefix}_task_executor"
   path        = "/"
   description = "Use docker images as airflow tasks"
   policy      = data.aws_iam_policy_document.docker_images_policies.json
