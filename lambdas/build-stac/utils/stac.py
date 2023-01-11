@@ -122,8 +122,9 @@ def generate_stac_regexevent(item: events.RegexEvent) -> pystac.Item:
         )
     properties = item.properties or {}
     if start_datetime and end_datetime:
-        properties["start_datetime"] = start_datetime.isoformat()
-        properties["end_datetime"] = end_datetime.isoformat()
+        # these are added post-serialization to properties, unlike single_datetime
+        properties["start_datetime"] = start_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
+        properties["end_datetime"] = end_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
         single_datetime = None
 
     return create_item(
