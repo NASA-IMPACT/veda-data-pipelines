@@ -31,13 +31,12 @@ jobs:
           list-files: shell
           filters: |
             dataset:
-              - 'data/datasets/*.json'
+              - added|modified: 'data/datasets/*.json'
       - name: Validate datasets using API
         if: steps.filter.outputs.dataset == 'true'
         env:
           STAC_INGESTOR_URL: ${{ secrets.STAC_INGESTOR_URL }}
         shell: bash
-        # LIMITATION - only reports errors in first CURL that fails
         run: |
           curl -X POST \
             -H "Content-Type: application/x-www-form-urlencoded" \
