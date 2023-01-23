@@ -1,0 +1,42 @@
+{
+    "id": "lis-fire-weather-index",
+    "type": "Collection",
+    "links": [],
+    "title": "LIS Derived Fire Weather Index",
+    "extent": {
+        "spatial": {
+            "bbox": [
+                [
+                    "-124.99500274658203",
+                    "31.906260098504493",
+                    "-109.40332571767162",
+                    "52.99500274658203"
+                ]
+            ]
+        },
+        "temporal": {
+            "interval": [
+                [
+                    "2002-01-01T00:00:00Z",
+                    "2004-09-26T00:00:00Z"
+                ]
+            ]
+        }
+    },
+    "license": "MIT",
+    "description": "The Fire Weather Index (FWI) is a component of the Forest Fire Weather Index (FWI) System. It is a numeric rating of fire intensity, and is used as a general index of fire danger throughout the forested areas of Canada. It is based on the Initial Spread Index (ISI) and the Buildup Index (BUI). The FWI is calculated by combining the ISI and BUI values, and takes into account both the potential for fire spread and the amount of fuel available for combustion. The FWI values increases as the fire danger increases, meaning the higher the FWI, the greater the potential for a fire to grow and spread. The FWI is often used as a general indicator of fire danger and is used by fire management agencies to determine the level of fire risk and to allocate resources accordingly.",
+    "stac_version": "1.0.0",
+    "dashboard:is_periodic": "true",
+    "dashboard:time_density": "day",
+    "item_assets": {
+        "cog_default": {
+            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+            "roles": [
+                "data",
+                "layer"
+            ],
+            "title": "Default COG Layer",
+            "description": "Cloud optimized default layer to display on map"
+        }
+    }
+}
