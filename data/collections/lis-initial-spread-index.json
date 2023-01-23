@@ -1,0 +1,42 @@
+{
+    "id": "lis-fire-initial-spread-index",
+    "type": "Collection",
+    "links": [],
+    "title": "LIS Derived Fire Initial Spread Index",
+    "extent": {
+        "spatial": {
+            "bbox": [
+                [
+                    "-124.99500274658203",
+                    "31.906260098504493",
+                    "-109.40332571767162",
+                    "52.99500274658203"
+                ]
+            ]
+        },
+        "temporal": {
+            "interval": [
+                [
+                    "2002-01-01T00:00:00Z",
+                    "2004-09-26T00:00:00Z"
+                ]
+            ]
+        }
+    },
+    "license": "MIT",
+    "description": "The Initial Spread Index (ISI) is a component of the Forest Fire Weather Index (FWI) System. It is a numeric rating of the expected rate of fire spread, based on wind speed and Fine Fuel Moisture Code (FFMC). The ISI values increases as the fire danger increases, meaning the higher the ISI, the greater the potential for a fire to spread quickly. The ISI is calculated using wind speed and FFMC as inputs, and takes into account the potential for fire spread based on the dryness of the fine fuels and the wind conditions. The wind speed is used to determine how quickly a fire might spread, and the FFMC is used to determine how easily the fine fuels will ignite and burn. It is important to note that the ISI does not take into account the type of fuel, so actual spread rates will vary between different types of fuels at the same ISI. The ISI is often used in conjunction with the FWI to determine the overall fire danger and potential for a fire to spread.",
+    "stac_version": "1.0.0",
+    "dashboard:is_periodic": "true",
+    "dashboard:time_density": "day",
+    "item_assets": {
+        "cog_default": {
+            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+            "roles": [
+                "data",
+                "layer"
+            ],
+            "title": "Default COG Layer",
+            "description": "Cloud optimized default layer to display on map"
+        }
+    }
+}
