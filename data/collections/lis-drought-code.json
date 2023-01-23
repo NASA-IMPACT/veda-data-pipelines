@@ -1,0 +1,42 @@
+{
+    "id": "lis-drought-code",
+    "type": "Collection",
+    "links": [],
+    "title": "LIS Derived Drought Code",
+    "extent": {
+        "spatial": {
+            "bbox": [
+                [
+                    "-124.99500274658203",
+                    "31.906260098504493",
+                    "-109.40332571767162",
+                    "52.99500274658203"
+                ]
+            ]
+        },
+        "temporal": {
+            "interval": [
+                [
+                    "2002-01-01T00:00:00Z",
+                    "2004-09-26T00:00:00Z"
+                ]
+            ]
+        }
+    },
+    "license": "MIT",
+    "description": "The Drought Code (DC) is a component of the Forest Fire Weather Index (FWI) System. It is a numeric rating of the average moisture content of deep, compact organic layers of fuel such as duff, humus and large logs. These deep layers are often less affected by precipitation and more affected by long-term weather conditions like drought. The DC values increases as the moisture content decreases, meaning the higher the DC, the drier the deep, compact organic layers are and the higher the potential for fire spread. The DC is a useful indicator of seasonal drought effects on forest fuels and the amount of smoldering in deep duff layers and large logs. This code is important, because dry deep fuel layers can result in a high intensity fire, with a lot of heat and smoke, and can be more difficult to control and put out.",
+    "stac_version": "1.0.0",
+    "dashboard:is_periodic": "true",
+    "dashboard:time_density": "day",
+    "item_assets": {
+        "cog_default": {
+            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+            "roles": [
+                "data",
+                "layer"
+            ],
+            "title": "Default COG Layer",
+            "description": "Cloud optimized default layer to display on map"
+        }
+    }
+}
