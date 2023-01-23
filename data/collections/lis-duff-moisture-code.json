@@ -1,0 +1,42 @@
+{
+    "id": "lis-fire-duff-moisture-code",
+    "type": "Collection",
+    "links": [],
+    "title": "LIS Derived Fire Duff Moisture Code",
+    "extent": {
+        "spatial": {
+            "bbox": [
+                [
+                    "-124.99500274658203",
+                    "31.906260098504493",
+                    "-109.40332571767162",
+                    "52.99500274658203"
+                ]
+            ]
+        },
+        "temporal": {
+            "interval": [
+                [
+                    "2002-01-01T00:00:00Z",
+                    "2004-09-26T00:00:00Z"
+                ]
+            ]
+        }
+    },
+    "license": "MIT",
+    "description": "The Duff Moisture Code (DMC) is a component of the Forest Fire Weather Index (FWI) System. It is a numeric rating of the average moisture content of loosely compacted organic layers of moderate depth, such as duff, humus, and medium-size woody material. This code gives an indication of fuel consumption in moderate duff layers and medium-size woody material. The DMC values increases as the moisture content decreases, meaning the higher the DMC, the drier the loosely compacted organic layers are and the higher the potential for fire spread. This code is an important indicator of the potential for fire spread and consumption of medium-size woody material, which can often be a source of fire spread and can be challenging to control and put out.",
+    "stac_version": "1.0.0",
+    "dashboard:is_periodic": "true",
+    "dashboard:time_density": "day",
+    "item_assets": {
+        "cog_default": {
+            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+            "roles": [
+                "data",
+                "layer"
+            ],
+            "title": "Default COG Layer",
+            "description": "Cloud optimized default layer to display on map"
+        }
+    }
+}
