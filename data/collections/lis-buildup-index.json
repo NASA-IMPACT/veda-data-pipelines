@@ -1,0 +1,42 @@
+{
+    "id": "lis-build-up-index",
+    "type": "Collection",
+    "links": [],
+    "title": "LIS Derived Build Up Index",
+    "extent": {
+        "spatial": {
+            "bbox": [
+                [
+                    "-124.99500274658203",
+                    "31.906260098504493",
+                    "-109.40332571767162",
+                    "52.99500274658203"
+                ]
+            ]
+        },
+        "temporal": {
+            "interval": [
+                [
+                    "2002-01-01T00:00:00Z",
+                    "2004-09-26T00:00:00Z"
+                ]
+            ]
+        }
+    },
+    "license": "MIT",
+    "description": "The Buildup Index (BUI) is a component of the Forest Fire Weather Index (FWI) System. It is a numeric rating of the total amount of fuel available for combustion in the forest. It is based on the moisture content of the loosely compacted organic layers of moderate depth (measured by the Duff Moisture Code, DMC) and the average moisture content of deep, compact organic layers (measured by the Drought Code, DC). The BUI is generally less than twice the DMC value, and moisture in the DMC layer is expected to help prevent burning in material deeper down in the available fuel. The BUI is an important indicator of the potential for a fire to grow and spread, as a higher BUI value indicates more fuel available for combustion and therefore a greater potential for a fire to grow.",
+    "stac_version": "1.0.0",
+    "dashboard:is_periodic": "true",
+    "dashboard:time_density": "day",
+    "item_assets": {
+        "cog_default": {
+            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+            "roles": [
+                "data",
+                "layer"
+            ],
+            "title": "Default COG Layer",
+            "description": "Cloud optimized default layer to display on map"
+        }
+    }
+}
