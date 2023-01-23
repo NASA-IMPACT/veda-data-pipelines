@@ -1,0 +1,10 @@
+{
+    "collection": "lis-fire-duff-moisture-code",
+    "bucket": "veda-data-store-staging",
+    "prefix": "EIS/COG/LIS_FORC_FWI_WEST_US/DMC",
+    "filename_regex": "^(.*).tif$",
+    "discovery": "s3",
+    "start_datetime": "2002-01-01T00:00:00Z",
+    "end_datetime": "2004-09-26T00:00:00Z",
+    "upload": false
+}
