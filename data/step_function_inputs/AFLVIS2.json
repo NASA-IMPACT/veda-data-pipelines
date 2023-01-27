@@ -1,0 +1,11 @@
+{
+    "queue_messages": "true",
+    "collection": "AFLVIS2",
+    "version": "001",
+    "discovery": "cmr",
+    "mode": "cmr",
+    "asset_name": "data",
+    "asset_roles": ["data"],
+    "asset_media_type": "text/tab-separated-values",
+    "test_links": true
+}

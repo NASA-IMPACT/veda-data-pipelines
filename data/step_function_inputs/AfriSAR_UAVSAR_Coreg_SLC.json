@@ -1,0 +1,10 @@
+{
+    "queue_messages": "true",
+    "collection": "AfriSAR_UAVSAR_Coreg_SLC",
+    "version": "1",
+    "discovery": "cmr",
+    "mode": "cmr",
+    "asset_name": "data",
+    "asset_roles": ["data"],
+    "test_links": true
+}

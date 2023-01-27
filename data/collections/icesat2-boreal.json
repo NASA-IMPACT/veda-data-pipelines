@@ -1,0 +1,46 @@
+{
+    "id": "icesat2-boreal",
+    "type": "Collection",
+    "links": [],
+    "title": "2019-2021 Gridded 30m Boreal Aboveground Biomass using ICESat-2 and Harmonized Landsat Sentinel",
+    "extent": {
+        "spatial": {
+            "bbox": [
+                [
+                    -180, 45, 180, 70
+                ]
+            ]
+        },
+        "temporal": {
+            "interval": [
+              [
+                "2019-01-01T00:00:00.000Z",
+                "2022-01-01T00:00:00.000Z"
+              ]
+            ]
+          }        
+    },
+    "license": "MIT",
+    "description": "2019-2021 Gridded 30m Boreal Aboveground Biomass using ICESat-2 and Harmonized Landsat Sentinel",
+    "item_assets": {
+        "cog_default": {
+            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+            "roles": [
+                "data",
+                "layer"
+            ],
+            "title": "Default COG Layer",
+            "description": "Cloud optimized default layer to display on map"
+        },
+        "documentation": {
+            "type": "text/html",
+            "roles": [
+                "documentation"
+            ],
+            "title": "Find and open data with STAC",
+            "description": "Find and open data with STAC",
+            "href": "https://docs.maap-project.org/en/stac/tutorials/stac-icesat2-boreal-example.html"
+        }        
+    },
+    "stac_version": "1.0.0"
+}

@@ -1,0 +1,28 @@
+{
+  "id": "GEDI02_B",
+  "stac_version": "1.0.0",
+  "license": "not-provided",
+  "title": "GEDI L2B Canopy Cover and Vertical Profile Metrics Data Global Footprint Level V002",
+  "type": "Collection",
+  "description": "The Global Ecosystem Dynamics Investigation (GEDI) mission aims to characterize ecosystem structure and dynamics to enable radically improved quantification and understanding of the Earth\u2019s carbon cycle and biodiversity. The GEDI instrument produces high resolution laser ranging observations of the 3-dimensional structure of the Earth. GEDI is attached to the International Space Station and collects data globally between 51.6\u00b0 N and 51.6\u00b0 S latitudes at the highest resolution and densest sampling of any light detection and ranging (lidar) instrument in orbit to date.\r\n\r\nThe purpose of the GEDI Level 2B Canopy Cover and Vertical Profile Metrics product (GEDI02_B) is to extract biophysical metrics from each GEDI waveform. These metrics are based on the directional gap probability profile derived from the L1B waveform. Metrics provided include canopy cover, Plant Area Index (PAI), Plant Area Volume Density (PAVD), and Foliage Height Diversity (FHD). The GEDI02_B product is provided in HDF-5 format and has a spatial resolution (average footprint) of 25 meters.\r\n\r\nThe GEDI02_B data product contains 105 layers for each of the eight-beam ground transects (or laser footprints located on the land surface). Datasets provided include precise latitude, longitude, elevation, height, canopy cover, and vertical profile metrics. Additional information for the layers can be found in the GEDI Level 2B Data Dictionary (https://lpdaac.usgs.gov/documents/587/gedi_l2b_dictionary_P001_v1.html).\r\n\r\nThe GEDI01_B product is provided in HDF5 format and has a spatial resolution (average footprint) of 25 meters. \r\n",
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [
+          -180,
+          -55,
+          180,
+          55
+        ]
+      ]
+    },
+    "temporal": {
+      "interval": [
+        [
+          "2019-03-25T00:00:00.000Z",
+          null
+        ]
+      ]
+    }
+  }
+}

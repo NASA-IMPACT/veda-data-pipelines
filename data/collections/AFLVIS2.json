@@ -1,0 +1,28 @@
+{
+  "id": "AFLVIS2",
+  "stac_version": "1.0.0",
+  "license": "not-provided",
+  "title": "AfriSAR LVIS L2 Geolocated Surface Elevation Product V001",
+  "type": "Collection",
+  "description": "This data set contains surface elevation measurements from NASA's Land, Vegetation, and Ice Sensor (LVIS) over Gabon, Africa. The data were collected over seven flights as part of the AfriSAR mission, a NASA campaign conducted in collaboration with the European Space Agency (ESA). The AfriSAR campaign took place during February and March of 2016. The level 2 data files are in ASCII format and are derived from the level 1B waveform dataset. ",
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [
+          8.72752,
+          -2.29633,
+          13.80416,
+          2.0493
+        ]
+      ]
+    },
+    "temporal": {
+      "interval": [
+        [
+          "2016-02-20T10:33:44.000Z",
+          "2016-03-08T13:50:18.000Z"
+        ]
+      ]
+    }
+  }
+}

@@ -19,5 +19,5 @@ jobs:
       cognito_app_secret: ${{ secrets.cognito_app_secret }}
       aws_access_key_id: ${{ secrets.aws_access_key_id }}
       aws_secret_access_key: ${{ secrets.aws_secret_access_key }}
-      stac_ingestor_url: ${{ secrets.stac_ingestor_url }}
-      external_role_arn: ${{ secrets.external_role_arn }}
+      stac_ingestor_api_url: ${{ secrets.stac_ingestor_api_url }}
+      data_management_role_arn: ${{ secrets.data_management_role_arn }}

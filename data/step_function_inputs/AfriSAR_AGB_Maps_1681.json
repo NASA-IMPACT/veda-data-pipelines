@@ -1,0 +1,9 @@
+{
+    "queue_messages": "true",
+    "collection": "AfriSAR_AGB_Maps_1681",
+    "version": "1",
+    "discovery": "cmr",
+    "asset_name": "data",
+    "asset_roles": ["data"],
+    "asset_media_type": "image/tiff; application=geotiff; profile=cloud-optimized"
+}

@@ -12,12 +12,16 @@ INTERVAL = Literal["month", "year"]
 
 class BaseEvent(BaseModel, frozen=True):
     collection: str
-    s3_filename: str
+    remote_fileurl: str
 
     id_regex: Optional[str] = None
     asset_name: Optional[str] = None
     asset_roles: Optional[List[str]] = None
     asset_media_type: Optional[Union[str, pystac.MediaType]] = None
+    assets: Optional[List[Dict]] = None
+    mode: Optional[str] = None
+    test_links: Optional[bool] = False
+    reverse_coords: Optional[bool]
 
     def item_id(self: "BaseEvent") -> str:
         if self.id_regex:
@@ -25,7 +29,7 @@ class BaseEvent(BaseModel, frozen=True):
             assert len(id_components) == 1
             id = "-".join(id_components[0])
         else:
-            id = Path(self.s3_filename).stem
+            id = Path(self.remote_fileurl).stem
         return id
 
 

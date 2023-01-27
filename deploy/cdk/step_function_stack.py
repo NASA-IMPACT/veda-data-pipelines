@@ -1,3 +1,4 @@
+from re import S
 from typing import TYPE_CHECKING
 from aws_cdk import (
     core,
@@ -57,14 +58,34 @@ class StepFunctionStack(core.Stack):
         lambda_stack: "LambdaStack",
         queue_stack: "QueueStack",
     ) -> stepfunctions.StateMachine:
+        trigger_discovery_task = self._lambda_task(
+            "Trigger new discovery state machine",
+            lambda_stack.trigger_discovery_lambda,
+        )
+
+        trigger_discovery_task.add_retry(
+            interval=core.Duration.seconds(2),
+            max_attempts=5,
+        )
+
         s3_discovery_task = self._lambda_task(
             "S3 Discover Task",
             lambda_stack.s3_discovery_lambda,
         )
 
+        s3_discovery_task.add_retry(
+            interval=core.Duration.seconds(2),
+            max_attempts=5,
+        )
+
         cmr_discovery_task = self._lambda_task(
             "CMR Discover Task",
             lambda_stack.cmr_discovery_lambda,
+        )
+
+        cmr_discovery_task.add_retry(
+            interval=core.Duration.seconds(2),
+            max_attempts=5,
         )
 
         enqueue_cogify_task = self._sqs_task(
@@ -77,6 +98,10 @@ class StepFunctionStack(core.Stack):
             queue=queue_stack.stac_ready_queue,
         )
 
+        maybe_next_discovery = stepfunctions.Choice(self, "NextDiscovery?").otherwise(
+            stepfunctions.Succeed(self, "Successful Ingest")
+        )
+
         maybe_cogify = (
             stepfunctions.Choice(self, "Cogify?")
             .when(
@@ -84,17 +109,25 @@ class StepFunctionStack(core.Stack):
                 stepfunctions.Map(
                     self,
                     "Run concurrent queueing to cogify queue",
-                    max_concurrency=100,
+                    max_concurrency=1,
                     items_path=stepfunctions.JsonPath.string_at("$.Payload.objects"),
-                ).iterator(enqueue_cogify_task),
+                    result_path=stepfunctions.JsonPath.DISCARD,
+                    output_path="$.Payload",
+                )
+                .iterator(enqueue_cogify_task)
+                .next(maybe_next_discovery),
             )
             .otherwise(
                 stepfunctions.Map(
                     self,
                     "Run concurrent queueing to stac ready queue",
-                    max_concurrency=100,
+                    max_concurrency=1,
                     items_path=stepfunctions.JsonPath.string_at("$.Payload.objects"),
-                ).iterator(enqueue_ready_task)
+                    result_path=stepfunctions.JsonPath.DISCARD,
+                    output_path="$.Payload",
+                )
+                .iterator(enqueue_ready_task)
+                .next(maybe_next_discovery)
             )
         )
 
@@ -109,6 +142,12 @@ class StepFunctionStack(core.Stack):
                 cmr_discovery_task.next(maybe_cogify),
             )
             .otherwise(stepfunctions.Fail(self, "Discovery Type not supported"))
+        )
+
+        # Defined below workflow to avoid circular dependency of steps
+        maybe_next_discovery.when(
+            stepfunctions.Condition.is_present("$.start_after"),
+            trigger_discovery_task,
         )
 
         return stepfunctions.StateMachine(
@@ -137,7 +176,7 @@ class StepFunctionStack(core.Stack):
         cogify_workflow = stepfunctions.Map(
             self,
             "Run concurrent cogifications",
-            max_concurrency=100,
+            max_concurrency=1,
             items_path=stepfunctions.JsonPath.string_at("$"),
         ).iterator(cogify_task.next(enqueue_task))
 
@@ -180,7 +219,7 @@ class StepFunctionStack(core.Stack):
         build_and_submit_stac_items = stepfunctions.Map(
             self,
             "Submit to STAC Ingestor",
-            max_concurrency=100,
+            max_concurrency=1,
             items_path=stepfunctions.JsonPath.string_at("$"),
         ).iterator(build_stac_item_task.next(submit_stac_item_task))
 

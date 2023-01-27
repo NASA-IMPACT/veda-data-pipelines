@@ -1,0 +1,28 @@
+{
+  "id": "BIOSAR1",
+  "stac_version": "1.0.0",
+  "license": "not-provided",
+  "title": "BIOSAR1",
+  "type": "Collection",
+  "description": "The understanding of processes occurring in Boreal forests and observation of changes over the huge  areas  of  Boreal  regions  can  efficiently  be  carried  out  using  satellite  instruments,  which  provide  sustained,  consistent  observations  over  a  longer  time  period.  In  order  to  monitor  parameters  important  for  detecting  environmental  changes  that  affect  Earth\u2019s  climate,  several  different   sensor   systems   are   needed   that   are   capable   of   measuring   different   physical   parameters  with  a  sufficient  spatial  and  temporal  resolution  as  well  as  the  required  spatial  and  temporal coverage. The BIOSAR project acquired airborne SAR data at longer wavelength in L-and  P-band  using  polarimetric  and  polarimetric  SAR  interferometry  modes  with  temporal  and  spatial baselines varying from 15 min to 60 min within one day and in repeat pass after 36 and56  days;  the  spatial  baseline  variation  is  ranging  from  0  m  to  80  m,  respectively.  The  consolidated  test  site  Remmingstorp  with  the  boreal  like  forest  type  is  located  in  shouthern  Sweden  and  represents  a  managed  mixed  forest  with  trees  having  biomass  values  up  to  400  t/ha.  The  SAR  acquisitions  were  done  simultanouly  to  the  ground  measurements.  First  order  data  quality  checks  of  the  SAR  data  and  ground  measurements  are  provided.  Further  first  analysis  with  respect  to  temporal  decorrelation  in  L-  and  P-band,  forest  height  inversion,  temporal  baseline  SAR  Tomography  and  6Mhz  bandwith  forest  height  inversion  at  P-band  are  presented and discussed.",
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [
+          7.03125,
+          54.351562,
+          25.8046875,
+          69.46875
+        ]
+      ]
+    },
+    "temporal": {
+      "interval": [
+        [
+          "2007-03-08T00:00:00.000Z",
+          null
+        ]
+      ]
+    }
+  }
+}

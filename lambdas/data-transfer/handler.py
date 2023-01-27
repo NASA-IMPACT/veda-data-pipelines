@@ -1,3 +1,4 @@
+import json
 import os
 import urllib.parse
 import tempfile
@@ -19,21 +20,24 @@ def handler(event, context):
     TARGET_BUCKET = os.environ["BUCKET"]
 
     kwargs = {}
-    if role_arn := os.environ.get("EXTERNAL_ROLE_ARN"):
+    if role_arn := os.environ.get("DATA_MANAGEMENT_ROLE_ARN"):
         creds = assume_role(role_arn, "veda-data-pipelines_data-transfer")
         kwargs = {
             "aws_access_key_id": creds["AccessKeyId"],
             "aws_secret_access_key": creds["SecretAccessKey"],
             "aws_session_token": creds["SessionToken"],
         }
-    source_s3 = boto3.client("s3")
+    source_s3 = boto3.client("s3", **kwargs)
     target_s3 = boto3.client("s3", **kwargs)
 
     for object in event:
         if not object.get("upload"):
             continue
 
-        url = urllib.parse.urlparse(object["s3_filename"])
+        if object.get('user_shared'):
+            TARGET_BUCKET = os.environ.get('USER_SHARED_BUCKET')
+            
+        url = urllib.parse.urlparse(object["remote_fileurl"])
         src_bucket = url.hostname
         src_key = url.path.strip("/")
         filename = src_key.split("/")[-1]
@@ -58,6 +62,19 @@ def handler(event, context):
                 )
                 raise
 
-        object["s3_filename"] = target_url
+        object["remote_fileurl"] = target_url
 
     return event
+
+if __name__ == '__main__':
+    sample_event = [
+            {
+            "collection": "icesat2-boreal",
+            "remote_fileurl": "s3://maap-ops-workspace/lduncanson/dps_output/run_boreal_biomass_quick_v2_ubuntu/map_boreal_2022_rh_noground_v1/2022/12/05/18/21/43/408047/boreal_agb_202212051670264409_2112.tif",
+            "upload": True,
+            "user_shared": True,
+            "properties": {}
+            }
+        ]
+
+    print(json.dumps(handler(sample_event, {}), indent=2))

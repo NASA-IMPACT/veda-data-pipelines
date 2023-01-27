@@ -11,9 +11,9 @@ on:
         required: true
       cognito_app_secret:
         required: true
-      stac_ingestor_url:
+      stac_ingestor_api_url:
         required: true
-      external_role_arn:
+      data_management_role_arn:
         required: true
 
 jobs:
@@ -53,6 +53,6 @@ jobs:
         env:
           ENV: ${{ inputs.deploy_env }}
           COGNITO_APP_SECRET: ${{ secrets.COGNITO_APP_SECRET }}
-          STAC_INGESTOR_URL: ${{ secrets.STAC_INGESTOR_URL }}
+          STAC_INGESTOR_API_URL: ${{ secrets.STAC_INGESTOR_API_URL }}
           APP_NAME: "veda-data-pipelines"
-          EXTERNAL_ROLE_ARN: ${{ secrets.EXTERNAL_ROLE_ARN }}
+          DATA_MANAGEMENT_ROLE_ARN: ${{ secrets.DATA_MANAGEMENT_ROLE_ARN }}
