@@ -1,0 +1,10 @@
+[
+    {
+        "collection": "CMIP245-winter-median-ta",
+        "prefix": "EIS/NEX-GDDP-CMIP6/",
+        "bucket": "veda-data-store-staging",
+        "filename_regex": "^(.*)winterTas(.*).tif$",
+        "discovery": "s3",
+        "upload": false
+    }
+]
