@@ -18,6 +18,7 @@ __pycache__
 *.hdf
 *.hdf5
 *.tif
+*.fgb
 *.nc
 *.HDF5
 *.h5
@@ -35,6 +36,7 @@ cdk.context.json
 
 # Avoid checking in filled out env file
 env.sh
+.env
 
 .hypothesis
 Makefile

@@ -8,6 +8,9 @@
 devPGSecret=veda-backend-uah-dev/pgstac/621feede
 stagePGSecret=delta-backend-stagingv2/pgstac/5d4eb447
 
+devVectorDBSecret=dev/tifeatures-timvt/Features_DB_for_EIS_Fires/3A8D1807
+stageVectorDBSecret=
+
 devVPCid=vpc-0512162c42da5e645
 stageVPCid=vpc-09d7998dbf340fcb7
 
@@ -29,6 +32,7 @@ else
     if [[ $1 = 'staging' ]]
     then
         cognitoAppSecret=$stageCognitoAppSecret
+        vectordbSecret=$stageVectorDBSecret
         pgSecret=$stagePGSecret
         vpcId=$stageVPCid
         sgId=$stageSGid
@@ -36,6 +40,7 @@ else
     else
         cognitoAppSecret=$devCognitoAppSecret
         pgSecret=$devPGSecret
+        vectordbSecret=$devVectorDBSecret
         vpcId=$devVPCid
         sgId=$devSGid
         stacIngestorUrl=$devStacIngestorUrl
@@ -52,6 +57,7 @@ else
     export VPC_ID=$vpcId
     export SECURITY_GROUP_ID=$sgId
     export SECRET_NAME=$pgSecret
+    export VECTOR_SECRET_NAME=$vectordbSecret
 
     export STAC_INGESTOR_URL=$stacIngestorUrl
 
