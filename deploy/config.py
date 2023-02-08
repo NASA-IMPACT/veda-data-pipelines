@@ -9,7 +9,7 @@ STAC_INGESTOR_URL = os.environ["STAC_INGESTOR_URL"]
 EARTHDATA_USERNAME = os.environ.get("EARTHDATA_USERNAME", "XXXX")
 EARTHDATA_PASSWORD = os.environ.get("EARTHDATA_PASSWORD", "XXXX")
 
-APP_NAME = "veda-data-pipeline-vector-test"
+APP_NAME = "veda-data-pipelines"
 VEDA_DATA_BUCKET = "climatedashboard-data"
 VEDA_EXTERNAL_BUCKETS = ["nasa-maap-data-store", "covid-eo-blackmarble"]
 MCP_BUCKETS = {
