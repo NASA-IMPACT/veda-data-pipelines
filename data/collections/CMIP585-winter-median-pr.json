@@ -1,5 +1,5 @@
 {
-    "id": "CMIP245-winter-median-pr",
+    "id": "CMIP585-winter-median-pr",
     "type": "Collection",
     "links":[
     ],
@@ -25,7 +25,7 @@
         }
     },
     "license":"MIT",
-    "description": "Differences in winter (January, February, and March) cumulative daily precipitation between a historical period (1995 - 2014) and multiple 20-year periods from an ensemble of CMIP6 climate projections (SSP2-4.5) downscaled by NASA Earth Exchange (NEX-GDDP-CMIP6)",
+    "description": "Differences in winter (January, February, and March) cumulative daily precipitation between a historical period (1995 - 2014) and multiple 20-year periods from an ensemble of CMIP6 climate projections (SSP5-8.5) downscaled by NASA Earth Exchange (NEX-GDDP-CMIP6)",
     "stac_version": "1.0.0",
     "dashboard:is_periodic": false,
     "dashboard:time_density": null,
