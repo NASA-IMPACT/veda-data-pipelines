@@ -31,6 +31,11 @@ class StepFunctionStack(core.Stack):
             lambda_stack=lambda_stack,
             queue_stack=queue_stack,
         )
+        self.vector_workflow = self._vector_workflow(
+            lambda_stack=lambda_stack,
+            queue_stack=queue_stack,
+        )
+
         self.publication_workflow = self._publication_workflow(
             lambda_stack=lambda_stack,
         )
@@ -77,8 +82,22 @@ class StepFunctionStack(core.Stack):
             queue=queue_stack.stac_ready_queue,
         )
 
-        maybe_cogify = (
-            stepfunctions.Choice(self, "Cogify?")
+        enqueue_vector_task = self._sqs_task(
+            "Send to vector queue",
+            queue=queue_stack.vector_queue,
+        )
+
+        vector_or_cogify = (
+            stepfunctions.Choice(self, "Vector or Cogify?")
+            .when(
+                stepfunctions.Condition.boolean_equals("$.Payload.vector", True),
+                stepfunctions.Map(
+                    self,
+                    "Run queueing to vector queue",
+                    max_concurrency=100,
+                    items_path=stepfunctions.JsonPath.string_at("$.Payload.objects"),
+                ).iterator(enqueue_vector_task),
+            )
             .when(
                 stepfunctions.Condition.boolean_equals("$.Payload.cogify", True),
                 stepfunctions.Map(
@@ -102,11 +121,11 @@ class StepFunctionStack(core.Stack):
             stepfunctions.Choice(self, "Discovery Choice (CMR or S3)")
             .when(
                 stepfunctions.Condition.string_equals("$.discovery", "s3"),
-                s3_discovery_task.next(maybe_cogify),
+                s3_discovery_task.next(vector_or_cogify),
             )
             .when(
                 stepfunctions.Condition.string_equals("$.discovery", "cmr"),
-                cmr_discovery_task.next(maybe_cogify),
+                cmr_discovery_task.next(vector_or_cogify),
             )
             .otherwise(stepfunctions.Fail(self, "Discovery Type not supported"))
         )
@@ -146,6 +165,36 @@ class StepFunctionStack(core.Stack):
             f"cogify-sf",
             state_machine_name=f"{self.stack_name}-cogify",
             definition=cogify_workflow,
+        )
+
+    def _vector_workflow(
+        self,
+        lambda_stack: "LambdaStack",
+        queue_stack: "QueueStack",
+    ) -> stepfunctions.StateMachine:
+        vector_task = self._lambda_task(
+            "Ingest Vector",
+            lambda_stack.vector_lambda,
+        )
+
+        # enqueue_task = self._sqs_task(
+        #     "Send cogified to stac-ready queue",
+        #     queue=queue_stack.stac_ready_queue,
+        #     input_path="$.Payload",
+        # )
+
+        vector_workflow = stepfunctions.Map(
+            self,
+            "Run vector ingest",
+            max_concurrency=100,
+            items_path=stepfunctions.JsonPath.string_at("$"),
+        ).iterator(vector_task)
+
+        return stepfunctions.StateMachine(
+            self,
+            f"vector-sf",
+            state_machine_name=f"{self.stack_name}-cogify",
+            definition=vector_workflow,
         )
 
     def _publication_workflow(

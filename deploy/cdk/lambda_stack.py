@@ -57,6 +57,15 @@ class LambdaStack(core.Stack):
             },
         )
 
+        # Ingest Vector
+        self.vector_lambda = self._lambda(
+            f"{construct_id}-vector-fn",
+            "../lambdas/submit-vector",
+            env={
+                "VECTOR_SECRET_NAME": config.VECTOR_SECRET_NAME,
+            }
+        )
+
         # Proxy lambda to trigger cogify step function
         self.trigger_cogify_lambda = self._python_lambda(
             f"{construct_id}-trigger-cogify-fn",
@@ -66,6 +75,12 @@ class LambdaStack(core.Stack):
         # Proxy lambda to trigger ingest and publish step function
         self.trigger_ingest_lambda = self._python_lambda(
             f"{construct_id}-trigger-ingest-fn", "../lambdas/proxy"
+        )
+
+        # Proxy lambda to trigger vector step function
+        self.trigger_vector_lambda = self._python_lambda(
+            f"{construct_id}-trigger-vector-fn",
+            "../lambdas/proxy",
         )
 
         # Builds stac
