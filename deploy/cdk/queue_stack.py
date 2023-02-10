@@ -65,7 +65,7 @@ class QueueStack(core.Stack):
             ),
         )
 
-        lambda_stack.trigger_cogify_lambda.add_event_source(
+        lambda_stack.trigger_vector_lambda.add_event_source(
             lambda_event_sources.SqsEventSource(
                 self.vector_queue,
                 batch_size=1,

@@ -33,7 +33,6 @@ class StepFunctionStack(core.Stack):
         )
         self.vector_workflow = self._vector_workflow(
             lambda_stack=lambda_stack,
-            queue_stack=queue_stack,
         )
 
         self.publication_workflow = self._publication_workflow(
@@ -170,7 +169,6 @@ class StepFunctionStack(core.Stack):
     def _vector_workflow(
         self,
         lambda_stack: "LambdaStack",
-        queue_stack: "QueueStack",
     ) -> stepfunctions.StateMachine:
         vector_task = self._lambda_task(
             "Ingest Vector",
@@ -193,7 +191,7 @@ class StepFunctionStack(core.Stack):
         return stepfunctions.StateMachine(
             self,
             f"vector-sf",
-            state_machine_name=f"{self.stack_name}-cogify",
+            state_machine_name=f"{self.stack_name}-vector-ingest",
             definition=vector_workflow,
         )
 
