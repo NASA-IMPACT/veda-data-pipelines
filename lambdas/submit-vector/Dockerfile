@@ -14,5 +14,6 @@ RUN echo "Remove lambda python packages"
 RUN rm -rdf ./numpy/doc/
 RUN rm -rdf ./stack
 RUN rm -rdf ./docutils*
+RUN ln -s /var/lang/bin/python3 /usr/local/bin/python
 
 COPY handler.py handler.py
