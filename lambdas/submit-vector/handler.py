@@ -8,6 +8,7 @@ s3 = boto3.client(
     "s3",
 )
 
+
 def download_file(file_uri: str):
 
     url_parse = urlparse(file_uri)
@@ -15,16 +16,19 @@ def download_file(file_uri: str):
     bucket = url_parse.netloc
     path = url_parse.path[1:]
     filename = url_parse.path.split('/')[-1]
+    target_filepath = os.path.join('/tmp', filename)
 
-    s3.download_file(bucket, path, filename)
+    s3.download_file(bucket, path, target_filepath)
 
-    print(f"downloaded {filename}")
+    print(f"downloaded {target_filepath}")
 
-    return filename
+    return target_filepath
+
 
 def get_connection_string(secret: dict) -> str:
     
     return f"PG:host={secret['host']} dbname={secret['dbname']} user={secret['username']} password={secret['password']}"
+
 
 def get_secret(secret_name: str) -> None:
     """Retrieve secrets from AWS Secrets Manager
@@ -83,9 +87,9 @@ def handler(event, context):
     href = event["href"]
     collection = event["collection"] 
 
-    downloaded_filename = download_file(href)
+    downloaded_filepath = download_file(href)
 
-    load_to_featuresdb(downloaded_filename, collection )
+    load_to_featuresdb(downloaded_filepath, collection )
 
 
 if __name__ == "__main__":
