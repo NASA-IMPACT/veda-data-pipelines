@@ -52,7 +52,7 @@ lambda_stack.grant_execution_privileges(
 )
 lambda_stack.grant_execution_privileges(
     lambda_function=lambda_stack.trigger_vector_lambda,
-    workflow_arn=pub_arn,
+    workflow_arn=vector_arn,
 )
 
 app.synth()
