@@ -69,7 +69,7 @@ Should follow the following format:
 ```json
 {
     "collection": "<collection-id>",
-    "discovery": "<s3/cmr>",
+    "discovery": "<s3/cmr/inventory>",
 
     ## for s3 discovery
     "prefix": "<s3-key-prefix>",
@@ -82,6 +82,10 @@ Should follow the following format:
     "temporal": ["<start-date>", "<end-date>"],
     "bounding_box": ["<bounding-box-as-comma-separated-LBRT>"],
     "include": "<filename-pattern>",
+
+    ## for inventory
+    "inventory_url": "s3://...",
+    "filename_regex": "<filename-regex>",
     
     ### misc
     "cogify": "<true/false>",

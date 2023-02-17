@@ -50,6 +50,11 @@ class LambdaStack(core.Stack):
             }
         )
 
+        # Discovers files from cmr
+        self.inventory_lambda = self._lambda(
+            f"{construct_id}-inventory-fn", "../lambdas/inventory"
+        )
+
         # Cogify files
         self.cogify_lambda = self._lambda(
             f"{construct_id}-cogify-fn",

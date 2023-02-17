@@ -141,6 +141,10 @@ class StepFunctionStack(core.Stack):
                 stepfunctions.Condition.string_equals("$.discovery", "cmr"),
                 cmr_discovery_task.next(maybe_cogify),
             )
+            .when(
+                stepfunctions.Condition.string_equals("$.discovery", "inventory"),
+                inventory_discovery_task.next(maybe_cogify),
+            )            
             .otherwise(stepfunctions.Fail(self, "Discovery Type not supported"))
         )
 
