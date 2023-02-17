@@ -84,7 +84,7 @@ def load_to_featuresdb(filename: str, collection: str):
 
     
 def handler(event, context):
-    href = event["href"]
+    href = event["s3_filename"]
     collection = event["collection"] 
 
     downloaded_filepath = download_file(href)
