@@ -88,6 +88,17 @@ class StepFunctionStack(core.Stack):
             max_attempts=5,
         )
 
+
+        inventory_task = self._lambda_task(
+            "CMR Discover Task",
+            lambda_stack.inventory_lambda,
+        )
+
+        inventory_task.add_retry(
+            interval=core.Duration.seconds(2),
+            max_attempts=5,
+        )
+
         enqueue_cogify_task = self._sqs_task(
             "Send to Cogify queue",
             queue=queue_stack.cogify_queue,
@@ -143,7 +154,7 @@ class StepFunctionStack(core.Stack):
             )
             .when(
                 stepfunctions.Condition.string_equals("$.discovery", "inventory"),
-                inventory_discovery_task.next(maybe_cogify),
+                inventory_task.next(maybe_cogify),
             )            
             .otherwise(stepfunctions.Fail(self, "Discovery Type not supported"))
         )

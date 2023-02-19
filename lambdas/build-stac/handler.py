@@ -56,10 +56,11 @@ def handler(event: Dict[str, Any], context) -> Union[S3LinkOutput, StacItemOutpu
 
 
 if __name__ == "__main__":
-    sample_event = {
+    sample_event =   {
         "collection": "icesat2-boreal",
-        "remote_fileurl": "s3://maap-user-shared-data/icesat2-boreal/boreal_agb_202302151676439579_1326.tif",
+        "remote_fileurl": "s3://nasa-maap-data-store/icesat2-boreal/boreal_agb_202302061675669996_3455.tif",
         "upload": True,
-        "properties": {}
+        "user_shared": False,
+        "properties": None
     }
     print(json.dumps(handler(sample_event, {}), indent=2))
