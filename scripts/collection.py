@@ -3,10 +3,8 @@ import os
 from pypgstac.load import Loader, Methods
 from pypgstac.db import PgstacDB
 
-from .utils import args_handler, data_files, DATA_PATH, get_secret
-
-
-collections_path = os.path.join(DATA_PATH, "collections")
+from dotenv import load_dotenv
+from .utils import args_handler, get_collections, get_secret
 
 
 def get_dsn_string(secret: dict, localhost: bool = False) -> str:
@@ -52,7 +50,8 @@ def insert_collections(files):
 
 @args_handler
 def insert(collections):
-    files = data_files(collections, collections_path)
+    load_dotenv()
+    files = get_collections(collections)
     insert_collections(files)
 
 
