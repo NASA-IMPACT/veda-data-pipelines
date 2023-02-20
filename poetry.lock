@@ -2093,7 +2093,7 @@ diagrams = ["railroad-diagrams", "jinja2"]
 
 [[package]]
 name = "pypgstac"
-version = "0.6.8"
+version = "0.6.6"
 description = "Schema, functions and a python library for storing and accessing STAC collections and items in PostgreSQL"
 category = "main"
 optional = false
@@ -2314,7 +2314,7 @@ version = "4.2.0"
 description = "Utils for streaming large files (S3, HDFS, GCS, Azure Blob Storage, gzip, bz2...)"
 category = "main"
 optional = false
-python-versions = ">=3.6,<4.0"
+python-versions = ">=3.6.*"
 
 [package.extras]
 all = ["boto3", "google-cloud-storage", "azure-storage-blob", "azure-common", "azure-core", "requests"]
