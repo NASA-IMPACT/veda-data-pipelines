@@ -63,11 +63,12 @@ class LambdaStack(core.Stack):
             "../lambdas/submit-vector",
             env={
                 "VECTOR_SECRET_NAME": config.VECTOR_SECRET_NAME,
-            }
+            },
         )
-        vector_conn_secret = secretsmanager.Secret.from_secret_name_v2(self, 'vector-conn-secret', config.VECTOR_SECRET_NAME)
+        vector_conn_secret = secretsmanager.Secret.from_secret_name_v2(
+            self, "vector-conn-secret", config.VECTOR_SECRET_NAME
+        )
         vector_conn_secret.grant_read(self.vector_lambda)
-
 
         # Proxy lambda to trigger cogify step function
         self.trigger_cogify_lambda = self._python_lambda(
