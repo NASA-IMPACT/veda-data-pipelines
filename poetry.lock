@@ -2093,7 +2093,7 @@ diagrams = ["railroad-diagrams", "jinja2"]
 
 [[package]]
 name = "pypgstac"
-version = "0.6.6"
+version = "0.6.11"
 description = "Schema, functions and a python library for storing and accessing STAC collections and items in PostgreSQL"
 category = "main"
 optional = false
