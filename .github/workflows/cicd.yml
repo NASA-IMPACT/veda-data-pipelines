@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: psf/black@stable
+      - uses: psf/black@22.8.0
 
   test_build-stac:
     name: Test lambdas/build-stac
