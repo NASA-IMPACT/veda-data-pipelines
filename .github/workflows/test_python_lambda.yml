@@ -23,6 +23,11 @@ jobs:
             poetry.lock
             ${{ inputs.path_to_lambda }}/requirements**.txt
 
+      # TECHDEBT: hack to manually install smart-open==4.2.0 to get around CI failures
+      # put a ticket in the backlog to upgrade to pypgstac==0.7.0 when we have more time
+      - name: install smart-open==4.2.0
+        run: pipx install smart-open==4.2.0
+
       - name: Install requirements
         run: |
           poetry install

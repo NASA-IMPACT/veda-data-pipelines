@@ -2093,7 +2093,7 @@ diagrams = ["railroad-diagrams", "jinja2"]
 
 [[package]]
 name = "pypgstac"
-version = "0.6.11"
+version = "0.6.6"
 description = "Schema, functions and a python library for storing and accessing STAC collections and items in PostgreSQL"
 category = "main"
 optional = false
@@ -2105,7 +2105,7 @@ orjson = ">=3.5.2"
 plpygis = ">=0.2.0,<0.3.0"
 pydantic = {version = ">=1.9.0,<1.10.0", extras = ["dotenv"]}
 python-dateutil = ">=2.8.0,<2.9.0"
-smart-open = ">=4.2.0,<5.2.0"
+smart-open = ">=4.2.0,<4.3.0"
 tenacity = ">=8.0.0,<8.1.0"
 
 [package.extras]
