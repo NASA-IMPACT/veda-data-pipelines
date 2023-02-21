@@ -18,9 +18,9 @@ jobs:
       - name: Show GITHUB_WORKSPACE
         run:  echo $GITHUB_WORKSPACE
 
-#      - uses: actions/setup-python@v4
-#        with:
-#          python-version: "3.8" # NOTE: Should match Lambda runtime specified in CDK code
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.8" # NOTE: Should match Lambda runtime specified in CDK code
 #          cache: "poetry"
 #          cache-dependency-path: |
 #            poetry.lock
