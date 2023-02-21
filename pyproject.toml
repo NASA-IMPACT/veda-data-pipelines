@@ -20,11 +20,9 @@ python-cmr = "0.7.0"
 rasterio = "1.3.0"
 rio-stac = "0.4.2"
 shapely = "1.8.4"
-smart-open = "4.2.0"
 exceptiongroup = "1.0.0rc9"
 psycopg = "3.1"
 psycopg-pool = "3.1.1"
-pypgstac = "0.6.6"
 
 [tool.poetry.dev-dependencies]
 "aws_cdk.core" = "^1.151.0"
@@ -43,6 +41,10 @@ pypgstac = "0.6.6"
 "aws_cdk.aws_lambda_python" = "^1.151.0"
 boto3-stubs = {extras = ["s3"], version = "^1.24.45"}
 black = "^22.8.0"
+
+[tool.poetry.group.ci-exclude.dependencies]
+smart-open = "5.2.0"
+pypgstac = "0.7.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
