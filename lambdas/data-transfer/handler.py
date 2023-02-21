@@ -43,6 +43,10 @@ def handler(event, context):
         filename = src_key.split("/")[-1]
 
         target_key = f"{object.get('collection')}/{filename}"
+        # The file-staging directory is the default for MAAP's bucket
+        directory = object.get('directory', 'file-staging')
+        if directory:
+            target_key = f"{directory}/{target_key}"
         target_url = f"s3://{TARGET_BUCKET}/{target_key}"
 
         # Check if the corresponding object exists in the target bucket
@@ -54,7 +58,7 @@ def handler(event, context):
                 with tempfile.TemporaryDirectory() as tmp_dir:
                     tmp_filename = f"{tmp_dir}/{filename}"
                     source_s3.download_file(src_bucket, src_key, tmp_filename)
-                    target_s3.upload_file(tmp_filename, TARGET_BUCKET, target_key, ExtraArgs={'ACL':'public-read'})
+                    target_s3.upload_file(tmp_filename, TARGET_BUCKET, target_key)
             except:
                 print(
                     "Failed while trying to upload file from "
