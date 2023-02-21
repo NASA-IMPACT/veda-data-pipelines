@@ -90,7 +90,7 @@ class StepFunctionStack(core.Stack):
 
 
         inventory_task = self._lambda_task(
-            "CMR Discover Task",
+            "Inventory Task",
             lambda_stack.inventory_lambda,
         )
 

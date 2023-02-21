@@ -54,7 +54,7 @@ def handler(event, context):
                 with tempfile.TemporaryDirectory() as tmp_dir:
                     tmp_filename = f"{tmp_dir}/{filename}"
                     source_s3.download_file(src_bucket, src_key, tmp_filename)
-                    target_s3.upload_file(tmp_filename, TARGET_BUCKET, target_key)
+                    target_s3.upload_file(tmp_filename, TARGET_BUCKET, target_key, ExtraArgs={'ACL':'public-read'})
             except:
                 print(
                     "Failed while trying to upload file from "
@@ -70,7 +70,7 @@ if __name__ == '__main__':
     sample_event = [
             {
             "collection": "icesat2-boreal",
-            "remote_fileurl": "s3://maap-ops-workspace/lduncanson/dps_output/run_boreal_biomass_quick_v2_ubuntu/map_boreal_2022_rh_noground_v4/2023/02/06/07/55/35/764806/boreal_agb_202302061675669996_3455.tif",
+            "remote_fileurl": "s3://maap-ops-workspace/lduncanson/dps_output/run_boreal_biomass_quick_v2_ubuntu/map_boreal_2022_rh_noground_v4/2023/02/15/05/42/01/342476/boreal_agb_202302151676439579_1326.tif",
             "upload": True,
             "user_shared": False,
             "properties": None

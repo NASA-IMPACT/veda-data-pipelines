@@ -6,6 +6,14 @@ import boto3
 from csv import DictReader
 from urllib.parse import urlparse
 
+def assume_role(role_arn, session_name):
+    sts = boto3.client("sts")
+    creds = sts.assume_role(
+        RoleArn=role_arn,
+        RoleSessionName=session_name,
+    )
+    return creds["Credentials"]
+
 def handler(event, context):
     inventory_url = event.get("inventory_url")
     parsed_url = urlparse(inventory_url, allow_fragments=False)
@@ -18,15 +26,22 @@ def handler(event, context):
     # raise if no inventory url or collection are in the input
 
     # Read the file and queue each item
-    s3client = boto3.client("s3")
+    kwargs = {}
+    if role_arn := os.environ.get("DATA_MANAGEMENT_ROLE_ARN"):
+        creds = assume_role(role_arn, "veda-data-pipelines_s3-discovery")
+        kwargs = {
+            "aws_access_key_id": creds["AccessKeyId"],
+            "aws_secret_access_key": creds["SecretAccessKey"],
+            "aws_session_token": creds["SessionToken"],
+        }    
+    s3client = boto3.client("s3", **kwargs)
     start_after = event.pop("start_after", 0)
 
     file_objs_size = 0
     payload = {**event, "cogify": cogify, "objects": []}
 
-    local_filename = inventory_filename.split('/')[-1]
-    print(bucket)
-    print(inventory_filename)
+    local_filename = f"/tmp/{inventory_filename.split('/')[-1]}"
+  
     s3client.download_file(Bucket=bucket, Key=inventory_filename, Filename=local_filename)
     with open(local_filename, 'r') as f:
          dict_reader = DictReader(f)
@@ -36,8 +51,8 @@ def handler(event, context):
             filename = file_dict['s3_path']
             if filename_regex and not re.match(filename_regex, filename):
                 continue
-            if file_objs_size > 230000:
-                payload["start_after"] = start_after
+            if file_objs_size > 23000:
+                # payload["start_after"] = start_after
                 break
             file_obj = {
                 "collection": collection,
@@ -50,8 +65,8 @@ def handler(event, context):
             file_obj_size = len(json.dumps(file_obj, ensure_ascii=False).encode("utf8"))
             file_objs_size = file_objs_size + file_obj_size
             start_after = line_number
-    print(json.dumps(payload, indent=2))
-    #print(payload['objects'][0])
+    #print(json.dumps(payload['objects'][0], indent=2))
+    #print(json.dumps(payload, indent=2))
     return payload
 
 
@@ -60,8 +75,7 @@ if __name__ == "__main__":
         "collection": "icesat2-boreal",
         "inventory_url": "s3://maap-data-store-test/AGB_tindex_master.csv",
         "discovery": "inventory",
-        "upload": True,
-        "start_after": 794
+        "upload": True
     }
 
     handler(sample_event, {})
