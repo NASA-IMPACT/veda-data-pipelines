@@ -15,11 +15,6 @@ jobs:
       - name: Install poetry
         run: pipx install poetry
 
-      # TECHDEBT: hack to manually install smart-open==4.2.0 to get around CI failures
-      # put a ticket in the backlog to upgrade to pypgstac==0.7.0 when we have more time
-      - name: Install smart-open
-        run: pipx install smart-open
-
       - uses: actions/setup-python@v4
         with:
           python-version: "3.8" # NOTE: Should match Lambda runtime specified in CDK code
@@ -28,8 +23,10 @@ jobs:
             poetry.lock
             ${{ inputs.path_to_lambda }}/requirements**.txt
 
-      - name: grok environment
-        run: pipx list
+      # TECHDEBT: hack to manually install smart-open==4.2.0 to get around CI failures
+      # put a ticket in the backlog to upgrade to pypgstac==0.7.0 when we have more time
+      - name: Install smart-open
+        run: pip install smart-open==4.2.0
 
       - name: Install requirements
         run: |
