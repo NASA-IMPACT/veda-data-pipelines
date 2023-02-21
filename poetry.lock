@@ -2095,8 +2095,8 @@ diagrams = ["railroad-diagrams", "jinja2"]
 name = "pypgstac"
 version = "0.6.6"
 description = "Schema, functions and a python library for storing and accessing STAC collections and items in PostgreSQL"
-category = "dev"
-optional = true
+category = "main"
+optional = false
 python-versions = ">=3.7"
 
 [package.dependencies]
@@ -2105,6 +2105,7 @@ orjson = ">=3.5.2"
 plpygis = ">=0.2.0,<0.3.0"
 pydantic = {version = ">=1.9.0,<1.10.0", extras = ["dotenv"]}
 python-dateutil = ">=2.8.0,<2.9.0"
+smart-open = ">=4.2.0,<4.3.0"
 tenacity = ">=8.0.0,<8.1.0"
 
 [package.extras]
@@ -2311,8 +2312,8 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 name = "smart-open"
 version = "4.2.0"
 description = "Utils for streaming large files (S3, HDFS, GCS, Azure Blob Storage, gzip, bz2...)"
-category = "dev"
-optional = true
+category = "main"
+optional = false
 python-versions = ">=3.6.*"
 
 [package.extras]
