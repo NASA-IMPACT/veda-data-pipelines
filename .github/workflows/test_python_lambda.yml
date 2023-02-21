@@ -29,10 +29,10 @@ jobs:
         run: pip install smart-open==4.2.0
 
       - name: grok environment
-        run: echo which poetry
+        run: which poetry
 
       - name: grok environment
-        run: echo which pip
+        run: which pip
 
       - name: Install requirements
         run: |
