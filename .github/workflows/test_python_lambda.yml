@@ -12,8 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      # TECHDEBT: hack to manually install smart-open==4.2.0 to get around CI failures
+      # put a ticket in the backlog to upgrade to pypgstac==0.7.0 when we have more time
       - name: Install poetry
-        run: pipx install poetry
+        run: pipx install poetry smart-open==4.2.0
 
       - uses: actions/setup-python@v4
         with:
@@ -23,16 +25,8 @@ jobs:
             poetry.lock
             ${{ inputs.path_to_lambda }}/requirements**.txt
 
-      # TECHDEBT: hack to manually install smart-open==4.2.0 to get around CI failures
-      # put a ticket in the backlog to upgrade to pypgstac==0.7.0 when we have more time
-      - name: install smart-open==4.2.0
-        run: pip install smart-open==4.2.0
-
       - name: grok environment
-        run: which poetry
-
-      - name: grok environment
-        run: which pip
+        run: pipx list
 
       - name: Install requirements
         run: |
