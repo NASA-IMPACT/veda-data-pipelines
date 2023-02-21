@@ -25,7 +25,7 @@ jobs:
 
       - name: Install requirements
         run: |
-          poetry install
+          poetry install --with dependencies,scripts
           poetry add $(cat ${{ inputs.path_to_lambda }}/requirements**.txt )
 
       - name: Run tests

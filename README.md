@@ -27,6 +27,12 @@ See [poetry-landing-page](https://pypi.org/project/poetry/)
 pip install poetry
 ```
 
+Then install all poetry packages in the `poetry.lock`
+
+```bash
+poetry install
+```
+
 ## Deployment
 
 This project uses AWS CDK to deploy AWS resources to the cloud.
