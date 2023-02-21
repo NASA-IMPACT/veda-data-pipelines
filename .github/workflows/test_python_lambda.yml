@@ -15,16 +15,13 @@ jobs:
       - name: Install poetry
         run: pipx install poetry
 
-      - name: Show GITHUB_WORKSPACE
-        run:  echo $GITHUB_WORKSPACE
-
       - uses: actions/setup-python@v4
         with:
           python-version: "3.8" # NOTE: Should match Lambda runtime specified in CDK code
-#          cache: "poetry"
-#          cache-dependency-path: |
-#            poetry.lock
-#            ${{ inputs.path_to_lambda }}/requirements**.txt
+          cache: "poetry"
+          cache-dependency-path: |
+            poetry.lock
+            ${{ inputs.path_to_lambda }}/requirements**.txt
 
       - name: Install requirements
         run: |
