@@ -1,6 +1,7 @@
 {
   "id": "AFLVIS2",
   "stac_version": "1.0.0",
+  "dashboard:is_periodic": true,
   "license": "not-provided",
   "title": "AfriSAR LVIS L2 Geolocated Surface Elevation Product V001",
   "type": "Collection",
