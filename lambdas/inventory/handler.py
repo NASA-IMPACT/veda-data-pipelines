@@ -13,7 +13,7 @@ def assume_role(role_arn, session_name):
         RoleSessionName=session_name,
     )
     return creds["Credentials"]
-
+ 
 def handler(event, context):
     inventory_url = event.get("inventory_url")
     parsed_url = urlparse(inventory_url, allow_fragments=False)
@@ -41,18 +41,17 @@ def handler(event, context):
     payload = {**event, "cogify": cogify, "objects": []}
 
     local_filename = f"/tmp/{inventory_filename.split('/')[-1]}"
-  
     s3client.download_file(Bucket=bucket, Key=inventory_filename, Filename=local_filename)
     with open(local_filename, 'r') as f:
          dict_reader = DictReader(f)
          list_of_dict = list(dict_reader)
-         for line_number, file_dict in enumerate(iterable=list_of_dict, start=start_after):
+         for file_dict in list_of_dict[start_after:]:
             # TODO make this configurable
             filename = file_dict['s3_path']
             if filename_regex and not re.match(filename_regex, filename):
                 continue
-            if file_objs_size > 23000:
-                # payload["start_after"] = start_after
+            if file_objs_size > 230000:
+                payload["start_after"] = start_after
                 break
             file_obj = {
                 "collection": collection,
@@ -64,9 +63,9 @@ def handler(event, context):
             payload["objects"].append(file_obj)
             file_obj_size = len(json.dumps(file_obj, ensure_ascii=False).encode("utf8"))
             file_objs_size = file_objs_size + file_obj_size
-            start_after = line_number
-    #print(json.dumps(payload['objects'][0], indent=2))
-    #print(json.dumps(payload, indent=2))
+            start_after += 1
+    print(json.dumps(payload, indent=2))
+    print(json.dumps(payload['objects'][-1]['remote_fileurl'], indent=2))
     return payload
 
 
@@ -75,7 +74,8 @@ if __name__ == "__main__":
         "collection": "icesat2-boreal",
         "inventory_url": "s3://maap-data-store-test/AGB_tindex_master.csv",
         "discovery": "inventory",
-        "upload": True
+        "upload": True,
+        "start_after": 795
     }
 
     handler(sample_event, {})

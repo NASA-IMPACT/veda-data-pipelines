@@ -72,13 +72,13 @@ def handler(event, context):
 
 if __name__ == '__main__':
     sample_event = [
-            {
-            "collection": "icesat2-boreal",
-            "remote_fileurl": "s3://maap-ops-workspace/lduncanson/dps_output/run_boreal_biomass_quick_v2_ubuntu/map_boreal_2022_rh_noground_v4/2023/02/15/05/42/01/342476/boreal_agb_202302151676439579_1326.tif",
-            "upload": True,
-            "user_shared": False,
-            "properties": None
-            }
+{
+    "collection": "icesat2-boreal",
+    "remote_fileurl": "s3://maap-ops-workspace/lduncanson/dps_output/run_boreal_biomass_quick_v2_ubuntu/map_boreal_2022_rh_noground_v4/2023/02/07/17/26/40/509524/boreal_agb_202302071675790681_27635.tif",
+    "upload": True,
+    "user_shared": False,
+    "properties": None
+  }
         ]
 
     print(json.dumps(handler(sample_event, {}), indent=2))

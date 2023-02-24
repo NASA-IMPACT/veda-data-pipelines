@@ -22,7 +22,7 @@
     },
     "license": "CC-BY",
     "dashboard:is_periodic": true,
-    "description": "Aboveground biomass density c.2020 gridded to 30m derived from ICESat-2, Harmonized Landsat-Sentinel2 and Copernicus DEM. Band 1 is the data band. Band 2 is the standard error.",
+    "description": "Aboveground biomass density c.2020 gridded to 30m derived from ICESat-2, Harmonized Landsat-Sentinel2 and Copernicus DEM. Band 1 is the data band. Band 2 is the standard deviation.",
     "item_assets": {
         "cog_default": {
             "type": "image/tiff; application=geotiff; profile=cloud-optimized",
