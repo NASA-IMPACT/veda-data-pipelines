@@ -64,8 +64,8 @@ def handler(event, context):
             file_obj_size = len(json.dumps(file_obj, ensure_ascii=False).encode("utf8"))
             file_objs_size = file_objs_size + file_obj_size
             start_after += 1
-    print(json.dumps(payload, indent=2))
-    print(json.dumps(payload['objects'][-1]['remote_fileurl'], indent=2))
+    # For testing purposes:
+    # print(json.dumps(payload, indent=2))
     return payload
 
 
