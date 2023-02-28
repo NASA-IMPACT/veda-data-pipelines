@@ -65,7 +65,7 @@ def handler(event, context):
             file_objs_size = file_objs_size + file_obj_size
             start_after += 1
     # For testing purposes:
-    print(json.dumps(payload, indent=2))
+    # print(json.dumps(payload, indent=2))
     return payload
 
 
