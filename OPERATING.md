@@ -86,6 +86,7 @@ Should follow the following format:
     ## for inventory
     "inventory_url": "s3://...",
     "filename_regex": "<filename-regex>",
+    "file_url_key": "s3_url", # key name to use for corresponding URL column in an inventory CSV file
     
     ### misc
     "cogify": "<true/false>",

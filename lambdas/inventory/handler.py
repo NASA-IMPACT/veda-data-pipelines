@@ -16,6 +16,7 @@ def assume_role(role_arn, session_name):
  
 def handler(event, context):
     inventory_url = event.get("inventory_url")
+    file_url_key = event.get('file_url_key', 's3_path')
     parsed_url = urlparse(inventory_url, allow_fragments=False)
     bucket = parsed_url.netloc
     inventory_filename = parsed_url.path.strip("/")
@@ -46,8 +47,7 @@ def handler(event, context):
          dict_reader = DictReader(f)
          list_of_dict = list(dict_reader)
          for file_dict in list_of_dict[start_after:]:
-            # TODO make this configurable
-            filename = file_dict['s3_path']
+            filename = file_dict[file_url_key]
             if filename_regex and not re.match(filename_regex, filename):
                 continue
             if file_objs_size > 230000:
@@ -65,7 +65,7 @@ def handler(event, context):
             file_objs_size = file_objs_size + file_obj_size
             start_after += 1
     # For testing purposes:
-    # print(json.dumps(payload, indent=2))
+    print(json.dumps(payload, indent=2))
     return payload
 
 
@@ -74,8 +74,8 @@ if __name__ == "__main__":
         "collection": "icesat2-boreal",
         "inventory_url": "s3://maap-data-store-test/AGB_tindex_master.csv",
         "discovery": "inventory",
-        "upload": True,
-        "start_after": 795
+        "file_url_key": "s3_path",
+        "upload": True
     }
 
     handler(sample_event, {})
