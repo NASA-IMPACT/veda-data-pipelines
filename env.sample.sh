@@ -5,9 +5,6 @@
 # Valid environments: dev, staging (for now)
 
 #===== Needed temporarily to load collections =====#
-devPGSecret=veda-backend-uah-dev/pgstac/621feede
-stagePGSecret=delta-backend-stagingv2/pgstac/5d4eb447
-
 devCognitoAppSecret=xxxx
 stageCognitoAppSecret=xxxx
 
@@ -22,11 +19,9 @@ else
     if [[ $1 = 'staging' ]]
     then
         cognitoAppSecret=$stageCognitoAppSecret
-        pgSecret=$stagePGSecret
         stacIngestorUrl=$stageStacIngestorUrl
     else
         cognitoAppSecret=$devCognitoAppSecret
-        pgSecret=$devPGSecret
         stacIngestorUrl=$devStacIngestorUrl
     fi
 
@@ -38,9 +33,7 @@ else
     export ENV=$1
     export APP_NAME="veda-data-pipelines"
 
-    export SECRET_NAME=$pgSecret
-
-    export STAC_INGESTOR_URL=$stacIngestorUrl
+        export STAC_INGESTOR_URL=$stacIngestorUrl
 
     echo "$1 environment set"
 fi

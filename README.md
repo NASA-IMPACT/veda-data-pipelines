@@ -9,10 +9,6 @@ data products and STAC metadata for interfaces such as https://github.com/NASA-I
 
 See [get-docker](https://docs.docker.com/get-docker/)
 
-### PgSTAC/pyPgStac Dependencies
-
-See [PgStac Getting Started](https://stac-utils.github.io/pgstac/pgstac/). Specifically Postgresql >= 13 and PostGIS >= 3 at time of writing, but mainly Postgresql needs to be installed to talk to the deployed databases.
-
 ### AWS CDK
 
 See [cdk-getting-started](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html)
@@ -39,7 +35,6 @@ This project uses AWS CDK to deploy AWS resources to the cloud.
 
 ```bash
 ENV="<dev/staging/prod>"
-SECRET_NAME="<secret-name-for-database>"
 COGNITO_APP_SECRET="<secret-name-for-pgstac-access>"
 APP_NAME="veda-data-pipelines"
 STAC_INGESTOR_URL="<url-for-ingestor-api>"
