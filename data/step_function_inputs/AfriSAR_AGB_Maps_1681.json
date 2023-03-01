@@ -5,5 +5,6 @@
     "discovery": "cmr",
     "asset_name": "data",
     "asset_roles": ["data"],
+    "cmr_api_url": "https://cmr.maap-project.org",
     "asset_media_type": "image/tiff; application=geotiff; profile=cloud-optimized"
 }
