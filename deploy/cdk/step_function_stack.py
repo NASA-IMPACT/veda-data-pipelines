@@ -152,7 +152,6 @@ class StepFunctionStack(core.Stack):
         self,
         lambda_stack: "LambdaStack",
     ) -> stepfunctions.StateMachine:
-
         transfer_task = self._lambda_task(
             "Data Transfer Task",
             lambda_stack.data_transfer_lambda,
