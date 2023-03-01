@@ -217,12 +217,11 @@ def get_assets_from_cmr(cmr_json, item) -> dict[pystac.Asset]:
         if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/data#":
             extension = os.path.splitext(link['href'])[-1].replace('.', '')
             if extension == 'prj':
-                role = 'metadata'
                 asset = gen_asset('metadata', link, item)
                 if asset:
                     assets['metadata'] = asset
             asset = gen_asset('data', link, item)
-            if asset:
+            if asset and not assets['data']:
                 assets['data'] = asset
         if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/s3#":
             asset = gen_asset('data', link, item)
@@ -239,7 +238,7 @@ def get_assets_from_cmr(cmr_json, item) -> dict[pystac.Asset]:
     return assets
 
 def cmr_api_url() -> str:
-    default_cmr_api_url = "https://cmr.earthdata.nasa.gov"
+    default_cmr_api_url = "https://cmr.maap-project.org" #"https://cmr.earthdata.nasa.gov"
     cmr_api_url = os.environ.get('CMR_API_URL', default_cmr_api_url)
     return cmr_api_url
 
