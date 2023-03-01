@@ -6,7 +6,7 @@ import datetime as dt
 import requests
 
 def get_cmr_granules_endpoint(event):
-    default_cmr_api_url = "https://cmr.earthdata.nasa.gov"
+    default_cmr_api_url = "https://cmr.maap-project.org" #"https://cmr.earthdata.nasa.gov"
     cmr_api_url = event.get('cmr_api_url', os.environ.get('CMR_API_URL', default_cmr_api_url))
     cmr_granules_search_url = f"{cmr_api_url}/search/granules.json"
     return cmr_granules_search_url
@@ -88,7 +88,7 @@ if __name__ == "__main__":
         "collection": "GEDI02_A",
         "version": "002",
         "discovery": "cmr",
-         "temporal": ["2019-04-01T00:00:00Z", "2019-07-31T23:59:59Z"],
+        "temporal": ["2019-04-01T00:00:00Z", "2019-07-31T23:59:59Z"],
         "mode": "cmr",
         "asset_name": "data",
         "asset_roles": ["data"],
