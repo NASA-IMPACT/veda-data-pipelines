@@ -23,6 +23,26 @@ class LambdaStack(core.Stack):
             assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
             description="Role to write to external bucket",
         )
+        external_role.attach_inline_policy(
+            iam.Policy(self, 'Policy',
+                statements = [
+                    iam.PolicyStatement(
+                        effect = iam.Effect.ALLOW,
+                        actions = [
+                            "logs:PutLogEvents",
+                            "logs:DescribeLogStreams",
+                            "logs:CreateLogStream",
+                            "logs:CreateLogGroup",
+                        ],
+                        resources = ["*"]
+                    ),
+                    iam.PolicyStatement(
+                        resources=[config.DATA_MANAGEMENT_ROLE_ARN],
+                        actions=["sts:AssumeRole"],
+                    )
+                ]
+            )
+        )
         external_role.add_to_policy(
             iam.PolicyStatement(
                 resources=[config.DATA_MANAGEMENT_ROLE_ARN],
