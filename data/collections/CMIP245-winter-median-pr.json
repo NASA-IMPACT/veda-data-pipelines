@@ -1,8 +1,7 @@
 {
     "id": "CMIP245-winter-median-pr",
     "type": "Collection",
-    "links":[
-    ],
+    "links":[],
     "title":"Projected changes to winter (January, February, and March) cumulative daily precipitation",
     "extent":{
         "spatial":{
@@ -11,7 +10,7 @@
                     -127,
                     29,
                     -103,
-                    52,
+                    52
                 ]
             ]
         },
@@ -19,7 +18,7 @@
             "interval":[
                 [
                     "1995-01-01T00:00:00Z",
-                    "2095-03-31T00:00:00Z",
+                    "2095-03-31T00:00:00Z"
                 ]
             ]
         }
