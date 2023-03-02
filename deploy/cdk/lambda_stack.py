@@ -24,23 +24,25 @@ class LambdaStack(core.Stack):
             description="Role to write to external bucket",
         )
         external_role.attach_inline_policy(
-            iam.Policy(self, 'Policy',
-                statements = [
+            iam.Policy(
+                self,
+                "Policy",
+                statements=[
                     iam.PolicyStatement(
-                        effect = iam.Effect.ALLOW,
-                        actions = [
+                        effect=iam.Effect.ALLOW,
+                        actions=[
                             "logs:PutLogEvents",
                             "logs:DescribeLogStreams",
                             "logs:CreateLogStream",
                             "logs:CreateLogGroup",
                         ],
-                        resources = ["*"]
+                        resources=["*"],
                     ),
                     iam.PolicyStatement(
                         resources=[config.DATA_MANAGEMENT_ROLE_ARN],
                         actions=["sts:AssumeRole"],
-                    )
-                ]
+                    ),
+                ],
             )
         )
         external_role.add_to_policy(
@@ -64,10 +66,9 @@ class LambdaStack(core.Stack):
 
         # Discovers files from cmr
         self.cmr_discovery_lambda = self._lambda(
-            f"{construct_id}-cmr-discovery-fn", "../lambdas/cmr-query",
-            env={
-                "CMR_API_URL": config.CMR_API_URL
-            }
+            f"{construct_id}-cmr-discovery-fn",
+            "../lambdas/cmr-query",
+            env={"CMR_API_URL": config.CMR_API_URL},
         )
 
         # Cogify files
@@ -105,7 +106,7 @@ class LambdaStack(core.Stack):
             role=external_role,
             env={
                 "DATA_MANAGEMENT_ROLE_ARN": config.DATA_MANAGEMENT_ROLE_ARN,
-                "CMR_API_URL": config.CMR_API_URL
+                "CMR_API_URL": config.CMR_API_URL,
             },
         )
 

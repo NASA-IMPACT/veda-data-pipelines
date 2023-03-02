@@ -76,7 +76,7 @@ def handler(event, context):
             file_obj_size = len(json.dumps(file_obj, ensure_ascii=False).encode("utf8"))
             file_objs_size = file_objs_size + file_obj_size
             start_after = filename
-    print(payload['objects'][0])
+    print(payload["objects"][0])
     return payload
 
 
@@ -88,7 +88,7 @@ if __name__ == "__main__":
         "filename_regex": "^(.*).tif$",
         "discovery": "s3",
         "upload": True,
-        "user_shared": True
+        "user_shared": True,
     }
 
     handler(sample_event, {})

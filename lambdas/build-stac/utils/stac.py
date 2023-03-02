@@ -42,13 +42,13 @@ def create_item(
             href=item_url,
             datetime=datetime,
             collection=collection,
-            bbox=bbox
+            bbox=bbox,
         )
         stac_item.assets = assets
         return stac_item
 
     def create_stac_item():
-        if mode == 'cmr':
+        if mode == "cmr":
             return create_item_item()
         try:
             # `stac.create_stac_item` tries to opon a dataset with rasterio.
@@ -71,7 +71,7 @@ def create_item(
             )
         except Exception as e:
             print(f"Caught exception {e}")
-            if 'not recognized as a supported file format' in str(e):
+            if "not recognized as a supported file format" in str(e):
                 return create_item_item()
             else:
                 raise
@@ -82,7 +82,7 @@ def create_item(
         rasterio_kwargs["session"] = AWSSession(
             aws_access_key_id=creds["AccessKeyId"],
             aws_secret_access_key=creds["SecretAccessKey"],
-            aws_session_token=creds['SessionToken'],
+            aws_session_token=creds["SessionToken"],
         )
 
     with rasterio.Env(
@@ -146,6 +146,7 @@ def pairwise(iterable) -> zip:
     a = iter(iterable)
     return zip(a, a)
 
+
 def get_bbox(coord_list) -> list[float]:
     """
     Returns the corners of a list of coordinates by:
@@ -154,57 +155,55 @@ def get_bbox(coord_list) -> list[float]:
     3. Returning a list of min x, min y, max x, max y
     """
     box = []
-    for i in (0,1):
-        res = sorted(coord_list, key=lambda x:x[i])
+    for i in (0, 1):
+        res = sorted(coord_list, key=lambda x: x[i])
         box.append((res[0][i], res[-1][i]))
     ret = [box[0][0], box[1][0], box[0][1], box[1][1]]
     return ret
+
 
 def generate_geometry_from_cmr(cmr_json, item) -> dict:
     """
     Generates geoJSON object from list of coordinates provided in CMR JSON
     """
     str_coords = None
-    if cmr_json.get('polygons'):
-        str_coords = cmr_json['polygons'][0][0].split()
+    if cmr_json.get("polygons"):
+        str_coords = cmr_json["polygons"][0][0].split()
         if item.reverse_coords:
             str_coords.reverse()
     elif cmr_json.get("boxes"):
-        str_coords = cmr_json['boxes'][0].split()
+        str_coords = cmr_json["boxes"][0].split()
 
     if str_coords:
-        polygon_coords = [(float(x), float(y)) for x,y in pairwise(str_coords)]
+        polygon_coords = [(float(x), float(y)) for x, y in pairwise(str_coords)]
         if len(polygon_coords) == 2:
             polygon_coords.insert(1, (polygon_coords[1][0], polygon_coords[0][1]))
             polygon_coords.insert(3, (polygon_coords[0][0], polygon_coords[2][1]))
             polygon_coords.insert(4, polygon_coords[0])
-        return {
-            "coordinates": [polygon_coords],
-            "type": "Polygon"
-        }
+        return {"coordinates": [polygon_coords], "type": "Polygon"}
     else:
         return None
 
+
 def gen_asset(role: str, link: dict, item: dict) -> pystac.Asset:
-    if item.test_links and 'http' in link.get('href'):
+    if item.test_links and "http" in link.get("href"):
         try:
-            requests.head(link.get('href'))
+            requests.head(link.get("href"))
         except Exception as e:
             print(f"Caught error for link {link}: {e}")
             return None
-    asset_media_type = link.get('type')
+    asset_media_type = link.get("type")
     # Fallback to asset_media_type defined in the item
-    if asset_media_type == None and role == 'data':
+    if asset_media_type == None and role == "data":
         asset_media_type = item.asset_media_type
 
-    if role == 'data' and 's3://' not in link.get('href'):
+    if role == "data" and "s3://" not in link.get("href"):
         pass
     else:
         return pystac.Asset(
-            roles=[role],
-            href=link.get('href'),
-            media_type=asset_media_type
+            roles=[role], href=link.get("href"), media_type=asset_media_type
         )
+
 
 def get_assets_from_cmr(cmr_json, item) -> dict[pystac.Asset]:
     """
@@ -212,46 +211,60 @@ def get_assets_from_cmr(cmr_json, item) -> dict[pystac.Asset]:
     TODO(aimee): This is using some heuristics and could probably be refined according to some standard in the future.
     """
     assets = {}
-    links = cmr_json['links']
+    links = cmr_json["links"]
     for link in links:
         if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/data#":
-            extension = os.path.splitext(link['href'])[-1].replace('.', '')
-            if extension == 'prj':
-                asset = gen_asset('metadata', link, item)
+            extension = os.path.splitext(link["href"])[-1].replace(".", "")
+            if extension == "prj":
+                asset = gen_asset("metadata", link, item)
                 if asset:
-                    assets['metadata'] = asset
-            asset = gen_asset('data', link, item)
-            if asset and not assets['data']:
-                assets['data'] = asset
+                    assets["metadata"] = asset
+            asset = gen_asset("data", link, item)
+            if asset and not assets["data"]:
+                assets["data"] = asset
         if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/s3#":
-            asset = gen_asset('data', link, item)
+            asset = gen_asset("data", link, item)
             if asset:
-                assets['data'] = asset
-        if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/metadata#" and 'metadata' not in assets:
-            asset = gen_asset('metadata', link, item)
+                assets["data"] = asset
+        if (
+            link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/metadata#"
+            and "metadata" not in assets
+        ):
+            asset = gen_asset("metadata", link, item)
             if asset:
-                assets['metadata'] = asset
-        if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/documentation#" and 'documentation' not in assets:
-            asset = gen_asset('documentation', link, item)
+                assets["metadata"] = asset
+        if (
+            link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/documentation#"
+            and "documentation" not in assets
+        ):
+            asset = gen_asset("documentation", link, item)
             if asset:
-                assets['documentation'] = asset
+                assets["documentation"] = asset
     return assets
 
+
 def cmr_api_url() -> str:
-    default_cmr_api_url = "https://cmr.maap-project.org" #"https://cmr.earthdata.nasa.gov"
-    cmr_api_url = os.environ.get('CMR_API_URL', default_cmr_api_url)
+    default_cmr_api_url = (
+        "https://cmr.maap-project.org"  # "https://cmr.earthdata.nasa.gov"
+    )
+    cmr_api_url = os.environ.get("CMR_API_URL", default_cmr_api_url)
     return cmr_api_url
+
 
 @generate_stac.register
 def generate_stac_cmrevent(item: events.CmrEvent) -> pystac.Item:
     """
     Generate STAC Item from CMR granule
     """
-    cmr_json = GranuleQuery(mode=f"{cmr_api_url()}/search/").concept_id(item.granule_id).get(1)[0]
-    cmr_json['concept_id'] = cmr_json.pop('id')
+    cmr_json = (
+        GranuleQuery(mode=f"{cmr_api_url()}/search/")
+        .concept_id(item.granule_id)
+        .get(1)[0]
+    )
+    cmr_json["concept_id"] = cmr_json.pop("id")
     geometry = generate_geometry_from_cmr(cmr_json, item)
     if geometry:
-        bbox = get_bbox(list(geojson.utils.coords(geometry['coordinates'])))
+        bbox = get_bbox(list(geojson.utils.coords(geometry["coordinates"])))
     else:
         bbox = None
     assets = get_assets_from_cmr(cmr_json, item)
@@ -268,5 +281,5 @@ def generate_stac_cmrevent(item: events.CmrEvent) -> pystac.Item:
         asset_media_type=item.asset_media_type,
         assets=assets,
         bbox=bbox,
-        geometry=geometry
+        geometry=geometry,
     )
