@@ -65,9 +65,7 @@ if __name__ == "__main__":
         "test_links": None,
         "reverse_coords": None,
         "asset_name": "data",
-        "asset_roles": [
-            "data"
-        ],
-        "asset_media_type": "application/x-hdf5"
-        }
+        "asset_roles": ["data"],
+        "asset_media_type": "application/x-hdf5",
+    }
     print(json.dumps(handler(sample_event, {}), indent=2))
