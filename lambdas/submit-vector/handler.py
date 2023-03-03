@@ -26,7 +26,6 @@ def download_file(file_uri: str):
 
 
 def get_connection_string(secret: dict) -> str:
-
     return f"PG:host={secret['host']} dbname={secret['dbname']} user={secret['username']} password={secret['password']}"
 
 
