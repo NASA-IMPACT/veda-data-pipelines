@@ -5,6 +5,7 @@ from aws_cdk import (
     aws_iam as iam,
     aws_s3 as s3,
     aws_secretsmanager as secretsmanager,
+    aws_ec2 as ec2
 )
 
 import config
@@ -58,12 +59,43 @@ class LambdaStack(core.Stack):
         )
 
         # Ingest Vector
+
+        vpc = ec2.Vpc.from_lookup(
+            self,
+            "vector_rds_VPC",
+            vpc_id="vpc-0636801cac5bb6e9c",
+            vpc_name="tifeatures-timvt-dev/tifeatures-timvt-dev-vpc")
+        
+        rdsSecurityGroup = ec2.SecurityGroup.from_lookup_by_name(
+            self,
+            "vector_rds_security_name",
+            security_group_name="tifeatures-timvt-dev-tifeaturestimvtdevpostgresdbSecurityGroup645E88B7-OXJ9J2UTXYMK",
+            vpc=vpc
+        )
+
+        vectorSecurityGroup = ec2.SecurityGroup(
+            self,
+            "vector_lambda_security_group",
+            vpc=vpc,
+            allow_all_outbound=True,
+        )
+
+        rdsSecurityGroup.add_ingress_rule(
+            ec2.Peer.security_group_id(vectorSecurityGroup.security_group_id),
+            ec2.Port.tcp(5432)
+        )
+
         self.vector_lambda = self._lambda(
             f"{construct_id}-vector-fn",
             "../lambdas/submit-vector",
             env={
                 "VECTOR_SECRET_NAME": config.VECTOR_SECRET_NAME,
             },
+            vpc=vpc,
+            security_groups=[vectorSecurityGroup],
+            vpc_subnets=ec2.SubnetSelection(
+                subnets=[ec2.Subnet.from_subnet_id(self, "vpc-subnet", "subnet-0001491cf45e9e201")]
+            )
         )
         vector_conn_secret = secretsmanager.Secret.from_secret_name_v2(
             self, "vector-conn-secret", config.VECTOR_SECRET_NAME
