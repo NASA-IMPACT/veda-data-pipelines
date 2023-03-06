@@ -60,16 +60,17 @@ class LambdaStack(core.Stack):
 
         # Ingest Vector
 
+        # Vector RDS VPC
         vpc = ec2.Vpc.from_lookup(
             self,
             "vector_rds_VPC",
-            vpc_id="vpc-0636801cac5bb6e9c",
-            vpc_name="tifeatures-timvt-dev/tifeatures-timvt-dev-vpc")
+            vpc_id=config.VECTOR_VPC_ID)
         
+        # Vector RDS Security Group
         rdsSecurityGroup = ec2.SecurityGroup.from_lookup_by_name(
             self,
             "vector_rds_security_name",
-            security_group_name="tifeatures-timvt-dev-tifeaturestimvtdevpostgresdbSecurityGroup645E88B7-OXJ9J2UTXYMK",
+            security_group_name=config.VECTOR_SECURITY_GROUP,
             vpc=vpc
         )
 
@@ -91,11 +92,9 @@ class LambdaStack(core.Stack):
             env={
                 "VECTOR_SECRET_NAME": config.VECTOR_SECRET_NAME,
             },
+            allow_public_subnet=True,
             vpc=vpc,
             security_groups=[vectorSecurityGroup],
-            vpc_subnets=ec2.SubnetSelection(
-                subnets=[ec2.Subnet.from_subnet_id(self, "vpc-subnet", "subnet-0001491cf45e9e201")]
-            )
         )
         vector_conn_secret = secretsmanager.Secret.from_secret_name_v2(
             self, "vector-conn-secret", config.VECTOR_SECRET_NAME

@@ -8,8 +8,14 @@
 devPGSecret=veda-backend-uah-dev/pgstac/621feede
 stagePGSecret=delta-backend-stagingv2/pgstac/5d4eb447
 
-devVectorDBSecret=dev/tifeatures-timvt/Features_DB_for_EIS_Fires/3A8D1807
-stageVectorDBSecret=
+devVectorDBSecret=staging/tifeatures-timvt/Features_DB_for_EIS_Fires/36C48138
+stageVectorDBSecret=staging/tifeatures-timvt/Features_DB_for_EIS_Fires/36C48138
+
+devVectorVPC=vpc-084140ffa3ef1c356
+stageVectorVPC=vpc-084140ffa3ef1c356
+
+devSecurityGroup=tifeatures-timvt-staging-tifeaturestimvtstagingpostgresdbSecurityGroup12348D66-78V7PDMDX87E
+vectorSecurityGroup=tifeatures-timvt-staging-tifeaturestimvtstagingpostgresdbSecurityGroup12348D66-78V7PDMDX87E
 
 devVPCid=vpc-0512162c42da5e645
 stageVPCid=vpc-09d7998dbf340fcb7
@@ -32,18 +38,22 @@ else
     if [[ $1 = 'staging' ]]
     then
         cognitoAppSecret=$stageCognitoAppSecret
-        vectordbSecret=$stageVectorDBSecret
         pgSecret=$stagePGSecret
         vpcId=$stageVPCid
         sgId=$stageSGid
         stacIngestorUrl=$stageStacIngestorUrl
+        vectordbSecret=$stageVectorDBSecret
+        vectorVPC=$stageVectorVPC
+        vectorSecurityGroup=$stageVectorSecurityGroup
     else
         cognitoAppSecret=$devCognitoAppSecret
         pgSecret=$devPGSecret
-        vectordbSecret=$devVectorDBSecret
         vpcId=$devVPCid
         sgId=$devSGid
         stacIngestorUrl=$devStacIngestorUrl
+        vectordbSecret=$devVectorDBSecret
+        vectorVPC=$devVectorVPC
+        vectorSecurityGroup=$devVectorSecurityGroup
     fi
 
     export EXTERNAL_ROLE_ARN="arn:aws:iam::xxxxxx:role/xxxxx"
@@ -58,6 +68,8 @@ else
     export SECURITY_GROUP_ID=$sgId
     export SECRET_NAME=$pgSecret
     export VECTOR_SECRET_NAME=$vectordbSecret
+    export VECTOR_VPC_ID=$vectorVPC
+    export VECTOR_SECURITY_GROUP=$vectorSecurityGroup
 
     export STAC_INGESTOR_URL=$stacIngestorUrl
 
