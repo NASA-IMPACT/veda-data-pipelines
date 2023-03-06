@@ -217,7 +217,7 @@ def get_assets_from_cmr(cmr_json, item) -> dict[pystac.Asset]:
                 if asset:
                     assets["metadata"] = asset
             asset = gen_asset("data", link, item)
-            if asset and not assets["data"]:
+            if asset and "data" not in assets:
                 assets["data"] = asset
         if link["rel"] == "http://esipfed.org/ns/fedsearch/1.1/s3#":
             asset = gen_asset("data", link, item)
