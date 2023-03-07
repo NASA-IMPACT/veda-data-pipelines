@@ -5,23 +5,23 @@
 # Valid environments: dev, staging (for now)
 
 #===== Needed temporarily to load collections =====#
-devPGSecret=veda-backend-uah-dev/pgstac/621feede
-stagePGSecret=delta-backend-stagingv2/pgstac/5d4eb447
+devPGSecret=
+stagePGSecret=
 
-devVectorDBSecret=staging/tifeatures-timvt/Features_DB_for_EIS_Fires/36C48138
-stageVectorDBSecret=staging/tifeatures-timvt/Features_DB_for_EIS_Fires/36C48138
+devVectorDBSecret=
+stageVectorDBSecret=
 
-devVectorVPC=vpc-084140ffa3ef1c356
-stageVectorVPC=vpc-084140ffa3ef1c356
+devVectorVPC=
+stageVectorVPC=
 
-devVectorSecurityGroup=tifeatures-timvt-staging-tifeaturestimvtstagingpostgresdbSecurityGroup12348D66-78V7PDMDX87E
-stageVectorSecurityGroup=tifeatures-timvt-staging-tifeaturestimvtstagingpostgresdbSecurityGroup12348D66-78V7PDMDX87E
+devVectorSecurityGroup=
+stageVectorSecurityGroup=
 
-devVPCid=vpc-0512162c42da5e645
-stageVPCid=vpc-09d7998dbf340fcb7
+devVPCid=
+stageVPCid=
 
-devSGid=sg-0bf8af1ca386cb709
-stageSGid=sg-0d30aea6d2b661d4b
+devSGid=
+stageSGid=
 #===== Needed temporarily to load collections =====#
 
 devCognitoAppSecret=xxxx
@@ -56,7 +56,7 @@ else
         vectorSecurityGroup=$devVectorSecurityGroup
     fi
 
-    export EXTERNAL_ROLE_ARN="arn:aws:iam::114506680961:role/veda-data-store-read-staging"
+    export EXTERNAL_ROLE_ARN=XXXX
     export EARTHDATA_USERNAME=XXXX
     export EARTHDATA_PASSWORD=XXXX
 
