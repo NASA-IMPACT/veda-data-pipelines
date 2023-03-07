@@ -14,3 +14,7 @@ jobs:
       aws_secret_access_key: ${{ secrets.aws_secret_access_key }}
       stac_ingestor_url: ${{ secrets.stac_ingestor_url }}
       external_role_arn: ${{ secrets.external_role_arn }}
+      vector_secret_name: ${{ secrets.vector_secret_name }}
+      vector_vpc_id: ${{ secrets.vector_vpc_id }}
+      vector_security_group: ${{ secrets.vector_security_group }}
+      
