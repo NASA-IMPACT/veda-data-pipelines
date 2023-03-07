@@ -5,23 +5,23 @@
 # Valid environments: dev, staging (for now)
 
 #===== Needed temporarily to load collections =====#
-devPGSecret=
-stagePGSecret=
+devPGSecret=xxxx
+stagePGSecret=xxxx
 
-devVectorDBSecret=
-stageVectorDBSecret=
+devVectorDBSecret=xxxx
+stageVectorDBSecret=xxxx
 
-devVectorVPC=
-stageVectorVPC=
+devVectorVPC=xxxx
+stageVectorVPC=xxxx
 
-devVectorSecurityGroup=
-stageVectorSecurityGroup=
+devVectorSecurityGroup=xxxx
+stageVectorSecurityGroup=xxxx
 
-devVPCid=
-stageVPCid=
+devVPCid=xxxx
+stageVPCid=xxxx
 
-devSGid=
-stageSGid=
+devSGid=xxxx
+stageSGid=xxxx
 #===== Needed temporarily to load collections =====#
 
 devCognitoAppSecret=xxxx
