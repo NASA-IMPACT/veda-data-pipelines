@@ -38,18 +38,12 @@ else
     if [[ $1 = 'staging' ]]
     then
         cognitoAppSecret=$stageCognitoAppSecret
-        pgSecret=$stagePGSecret
-        vpcId=$stageVPCid
-        sgId=$stageSGid
         stacIngestorUrl=$stageStacIngestorUrl
         vectordbSecret=$stageVectorDBSecret
         vectorVPC=$stageVectorVPC
         vectorSecurityGroup=$stageVectorSecurityGroup
     else
         cognitoAppSecret=$devCognitoAppSecret
-        pgSecret=$devPGSecret
-        vpcId=$devVPCid
-        sgId=$devSGid
         stacIngestorUrl=$devStacIngestorUrl
         vectordbSecret=$devVectorDBSecret
         vectorVPC=$devVectorVPC
@@ -72,6 +66,7 @@ else
     export VECTOR_SECURITY_GROUP=$vectorSecurityGroup
 
     export STAC_INGESTOR_URL=$stacIngestorUrl
+
 
     echo "$1 environment set"
 fi
