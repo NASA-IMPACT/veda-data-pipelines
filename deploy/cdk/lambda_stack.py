@@ -5,7 +5,7 @@ from aws_cdk import (
     aws_iam as iam,
     aws_s3 as s3,
     aws_secretsmanager as secretsmanager,
-    aws_ec2 as ec2
+    aws_ec2 as ec2,
 )
 
 import config
@@ -61,17 +61,14 @@ class LambdaStack(core.Stack):
         # Ingest Vector
 
         # Vector RDS VPC
-        vpc = ec2.Vpc.from_lookup(
-            self,
-            "vector_rds_VPC",
-            vpc_id=config.VECTOR_VPC_ID)
-        
+        vpc = ec2.Vpc.from_lookup(self, "vector_rds_VPC", vpc_id=config.VECTOR_VPC_ID)
+
         # Vector RDS Security Group
         rdsSecurityGroup = ec2.SecurityGroup.from_lookup_by_name(
             self,
             "vector_rds_security_name",
             security_group_name=config.VECTOR_SECURITY_GROUP,
-            vpc=vpc
+            vpc=vpc,
         )
 
         vectorSecurityGroup = ec2.SecurityGroup(
@@ -83,7 +80,7 @@ class LambdaStack(core.Stack):
 
         rdsSecurityGroup.add_ingress_rule(
             ec2.Peer.security_group_id(vectorSecurityGroup.security_group_id),
-            ec2.Port.tcp(5432)
+            ec2.Port.tcp(5432),
         )
 
         self.vector_lambda = self._lambda(
