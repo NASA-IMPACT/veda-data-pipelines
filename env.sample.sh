@@ -56,7 +56,7 @@ else
         vectorSecurityGroup=$devVectorSecurityGroup
     fi
 
-    export EXTERNAL_ROLE_ARN="arn:aws:iam::xxxxxx:role/xxxxx"
+    export EXTERNAL_ROLE_ARN="arn:aws:iam::114506680961:role/veda-data-store-read-staging"
     export EARTHDATA_USERNAME=XXXX
     export EARTHDATA_PASSWORD=XXXX
 
