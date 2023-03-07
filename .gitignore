@@ -8,6 +8,7 @@ pyhdf*
 
 # Ignore pycache
 __pycache__
+.python-version
 
 # Ignore data files which are downloaded for local testing
 *.xml
@@ -35,6 +36,7 @@ cdk.context.json
 
 # Avoid checking in filled out env file
 env.sh
+.env*
 
 .hypothesis
 Makefile
