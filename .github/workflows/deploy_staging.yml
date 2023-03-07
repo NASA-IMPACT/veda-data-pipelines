@@ -17,4 +17,3 @@ jobs:
       vector_secret_name: ${{ secrets.vector_secret_name }}
       vector_vpc_id: ${{ secrets.vector_vpc_id }}
       vector_security_group: ${{ secrets.vector_security_group }}
-      
