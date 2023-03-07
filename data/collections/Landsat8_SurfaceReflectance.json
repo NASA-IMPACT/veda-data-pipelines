@@ -1,6 +1,7 @@
 {
   "id": "Landsat8_SurfaceReflectance",
   "stac_version": "1.0.0",
+  "dashboard:is_periodic": true,
   "license": "not-provided",
   "title": "Landsat 8 Operational Land Imager (OLI) Surface Reflectance Analysis Ready Data (ARD) V1, Peru and Equatorial Western Africa, April 2013-January 2020",
   "type": "Collection",

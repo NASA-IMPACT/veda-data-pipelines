@@ -1,6 +1,7 @@
 {
   "id": "GEDI02_B",
   "stac_version": "1.0.0",
+  "dashboard:is_periodic": true,
   "license": "not-provided",
   "title": "GEDI L2B Canopy Cover and Vertical Profile Metrics Data Global Footprint Level V002",
   "type": "Collection",

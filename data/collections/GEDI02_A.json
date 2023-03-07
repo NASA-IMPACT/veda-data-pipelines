@@ -1,6 +1,7 @@
 {
   "id": "GEDI02_A",
   "stac_version": "1.0.0",
+  "dashboard:is_periodic": true,
   "license": "not-provided",
   "title": "GEDI L2A Elevation and Height Metrics Data Global Footprint Level V002",
   "type": "Collection",
