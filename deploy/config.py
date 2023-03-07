@@ -19,3 +19,7 @@ MCP_BUCKETS = {
 
 # This should throw if it is not provided
 EXTERNAL_ROLE_ARN = os.environ["EXTERNAL_ROLE_ARN"]
+
+VECTOR_SECRET_NAME = os.environ["VECTOR_SECRET_NAME"]
+VECTOR_VPC_ID = os.environ["VECTOR_VPC_ID"]
+VECTOR_SECURITY_GROUP = os.environ["VECTOR_SECURITY_GROUP"]

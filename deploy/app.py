@@ -40,6 +40,7 @@ step_function_stack = StepFunctionStack(
 # Need to build arn manually otherwise it'll result in cyclic dependency
 cogify_arn = step_function_stack.build_arn(env_details, "cogify")
 pub_arn = step_function_stack.build_arn(env_details, "publication")
+vector_arn = step_function_stack.build_arn(env_details, "vector-ingest")
 
 lambda_stack.grant_execution_privileges(
     lambda_function=lambda_stack.trigger_cogify_lambda,
@@ -48,6 +49,10 @@ lambda_stack.grant_execution_privileges(
 lambda_stack.grant_execution_privileges(
     lambda_function=lambda_stack.trigger_ingest_lambda,
     workflow_arn=pub_arn,
+)
+lambda_stack.grant_execution_privileges(
+    lambda_function=lambda_stack.trigger_vector_lambda,
+    workflow_arn=vector_arn,
 )
 
 app.synth()

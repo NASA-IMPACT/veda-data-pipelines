@@ -1,0 +1,39 @@
+{
+   "id": "eis_fire_fireline",
+   "type": "Collection",
+   "links":[
+      {
+         "rel": "child",
+         "type": "application/json",
+         "href": "https://pzh7fedpc0.execute-api.us-west-2.amazonaws.com/collections/public.eis_fire_fireline"
+      }
+   ],
+   "title":"EIS Fireline dataset",
+   "extent":{
+      "spatial": {
+         "bbox": [
+               [
+                  -123.99217987060547,
+                  31.054306030273438,
+                  -101.49222564697266,
+                  49.461177825927734
+               ]
+      ],
+         "crs": "http://www.opengis.net/def/crs/EPSG/0/4326"
+      },
+      "temporal": {
+         "interval": [
+                  [
+                     "2019-05-01T00:00:00+00:00",
+                     "2020-10-31T12:00:00+00:00"
+                  ]
+      ],
+         "trs": "http://www.opengis.net/def/uom/ISO-8601/0/Gregorian"
+      }
+   },
+   "license":"public-domain",
+   "description": "EIS Fireline dataset",
+   "stac_version": "1.0.0",
+   "dashboard:is_periodic": true,
+   "dashboard:time_density": "day"
+}

@@ -49,6 +49,7 @@ def handler(event, context):
 
     files_objs = []
     cogify = event.pop("cogify", False)
+    vector = event.pop("vector", False)
     collection = event.get("collection", prefix.rstrip("/"))
     for filename in filenames:
         files_objs.append(
@@ -61,6 +62,7 @@ def handler(event, context):
         )
     return {
         "cogify": cogify,
+        "vector": vector,
         "objects": files_objs,
     }
 

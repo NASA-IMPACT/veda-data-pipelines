@@ -1,6 +1,4 @@
-ARG PYTHON_VERSION=3.9
-
-FROM --platform=linux/amd64 public.ecr.aws/lambda/python:${PYTHON_VERSION}
+FROM ghcr.io/lambgeo/lambda-gdal:3.5-python3.9
 
 WORKDIR /app
 
@@ -16,5 +14,6 @@ RUN echo "Remove lambda python packages"
 RUN rm -rdf ./numpy/doc/
 RUN rm -rdf ./stack
 RUN rm -rdf ./docutils*
+RUN ln -s /var/lang/bin/python3 /usr/local/bin/python
 
-COPY . .
+COPY handler.py handler.py

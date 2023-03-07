@@ -56,6 +56,24 @@ class QueueStack(core.Stack):
             )
         )
 
+        self.vector_queue = self._queue(
+            f"{construct_id}-vector-queue",
+            visibility_timeout=900,
+            dead_letter_queue=sqs.DeadLetterQueue(
+                max_receive_count=5,
+                queue=self._queue(f"{construct_id}-vector-dlq"),
+            ),
+        )
+
+        lambda_stack.trigger_vector_lambda.add_event_source(
+            lambda_event_sources.SqsEventSource(
+                self.vector_queue,
+                batch_size=10,
+                max_batching_window=core.Duration.seconds(20),
+                report_batch_item_failures=True,
+            )
+        )
+
     def _queue(
         self, name, visibility_timeout=30, dead_letter_queue=None, retention_days=4
     ):
