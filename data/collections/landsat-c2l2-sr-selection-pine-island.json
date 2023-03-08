@@ -1,0 +1,42 @@
+{
+    "id": "landsat-c2l2-sr-selection-pine-island",
+    "type": "Collection",
+    "links": [],
+    "title": "Selected Landsat Surface Reflectance Scenes for Pine Island Glacier",
+    "extent": {
+        "spatial": {
+            "bbox": [
+                [
+                    "-112.228",
+                    "-75.855",
+                    "-103.229",
+                    "-73.551"
+                ]
+            ]
+        },
+        "temporal": {
+            "interval": [
+                [
+                    "2001-01-04",
+                    "2023-01-29"
+                ]
+            ]
+        }
+    },
+    "license": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/atoms/files/Landsat_Data_Policy.pdf",
+    "description": "Selected low-cloud-cover Landsat Collection-2 Level-2 Surface Reflectance scenes covering Pine Island Glacier",
+    "stac_version": "1.0.0",
+    "dashboard:is_periodic": "false",
+    "dashboard:time_density": "day",
+    "item_assets": {
+        "cog_default": {
+            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+            "roles": [
+                "data",
+                "layer"
+            ],
+            "title": "Default COG Layer",
+            "description": "Cloud optimized default layer to display on map"
+        }
+    }
+}
