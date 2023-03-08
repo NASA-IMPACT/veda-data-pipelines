@@ -1,0 +1,28 @@
+{
+    "id": "ESACCI_Biomass_L4_AGB_V3_100m_2018",
+    "stac_version": "1.0.0",
+    "license": "ESA CCI Data Policy: free and open access",
+    "title": "ESA CCI above-ground biomass product level 4, year 2018",
+    "type": "Collection",
+    "description": "This dataset comprises estimates of forest above-ground biomass for the years 2010, 2017 and 2018. They are derived from a combination of Earth observation data, depending on the year, from the Copernicus Sentinel-1 mission, Envisat’s ASAR instrument and JAXA’s Advanced Land Observing Satellite (ALOS-1 and ALOS-2), along with additional information from Earth observation sources. The data has been produced as part of the European Space Agency's (ESA's) Climate Change Initiative (CCI) programme by the Biomass CCI team.",
+    "extent": {
+      "spatial": {
+        "bbox": [
+          [
+            -180,
+            -90,
+            180,
+            90
+          ]
+        ]
+      },
+      "temporal": {
+        "interval": [
+          [
+            "2018-01-01T00:00:00.000Z",
+            "2018-12-31T23:59:59.999Z"
+          ]
+        ]
+      }
+    }
+  }
