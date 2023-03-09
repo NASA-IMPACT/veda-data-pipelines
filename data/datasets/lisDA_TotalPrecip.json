@@ -1,0 +1,33 @@
+{
+  "collection": "lis-global-da-totalprecip",
+  "title": "Total Precipitation - LIS 10km Global DA",
+  "description": "Gridded total precipitation (in kg m-2 s-1) from 10km global LIS with assimilation",
+  "license": "CC0-1.0",
+  "is_periodic": true,
+  "time_density": "day",
+  "spatial_extent": {
+    "xmin": -179.95,
+    "ymin": -59.45,
+    "xmax": 179.95,
+    "ymax": 83.55
+  },
+  "temporal_extent": {
+    "startdate": "2002-08-02T00:00:00Z",
+    "enddate": "2021-12-01T00:00:00Z"
+  },
+  "sample_files": [
+    "s3://veda-data-store-staging/EIS/COG/LIS_GLOBAL_DA/TotalPrecip/LIS_TotalPrecip_200208020000.d01.cog.tif"
+  ],
+  "discovery_items": [
+    {
+      "discovery": "s3",
+      "cogify": false,
+      "upload": false,
+      "dry_run": false,
+      "prefix": "EIS/COG/LIS_GLOBAL_DA/TotalPrecip/",
+      "bucket": "veda-data-store-staging",
+      "filename_regex": "(.*)LIS_TotalPrecip_(.*).tif$",
+      "cpu_count": 20
+    }
+  ]
+}

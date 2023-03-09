@@ -1,0 +1,35 @@
+{
+  "collection": "lis-global-da-tws-trend",
+  "title": "Terrestrial Water Storage Trend - LIS 10km Global DA",
+  "description": "Gridded trend in terrestrial water storage (theil-sen slope estimation in mm yr-1) from 10km global LIS with assimilation",
+  "license": "CC0-1.0",
+  "is_periodic": false,
+  "time_density": null,
+  "spatial_extent": {
+    "xmin": -179.95,
+    "ymin": -59.45,
+    "xmax": 179.95,
+    "ymax": 83.55
+  },
+  "temporal_extent": {
+    "startdate": "2003-01-01T00:00:00Z",
+    "enddate": "2021-12-31T23:59:59Z"
+  },
+  "sample_files": [
+    "s3://veda-data-store-staging/EIS/COG/LIS_GLOBAL_DA/DA_Trends/DATWS_STL_based_trendv2_2003_2021.cog.tif"
+  ],
+  "discovery_items": [
+    {
+      "collection": "lis-global-da-tws-trend-airflow",
+      "discovery": "s3",
+      "cogify": false,
+      "upload": false,
+      "dry_run": false,
+      "prefix": "EIS/COG/LIS_GLOBAL_DA/DA_Trends/",
+      "bucket": "veda-data-store-staging",
+      "filename_regex": "(.*)DATWS_STL_based_trendv2_2003_2021.cog.tif$",
+      "datetime_range": "year"
+    }
+  ],
+  "data_type": "cog"
+}

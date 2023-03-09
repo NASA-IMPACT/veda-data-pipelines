@@ -1,0 +1,33 @@
+{
+  "collection": "houston-landcover",
+  "title": "Houston Land Cover",
+  "description": "MODIS-derived land use-land cover over the Houston metro area (zoomed-in extent). Displays colors 0-255 from a lookup table for land cover type (ex: reds = urbanized).",
+  "license": "CC0-1.0",
+  "is_periodic": false,
+  "time_density": null,
+  "spatial_extent": {
+    "xmin": -96.00,
+    "ymin": 29.80,
+    "xmax": -94.29,
+    "ymax": 30.40
+  },
+  "temporal_extent": {
+    "startdate": "2001-01-01T00:00:00Z",
+    "enddate": "2019-12-31T23:59:59Z"
+  },
+  "sample_files": [
+    "s3://veda-data-store-staging/houston-landcover/HOUS_DFAL_Z_f_landcover_2001.tif"
+  ],
+  "discovery_items": [
+    {
+      "discovery": "s3",
+      "cogify": false,
+      "upload": false,
+      "dry_run": false,
+      "prefix": "houston-landcover/",
+      "bucket": "veda-data-store-staging",
+      "filename_regex": "(.*)HOUS_DFAL_Z_f(.*).tif$",
+      "datetime_range": "year"
+    }
+  ]
+}

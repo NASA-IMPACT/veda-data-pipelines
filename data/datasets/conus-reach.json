@@ -1,0 +1,34 @@
+{
+  "collection": "conus-reach",
+  "title": "Stream network across the Contiguous United States",
+  "description": "This dataset describes the Stream network across the Contiguous United States delineated using Soil and Water Assessment Tool.",
+  "license": "CC0-1.0",
+  "is_periodic": false,
+  "time_density": null,
+  "spatial_extent": {
+    "xmin": -127.78,
+    "ymin": 23.36,
+    "xmax": -65.61,
+    "ymax": 51.45
+  },
+  "temporal_extent": {
+    "startdate": "2020-01-01T00:00:00Z",
+    "enddate": "2020-01-01T23:59:59Z"
+  },
+  "sample_files": [
+    "s3://veda-data-store-staging/EIS/COG/Water-Quality/CONUS_Reach_2020.cog.tif"
+  ],
+  "discovery_items": [
+    {
+      "discovery": "s3",
+      "cogify": false,
+      "upload": false,
+      "dry_run": false,
+      "prefix": "EIS/COG/Water-Quality/",
+      "bucket": "veda-data-store-staging",
+      "filename_regex": "(.*)CONUS_Reach(.*).cog.tif$",
+      "datetime_range": "year"
+    }
+  ],
+  "data_type": "cog"
+}

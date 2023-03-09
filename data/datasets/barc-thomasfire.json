@@ -1,0 +1,33 @@
+{
+  "collection": "barc-thomasfire",
+  "title": "Burn Area Reflectance Classification for Thomas Fire",
+  "description": "Burn Area Reflectance Classification (BARC) from the Burned Area Emergency Response (BAER) program for Thomas fire, 2017",
+  "license": "CC0-1.0",
+  "is_periodic": false,
+  "time_density": null,
+  "spatial_extent": {
+    "xmin": -119.73,
+    "ymin": 34.19,
+    "xmax": -118.88,
+    "ymax": 34.73
+  },
+  "temporal_extent": {
+    "startdate": "2017-12-01T00:00:00Z",
+    "enddate": "2017-12-01T23:59:59Z"
+  },
+  "sample_files": [
+    "s3://veda-data-store-staging/EIS/COG/Fire-Hydro/thomas_fire_barc_201712.cog.tiff"
+  ],
+  "discovery_items": [
+    {
+      "discovery": "s3",
+      "cogify": false,
+      "upload": false,
+      "dry_run": false,
+      "prefix": "EIS/COG/Fire-Hydro/",
+      "bucket": "veda-data-store-staging",
+      "filename_regex": "(.*)thomas_fire_barc(.*).tiff$",
+      "date_range": "month"
+    }
+  ]
+}

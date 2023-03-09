@@ -1,0 +1,32 @@
+{
+  "collection": "lis-etsuppression",
+  "title": "Change in ET for 2020 fires using LIS outputs",
+  "description": "Change in ET for 2020 fires using model outputs from Land Information System (LIS) framework that synthesizes multiple remote sensing observations within the Noah-MP land surface model. Change is calculated as the difference of ET in the immediate post-fire water year from that in the immediate pre-fire water year. The difference is normalized by pre-fire ET and negative values denote vegetation disturbance induced by fire or by a climatological anomaly resulting in the decline in ET.",
+  "license": "CC0-1.0",
+  "is_periodic": false,
+  "time_density": null,
+  "spatial_extent": {
+    "xmin": -125.04,
+    "ymin": 31.97,
+    "xmax": -109.40,
+    "ymax": 49.28
+  },
+  "temporal_extent": {
+    "startdate": "2020-01-01T00:00:00Z",
+    "enddate": "2020-01-01T23:59:59Z"
+  },
+  "sample_files": [
+    "s3://veda-data-store-staging/EIS/COG/Fire-Hydro/lis_etsuppression_2020.cog.tiff"
+  ],
+  "discovery_items": [
+    {
+      "discovery": "s3",
+      "cogify": false,
+      "upload": false,
+      "dry_run": false,
+      "prefix": "EIS/COG/Fire-Hydro/",
+      "bucket": "veda-data-store-staging",
+      "filename_regex": "(.*)lis_etsuppression_(.*).cog.tiff$"
+    }
+  ]
+}

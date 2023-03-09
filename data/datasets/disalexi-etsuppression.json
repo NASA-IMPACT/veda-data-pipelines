@@ -1,0 +1,33 @@
+{
+    "collection": "disalexi-etsuppression",
+    "title": "Change in ET for fires using DisALEXI model",
+    "description": "Change in ET using DisALEXI model of OpenET observations for 2017-20 fires, calculated as the difference of ET in the immediate post-fire water year from ET in the immediate pre-fire water year. The difference is normalized by pre-fire ET and negative values denote vegetation disturbance induced by fire or by a climatological anomaly resulting in the decline in ET.",
+    "license": "CC0-1.0",
+    "is_periodic": true,
+    "time_density": "year",
+    "spatial_extent": {
+      "xmin": -125.35,
+      "ymin": 29.83,
+      "xmax": -108.12,
+      "ymax": 49.04
+    },
+    "temporal_extent": {
+      "startdate": "2017-10-01T00:00:00Z",
+      "enddate": "2020-10-01T00:00:00Z"
+    },
+    "sample_files": [
+      "s3://veda-data-store-staging/EIS/COG/Fire-Hydro/disalexi_etsuppression_2020.cog.tiff"
+    ],
+    "discovery_items": [
+      {
+        "discovery": "s3",
+        "cogify": false,
+        "upload": false,
+        "dry_run": false,
+        "prefix": "EIS/COG/Fire-Hydro/",
+        "bucket": "veda-data-store-staging",
+        "filename_regex": "(.*)disalexi_etsuppression_(.*).cog.tiff$",
+        "datetime_range": "year"
+      }
+    ]
+  }

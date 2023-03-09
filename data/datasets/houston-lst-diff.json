@@ -1,0 +1,33 @@
+{
+  "collection": "houston-lst-diff",
+  "title": "Houston LST (Diff)",
+  "description": "Changes in decadally averaged land surface temperature (LST, daytime) in the Houston metro area. The higher the value, the larger the increase.",
+  "license": "CC0-1.0",
+  "is_periodic": false,
+  "time_density": null,
+  "spatial_extent": {
+    "xmax": -94.00,
+    "ymax": 31.00,
+    "xmin": -97.00,
+    "ymin": 28.00
+  },
+  "temporal_extent": {
+    "startdate": "2000-01-01T00:00:00Z",
+    "enddate": "2019-12-31T23:59:59Z"
+  },
+  "sample_files": [
+    "s3://climatedashboard-data/houston/houston-lst-diff_2000_2019.tif"
+  ],
+  "discovery_items": [
+    {
+      "discovery": "s3",
+      "cogify": false,
+      "upload": true,
+      "dry_run": false,
+      "prefix": "houston",
+      "bucket": "climatedashboard-data",
+      "filename_regex": "^(.*)houston-lst-diff(.*).tif$",
+      "datetime_range": "year"
+    }
+  ]
+}
