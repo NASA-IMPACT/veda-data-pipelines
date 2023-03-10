@@ -20,7 +20,6 @@
   ],
   "discovery_items": [
     {
-      "collection": "lis-global-da-tws-trend-airflow",
       "discovery": "s3",
       "cogify": false,
       "upload": false,
