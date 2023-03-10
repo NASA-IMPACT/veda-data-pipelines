@@ -42,7 +42,7 @@ def extract_dates(
 
     # Find dates in filename
     dates = []
-    for (pattern, dateformat) in DATE_REGEX_STRATEGIES:
+    for pattern, dateformat in DATE_REGEX_STRATEGIES:
         dates_found = re.compile(pattern).findall(filename)
         if not dates_found:
             continue

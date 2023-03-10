@@ -1,0 +1,8 @@
+{
+  "collection": "CMIP245-winter-median-pr",
+  "prefix": "EIS/NEX-GDDP-CMIP6/",
+  "bucket": "veda-data-store-staging",
+  "filename_regex": "^(.*)_pr(.*)ssp245(.*).cog.tif$",
+  "discovery": "s3",
+  "upload": false
+}

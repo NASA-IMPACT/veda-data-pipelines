@@ -15,6 +15,12 @@ on:
         required: true
       external_role_arn:
         required: true
+      vector_secret_name:
+        required: true
+      vector_vpc_id:
+        required: true
+      vector_security_group:
+        required: true
 
 jobs:
   deploy:
@@ -56,3 +62,6 @@ jobs:
           STAC_INGESTOR_URL: ${{ secrets.STAC_INGESTOR_URL }}
           APP_NAME: "veda-data-pipelines"
           EXTERNAL_ROLE_ARN: ${{ secrets.EXTERNAL_ROLE_ARN }}
+          VECTOR_SECRET_NAME: ${{ secrets.VECTOR_SECRET_NAME }}
+          VECTOR_VPC_ID: ${{ secrets.VECTOR_VPC_ID }}
+          VECTOR_SECURITY_GROUP: ${{ secrets.VECTOR_SECURITY_GROUP }}

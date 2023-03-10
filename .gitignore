@@ -8,6 +8,7 @@ pyhdf*
 
 # Ignore pycache
 __pycache__
+.python-version
 
 # Ignore data files which are downloaded for local testing
 *.xml
@@ -40,3 +41,5 @@ env.sh
 
 .hypothesis
 Makefile
+
+.vscode

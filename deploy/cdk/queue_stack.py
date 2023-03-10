@@ -68,7 +68,7 @@ class QueueStack(core.Stack):
         lambda_stack.trigger_vector_lambda.add_event_source(
             lambda_event_sources.SqsEventSource(
                 self.vector_queue,
-                batch_size=1,
+                batch_size=10,
                 max_batching_window=core.Duration.seconds(20),
                 report_batch_item_failures=True,
             )

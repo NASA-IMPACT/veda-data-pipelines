@@ -14,17 +14,19 @@ def download_file(file_uri: str):
 
     bucket = url_parse.netloc
     path = url_parse.path[1:]
-    filename = url_parse.path.split('/')[-1]
+    filename = url_parse.path.split("/")[-1]
+    target_filepath = os.path.join("/tmp", filename)
 
-    s3.download_file(bucket, path, filename)
+    s3.download_file(bucket, path, target_filepath)
 
-    print(f"downloaded {filename}")
+    print(f"downloaded {target_filepath}")
 
-    return filename
+    return target_filepath
+
 
 def get_connection_string(secret: dict) -> str:
-    
     return f"PG:host={secret['host']} dbname={secret['dbname']} user={secret['username']} password={secret['password']}"
+
 
 def get_secret(secret_name: str) -> None:
     """Retrieve secrets from AWS Secrets Manager
@@ -63,34 +65,36 @@ def load_to_featuresdb(filename: str, collection: str):
 
     print(f"running ogr2ogr import for collection: {collection}")
 
-    subprocess.run([
-        "ogr2ogr", 
-        "-f", 
-        "PostgreSQL",
-        connection, 
-        "-t_srs", 
-        "EPSG:4326", 
-        filename, 
-        "-nln", 
-        collection, 
-        "-append",
-        "-update",
-        "-progress"
-        ])
+    subprocess.run(
+        [
+            "ogr2ogr",
+            "-f",
+            "PostgreSQL",
+            connection,
+            "-t_srs",
+            "EPSG:4326",
+            filename,
+            "-nln",
+            collection,
+            "-append",
+            "-update",
+            "-progress",
+        ]
+    )
 
-    
+
 def handler(event, context):
-    href = event["href"]
-    collection = event["collection"] 
+    href = event["s3_filename"]
+    collection = event["collection"]
 
-    downloaded_filename = download_file(href)
+    downloaded_filepath = download_file(href)
 
-    load_to_featuresdb(downloaded_filename, collection )
+    load_to_featuresdb(downloaded_filepath, collection)
 
 
 if __name__ == "__main__":
     sample_event = {
         "collection": "eis_fire_newfirepix_2",
-        "href": "s3://covid-eo-data/fireline/newfirepix.fgb"
+        "href": "s3://covid-eo-data/fireline/newfirepix.fgb",
     }
     handler(sample_event, {})
