@@ -27,7 +27,7 @@
       "prefix": "EIS/COG/Fire-Hydro/",
       "bucket": "veda-data-store-staging",
       "filename_regex": "(.*)lis_tvegsuppression_(.*).cog.tiff$",
-      "date_range": "year"
+      "datetime_range": "year"
     }
   ]
 }

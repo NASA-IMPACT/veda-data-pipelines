@@ -27,7 +27,7 @@
       "prefix": "EIS/COG/Fire-Hydro/",
       "bucket": "veda-data-store-staging",
       "filename_regex": "(.*)thomas_fire_barc(.*).tiff$",
-      "date_range": "month"
+      "datetime_range": "month"
     }
   ]
 }
