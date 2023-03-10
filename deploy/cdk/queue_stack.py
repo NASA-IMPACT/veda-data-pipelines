@@ -1,15 +1,16 @@
 from typing import TYPE_CHECKING
 from aws_cdk import (
-    core,
     aws_sqs as sqs,
     aws_lambda_event_sources as lambda_event_sources,
+    Duration,
+    Stack,
 )
 
 if TYPE_CHECKING:
     from .lambda_stack import LambdaStack
 
 
-class QueueStack(core.Stack):
+class QueueStack(Stack):
     def __init__(
         self,
         app,
@@ -32,7 +33,7 @@ class QueueStack(core.Stack):
             lambda_event_sources.SqsEventSource(
                 self.cogify_queue,
                 batch_size=10,
-                max_batching_window=core.Duration.seconds(20),
+                max_batching_window=Duration.seconds(20),
                 report_batch_item_failures=True,
             )
         )
@@ -51,7 +52,7 @@ class QueueStack(core.Stack):
             lambda_event_sources.SqsEventSource(
                 self.stac_ready_queue,
                 batch_size=10,
-                max_batching_window=core.Duration.seconds(30),
+                max_batching_window=Duration.seconds(30),
                 report_batch_item_failures=True,
             )
         )
@@ -63,7 +64,7 @@ class QueueStack(core.Stack):
             self,
             name,
             queue_name=name,
-            visibility_timeout=core.Duration.seconds(visibility_timeout),
+            visibility_timeout=Duration.seconds(visibility_timeout),
             dead_letter_queue=dead_letter_queue,
-            retention_period=core.Duration.days(retention_days),
+            retention_period=Duration.days(retention_days),
         )

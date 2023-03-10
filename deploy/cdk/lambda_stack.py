@@ -1,16 +1,17 @@
 from aws_cdk import (
-    core,
     aws_lambda,
-    aws_lambda_python,
+    aws_lambda_python_alpha,
     aws_iam as iam,
     aws_s3 as s3,
     aws_secretsmanager as secretsmanager,
+    Duration,
+    Stack,
 )
 
 import config
 
 
-class LambdaStack(core.Stack):
+class LambdaStack(Stack):
     def __init__(self, app, construct_id, **kwargs) -> None:
         super().__init__(app, construct_id, **kwargs)
         self.construct_id = construct_id
@@ -135,14 +136,14 @@ class LambdaStack(core.Stack):
             handler=aws_lambda.Handler.FROM_IMAGE,
             runtime=aws_lambda.Runtime.FROM_IMAGE,
             memory_size=memory_size,
-            timeout=core.Duration.seconds(timeout_seconds),
+            timeout=Duration.seconds(timeout_seconds),
             environment=env,
             reserved_concurrent_executions=reserved_concurrent_executions,
             **kwargs,
         )
 
     def _python_lambda(self, name, directory, env=None, timeout_seconds=900, **kwargs):
-        return aws_lambda_python.PythonFunction(
+        return aws_lambda_python_alpha.PythonFunction(
             self,
             name,
             function_name=name,
@@ -151,7 +152,7 @@ class LambdaStack(core.Stack):
             index="handler.py",
             handler="handler",
             environment=env,
-            timeout=core.Duration.seconds(timeout_seconds),
+            timeout=Duration.seconds(timeout_seconds),
             **kwargs,
         )
 

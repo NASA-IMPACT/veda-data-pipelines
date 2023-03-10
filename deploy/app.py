@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 
-from aws_cdk import core
+from aws_cdk import App, Environment
 
 from cdk.lambda_stack import LambdaStack
 from cdk.step_function_stack import StepFunctionStack
@@ -9,9 +9,9 @@ from cdk.queue_stack import QueueStack
 
 import config
 
-app = core.App()
+app = App()
 
-env_details = core.Environment(
+env_details = Environment(
     region=os.environ["CDK_DEFAULT_REGION"],
     account=os.environ["CDK_DEFAULT_ACCOUNT"],
 )
