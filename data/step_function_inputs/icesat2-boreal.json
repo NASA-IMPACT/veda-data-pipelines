@@ -1,9 +1,6 @@
 {
     "collection": "icesat2-boreal",
-    "prefix": "lduncanson/dps_output/run_boreal_biomass_quick_v2_ubuntu/map_boreal_2022_rh_noground_v1/2022/12/05",
-    "bucket": "maap-ops-workspace",
-    "filename_regex": "^(.*).tif$",
-    "discovery": "s3",
-    "upload": true,
-    "user_shared": true
+    "inventory_url": "s3://maap-ops-workspace/shared/lduncanson/DPS_tile_lists/2023/AGB_tindex_master.csv",
+    "discovery": "inventory",
+    "upload": true
 }
