@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 from aws_cdk import (
-    core,
+    Stack,
+    Duration,
     aws_stepfunctions as stepfunctions,
     aws_stepfunctions_tasks as tasks,
 )
@@ -11,7 +12,7 @@ if TYPE_CHECKING:
     from .lambda_stack import LambdaStack
 
 
-class StepFunctionStack(core.Stack):
+class StepFunctionStack(Stack):
     def __init__(
         self,
         app,
@@ -213,7 +214,7 @@ class StepFunctionStack(core.Stack):
 
         build_stac_item_task.add_retry(
             errors=["RasterioIOError"],
-            interval=core.Duration.seconds(2),
+            interval=Duration.seconds(2),
             max_attempts=5,
         )
 
