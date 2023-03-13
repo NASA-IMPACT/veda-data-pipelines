@@ -34,9 +34,9 @@ def handler(event, context):
         if not object.get("upload"):
             continue
 
-        if object.get('user_shared'):
-            TARGET_BUCKET = os.environ.get('USER_SHARED_BUCKET')
-            
+        if object.get("user_shared"):
+            TARGET_BUCKET = os.environ.get("USER_SHARED_BUCKET")
+
         url = urllib.parse.urlparse(object["remote_fileurl"])
         src_bucket = url.hostname
         src_key = url.path.strip("/")
@@ -70,14 +70,20 @@ def handler(event, context):
 
     return event
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sample_event = [
         {
             "collection": "icesat2-boreal",
             "remote_fileurl": "s3://maap-ops-workspace/lduncanson/dps_output/run_boreal_biomass_quick_v2_ubuntu/map_boreal_2022_rh_noground_v4/2023/02/07/17/26/40/509524/boreal_agb_202302071675790681_27635.tif",
             "upload": True,
+<<<<<<< HEAD
             "user_shared": False,
             "properties": None
+=======
+            "user_shared": True,
+            "properties": {},
+>>>>>>> main
         }
     ]
 
