@@ -21,6 +21,8 @@ on:
         required: true
       vector_security_group:
         required: true
+      oidc_role_arn:
+        required: true
 
 jobs:
   deploy:
@@ -50,8 +52,7 @@ jobs:
       - name: Configure awscli
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ secrets.OIDC_ROLE_ARN }}
           aws-region: us-west-2
 
       - name: deploy
