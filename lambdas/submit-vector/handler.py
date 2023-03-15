@@ -25,8 +25,11 @@ def download_file(file_uri: str):
     return target_filepath
 
 
-def get_connection_string(secret: dict) -> str:
-    return f"PG:host={secret['host']} dbname={secret['dbname']} user={secret['username']} password={secret['password']}"
+def get_connection_string(secret: dict, as_uri: bool = False) -> str:
+    if as_uri:
+        return f"postgresql://{secret['username']}:{secret['password']}@{secret['host']}:5432/{secret['dbname']}"
+    else:
+        return f"PG:host={secret['host']} dbname={secret['dbname']} user={secret['username']} password={secret['password']}"
 
 
 def get_secret(secret_name: str) -> None:
@@ -74,12 +77,27 @@ def load_to_featuresdb(filename: str, collection: str):
             connection,
             "-t_srs",
             "EPSG:4326",
-            filename,
+            f"eis_fire_{filename}",
             "-nln",
             collection,
-            "-append",
-            "-update",
+            "-overwrite",
             "-progress",
+        ]
+    )
+
+
+def alter_datetime_add_indexes(filename: str, collection: str):
+    secret_name = os.environ.get("VECTOR_SECRET_NAME")
+
+    con_secrets = get_secret(secret_name)
+    connection = get_connection_string(secret=con_secrets, as_uri=True)
+
+    subprocess.run(
+        [
+            "psql",
+            connection,
+            "-c",
+            f"ALTER table eis_fire_{filename} ALTER COLUMN t TYPE TIMESTAMP without time zone;CREATE INDEX IF NOT EXISTS idx_eis_fire_{filename}_datetime ON eis_fire_{filename}(t);",
         ]
     )
 
@@ -91,6 +109,8 @@ def handler(event, context):
     downloaded_filepath = download_file(href)
 
     load_to_featuresdb(downloaded_filepath, collection)
+
+    alter_datetime_add_indexes(downloaded_filepath, collection)
 
 
 if __name__ == "__main__":
