@@ -10,7 +10,6 @@ s3 = boto3.client(
 
 
 def download_file(file_uri: str):
-
     url_parse = urlparse(file_uri)
 
     bucket = url_parse.netloc

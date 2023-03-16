@@ -85,8 +85,6 @@ lambda_stack.grant_execution_privileges(
 )
 
 
-
-
 for key, value in tags.items():
     aws_cdk.Tags.of(app).add(key, value)
 

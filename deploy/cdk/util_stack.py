@@ -8,6 +8,7 @@ import json
 
 from config import Config
 
+
 class DataPipelineUtilStack(Stack):
     def __init__(
         self,
