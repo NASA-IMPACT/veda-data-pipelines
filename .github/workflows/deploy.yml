@@ -6,21 +6,9 @@ on:
         type: string
     secrets:
       aws_access_key_id:
-        required: true
+        required: false
       aws_secret_access_key:
-        required: true
-      cognito_app_secret:
-        required: true
-      stac_ingestor_url:
-        required: true
-      external_role_arn:
-        required: true
-      vector_secret_name:
-        required: true
-      vector_vpc_id:
-        required: true
-      vector_security_group:
-        required: true
+        required: false
       oidc_role_arn:
         required: true
 
@@ -44,25 +32,32 @@ jobs:
       - name: Install node and related deps
         uses: actions/setup-node@v3
         with:
-          node-version: 17.3.0
+          node-version: 16.19.1
 
       - name: Install AWS CDK
         run: npm install -g aws-cdk
 
-      - name: Configure awscli
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Configure awscli (local runner)
+        if: ${{ env.ACT }} # OIDC doesn't work when using ACT, as AWS user accounts don't have access to the OIDC role by default
+        run: |
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "AWS_DEFAULT_REGION=us-west-2" >> $GITHUB_ENV
+          echo "AWS_REGION=us-west-2" >> $GITHUB_ENV
+
+      - name: Configure awscli (non-local runner)
+        if: ${{ !env.ACT }}
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ secrets.OIDC_ROLE_ARN }}
           aws-region: us-west-2
 
+      - name: Get environment configuration from AWS Secrets Manager
+        run: |
+          aws secretsmanager get-secret-value --secret-id data-pipelines-env-secret-${{ github.event.inputs.DEPLOY_ENV }} --query SecretString --output text --region us-west-2 | jq -r "to_entries|map(\"\(.key)=\(.value|tostring)\")|.[]" >> $GITHUB_ENV
+      
       - name: deploy
         run: cd deploy && cdk deploy --all --require-approval never
         env:
-          ENV: ${{ inputs.deploy_env }}
-          COGNITO_APP_SECRET: ${{ secrets.COGNITO_APP_SECRET }}
-          STAC_INGESTOR_URL: ${{ secrets.STAC_INGESTOR_URL }}
-          APP_NAME: "veda-data-pipelines"
-          EXTERNAL_ROLE_ARN: ${{ secrets.EXTERNAL_ROLE_ARN }}
-          VECTOR_SECRET_NAME: ${{ secrets.VECTOR_SECRET_NAME }}
-          VECTOR_VPC_ID: ${{ secrets.VECTOR_VPC_ID }}
-          VECTOR_SECURITY_GROUP: ${{ secrets.VECTOR_SECURITY_GROUP }}
+          ENV: ${{ github.event.inputs.DEPLOY_ENV }} # ensure deployment to correct environment
+

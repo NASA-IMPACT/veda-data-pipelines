@@ -8,8 +8,6 @@ import json
 
 from config import Config
 
-
-
 class DataPipelineUtilStack(Stack):
     def __init__(
         self,
@@ -30,7 +28,10 @@ class DataPipelineUtilStack(Stack):
             "MCP_BUCKETS": config.MCP_BUCKETS,
             "EARTHDATA_USERNAME": config.EARTHDATA_USERNAME,
             "EARTHDATA_PASSWORD": config.EARTHDATA_PASSWORD,
-            "SECRET_NAME": config.SECRET_NAME
+            "SECRET_NAME": config.SECRET_NAME,
+            "VECTOR_VPC_ID": config.VECTOR_VPC_ID,
+            "VECTOR_SECURITY_GROUP": config.VECTOR_SECURITY_GROUP,
+            "VECTOR_SECRET_NAME": config.VECTOR_SECRET_NAME,
         }
 
         env_secret = self.build_env_secret(config.ENV, env_dict)
@@ -56,7 +57,7 @@ class DataPipelineUtilStack(Stack):
         # to deploy resources (TODO) and read a secret
         oidc_role = iam.Role(
             self,
-            f"stac-ingestor-oidc-role-{stage}",
+            f"data-pipelines-oidc-role-{stage}",
             assumed_by=iam.WebIdentityPrincipal(
                 oidc_provider.open_id_connect_provider_arn,
                 conditions={
@@ -81,8 +82,8 @@ class DataPipelineUtilStack(Stack):
 
         oidc_policy = iam.Policy(
             self,
-            f"stac-ingestor-oidc-policy-{stage}",
-            policy_name=f"stac-ingestor-oidc-policy-{stage}",
+            f"data-pipelines-oidc-policy-{stage}",
+            policy_name=f"data-pipelines-oidc-policy-{stage}",
             roles=[oidc_role],
             statements=[get_secret_statement],
         )
