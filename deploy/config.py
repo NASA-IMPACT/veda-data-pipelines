@@ -41,9 +41,18 @@ class Config(BaseSettings):
         default="XXXX"
     )
 
-    VECTOR_SECRET_NAME = os.environ["VECTOR_SECRET_NAME"]
-    VECTOR_VPC_ID = os.environ["VECTOR_VPC_ID"]
-    VECTOR_SECURITY_GROUP = os.environ["VECTOR_SECURITY_GROUP"]
+    VECTOR_SECRET_NAME: str = Field(
+        Description="Name of secret containing vector DB credentials",
+        env='VECTOR_SECRET_NAME',
+    )
+    VECTOR_VPC_ID: str = Field(
+        Description="ID of VPC for vector DB",
+        env='VECTOR_VPC_ID',
+    )
+    VECTOR_SECURITY_GROUP: str = Field(
+        Description="ID of security group for vector DB",
+        env='VECTOR_SECURITY_GROUP',
+    )
     APP_NAME: str = "veda-data-pipelines"
     VEDA_DATA_BUCKET: str = "climatedashboard-data"
     VEDA_EXTERNAL_BUCKETS = ["nasa-maap-data-store", "covid-eo-blackmarble"]

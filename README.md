@@ -47,6 +47,12 @@ STAC_INGESTOR_URL="<url-for-ingestor-api>"
 EXTERNAL_ROLE_ARN="<arn-for-external-role-permissions>"
 ```
 
+To retrieve these variables from an existing deployment, run the following command:
+
+```bash
+aws secretsmanager get-secret-value --secret-id data-pipelines-env-secret-<ENV> --query SecretString --output text | jq -r "to_entries|map(\"\(.key)=\(.value|tostring)\")|.[]"
+```
+
 **Note:** You can use the handy `env.sample.sh` script to set these variables. Just rename the file to `env.sh` and populate it with appropriate values. Then run the following commands:
 
 ```bash
