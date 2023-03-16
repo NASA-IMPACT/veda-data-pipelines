@@ -13,6 +13,7 @@ import config as cfg
 
 config = cfg.Config(_env_file=".env")
 
+
 class LambdaStack(Stack):
     def __init__(self, app, construct_id, **kwargs) -> None:
         super().__init__(app, construct_id, **kwargs)
