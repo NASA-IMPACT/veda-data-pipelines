@@ -97,6 +97,12 @@ class LambdaStack(core.Stack):
             self, "vector-conn-secret", config.VECTOR_SECRET_NAME
         )
         vector_conn_secret.grant_read(self.vector_lambda)
+        self.vector_lambda.role.add_to_policy(
+            iam.PolicyStatement(
+                resources=[config.EXTERNAL_ROLE_ARN],
+                actions=["sts:AssumeRole"],
+            )
+        )
 
         # Proxy lambda to trigger cogify step function
         self.trigger_cogify_lambda = self._python_lambda(
@@ -216,6 +222,7 @@ class LambdaStack(core.Stack):
 
         for bucket in [internal_bucket, mcp_bucket, *external_buckets]:
             bucket.grant_read(self.s3_discovery_lambda.role)
+            bucket.grant_read(self.vector_lambda.role)
             bucket.grant_read(self.build_stac_lambda.role)
             bucket.grant_read(self.data_transfer_lambda.role)
 

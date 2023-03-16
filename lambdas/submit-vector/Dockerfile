@@ -1,4 +1,4 @@
-FROM ghcr.io/lambgeo/lambda-gdal:3.5-python3.9
+FROM --platform=linux/amd64 ghcr.io/lambgeo/lambda-gdal:3.5-python3.9
 
 WORKDIR /app
 

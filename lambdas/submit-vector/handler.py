@@ -1,15 +1,23 @@
 import boto3
+import requests
 import os
 import subprocess
 import json
 from urllib.parse import urlparse
 
-s3 = boto3.client(
-    "s3",
-)
-
 
 def download_file(file_uri: str):
+    sts = boto3.client("sts")
+    response = sts.assume_role(
+        RoleArn="arn:aws:iam::114506680961:role/veda-data-store-read-staging",
+        RoleSessionName="sts-assume-114506680961",
+    )
+    new_session = boto3.Session(
+        aws_access_key_id=response["Credentials"]["AccessKeyId"],
+        aws_secret_access_key=response["Credentials"]["SecretAccessKey"],
+        aws_session_token=response["Credentials"]["SessionToken"],
+    )
+    s3 = new_session.client("s3")
 
     url_parse = urlparse(file_uri)
 
@@ -22,6 +30,7 @@ def download_file(file_uri: str):
 
     print(f"downloaded {target_filepath}")
 
+    sts.close()
     return target_filepath
 
 
@@ -44,7 +53,7 @@ def get_secret(secret_name: str) -> None:
     """
 
     # Create a Secrets Manager client
-    session = boto3.session.Session(region_name="us-west-2")
+    session = boto3.session.Session(region_name="us-west-1")
     client = session.client(service_name="secretsmanager")
 
     # In this sample we only handle the specific exceptions for the 'GetSecretValue' API.
@@ -77,9 +86,9 @@ def load_to_featuresdb(filename: str, collection: str):
             connection,
             "-t_srs",
             "EPSG:4326",
-            f"eis_fire_{filename}",
+            filename,
             "-nln",
-            collection,
+            f"eis_fire_{collection}",
             "-overwrite",
             "-progress",
         ]
@@ -97,7 +106,7 @@ def alter_datetime_add_indexes(filename: str, collection: str):
             "psql",
             connection,
             "-c",
-            f"ALTER table eis_fire_{filename} ALTER COLUMN t TYPE TIMESTAMP without time zone;CREATE INDEX IF NOT EXISTS idx_eis_fire_{filename}_datetime ON eis_fire_{filename}(t);",
+            f"ALTER table eis_fire_{collection} ALTER COLUMN t TYPE TIMESTAMP without time zone;CREATE INDEX IF NOT EXISTS idx_eis_fire_{collection}_datetime ON eis_fire_{collection}(t);",
         ]
     )
 
@@ -108,9 +117,15 @@ def handler(event, context):
 
     downloaded_filepath = download_file(href)
 
+    print(f"[ DOWNLOAD FILEPATH ]: {downloaded_filepath}")
+    print(f"[ COLLECTION ]: {collection}")
     load_to_featuresdb(downloaded_filepath, collection)
-
     alter_datetime_add_indexes(downloaded_filepath, collection)
+
+    # this is annoying, tipg needs to refresh the catalog after an `overwrite`
+    resp = requests.get(url="https://firenrt.delta-backend.com/refresh")
+    print(f"[ REFRESH STATUS CODE ]: {resp.status_code}")
+    print(f"[ REFRESH JSON ]: {resp.json()}")
 
 
 if __name__ == "__main__":
