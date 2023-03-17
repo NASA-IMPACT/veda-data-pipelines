@@ -15,9 +15,15 @@ on:
         required: true
       external_role_arn:
         required: true
+      vector_secret_name:
+        required: true
+      vector_vpc_id:
+        required: true
+      vector_security_group:
+        required: true
 
 jobs:
-  deploy_oidc:
+  deploy:
     runs-on: ubuntu-latest
     environment: ${{ inputs.deploy_env }}
     steps:
