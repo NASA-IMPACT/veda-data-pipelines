@@ -1,5 +1,5 @@
 {
-    "id": "landsat-c2l2-sr-selection-pine-island",
+    "id": "landsat-c2l2-sr-antarctic-glaciers-pine-island",
     "type": "Collection",
     "links": [],
     "title": "Selected Landsat Surface Reflectance Scenes for Pine Island Glacier",
@@ -7,9 +7,9 @@
         "spatial": {
             "bbox": [
                 [
-                    "-112.228",
+                    "-106.047",
                     "-75.855",
-                    "-103.229",
+                    "-97.049",
                     "-73.551"
                 ]
             ]
@@ -18,7 +18,7 @@
             "interval": [
                 [
                     "2001-01-04",
-                    "2023-01-29"
+                    "2023-02-02"
                 ]
             ]
         }
