@@ -13,7 +13,7 @@ on:
         required: true
 
 jobs:
-  deploy:
+  deploy_oidc:
     runs-on: ubuntu-latest
     environment: ${{ inputs.deploy_env }}
     steps:
