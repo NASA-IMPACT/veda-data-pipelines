@@ -78,21 +78,40 @@ def load_to_featuresdb(filename: str, collection: str):
 
     print(f"running ogr2ogr import for collection: {collection}")
 
-    subprocess.run(
-        [
-            "ogr2ogr",
-            "-f",
-            "PostgreSQL",
-            connection,
-            "-t_srs",
-            "EPSG:4326",
-            filename,
-            "-nln",
-            f"eis_fire_{collection}",
-            "-overwrite",
-            "-progress",
-        ]
-    )
+    if collection in ["fireline", "newfirepix"]:
+        subprocess.run(
+            [
+                "ogr2ogr",
+                "-f",
+                "PostgreSQL",
+                connection,
+                "-t_srs",
+                "EPSG:4326",
+                filename,
+                "-nln",
+                f"eis_fire_{collection}",
+                "-overwrite",
+                "-progress",
+            ]
+        )
+    elif collection == "perimeter":
+        subprocess.run(
+            [
+                "ogr2ogr",
+                "-f",
+                "PostgreSQL",
+                connection,
+                "-t_srs",
+                "EPSG:4326",
+                filename,
+                "-nln",
+                f"eis_fire_{collection}",
+                "-overwrite",
+                "-sql",
+                "SELECT n_pixels, n_newpixels, farea, fperim, flinelen, duration, pixden, meanFRP, isactive, t_ed as t, fireID from perimeter",
+                "-progress",
+            ]
+        )
 
 
 def alter_datetime_add_indexes(filename: str, collection: str):
