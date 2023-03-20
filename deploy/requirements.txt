@@ -4,3 +4,4 @@ aws-cdk.asset-node-proxy-agent-v5==2.0.83
 aws-cdk.aws-lambda-python-alpha==2.68.0a0
 aws-cdk-lib==2.68.0
 awscli==1.27.91
+pydantic==1.9.2
