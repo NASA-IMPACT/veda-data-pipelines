@@ -1,0 +1,25 @@
+{
+    "id": "s1-rtc-seasonal-composite",
+    "stac_version": "1.0.0",
+    "license": "not-provided",
+    "title": "Sentinel 1 RTC seasonal mosaic",
+    "type": "Collection",
+    "description": "Sentinel 1 RTC seasonal mosaic. The Sentinel-1 mission is a constellation of two polar-orbiting satellites, operating day and night performing C-band synthetic aperture radar imaging.",
+    "extent": {
+      "spatial": {
+        "bbox": [
+          [
+              -180, 50, 180, 77
+          ]
+      ]
+      },
+      "temporal": {
+        "interval": [
+          [
+            "2014-01-01T00:00:00.000Z",
+            "2023-01-01T00:00:00.000Z"
+          ]
+        ]
+      }
+    }
+}
