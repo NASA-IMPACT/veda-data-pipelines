@@ -8,8 +8,8 @@
          "href": "https://firenrt.delta-backend.com/collections/public.eis_fire_fireline"
       }
    ],
-   "title":"",
-   "description": "",
+   "title":"Active Fire Line",
+   "description": "Active fire line as estimated by new VIIRS detections.",
    "extent":{
       "spatial": {
          "bbox": [
