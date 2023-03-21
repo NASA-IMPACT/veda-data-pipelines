@@ -1,11 +1,11 @@
 {
-   "id": "eis_fire_fireline",
+   "id": "eis_fire_perimeter",
    "type": "Collection",
    "links":[
       {
          "rel": "child",
          "type": "application/json",
-         "href": "https://firenrt.delta-backend.com/collections/public.eis_fire_fireline"
+         "href": "https://firenrt.delta-backend.com/collections/public.eis_fire_perimeter"
       }
    ],
    "title":"",
