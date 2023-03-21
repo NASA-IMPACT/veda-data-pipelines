@@ -26,7 +26,7 @@
         "dry_run": false,
         "prefix": "EIS/COG/LIS_GLOBAL_DA/DA_Trends/",
         "bucket": "veda-data-store-staging",
-        "filename_regex": "(.*)DAGPP_STL_based_trendv2_2003_2021.cog.tif$",
+        "filename_regex": "(.*)DAGPP_STL_based_trend_v3_2003_2021.cog.tif$",
         "datetime_range": "year"
       }
     ],
