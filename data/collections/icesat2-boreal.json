@@ -2,12 +2,12 @@
     "id": "icesat2-boreal",
     "type": "Collection",
     "links": [],
-    "title": "2019-2021 Gridded 30m Boreal Aboveground Biomass using ICESat-2 and Harmonized Landsat Sentinel",
+    "title": "Gridded Boreal Aboveground Biomass Density c.2020 at 30m resolution",
     "extent": {
         "spatial": {
             "bbox": [
                 [
-                    -180, 45, 180, 70
+                    -180, 51.6, 180, 78
                 ]
             ]
         },
@@ -15,13 +15,14 @@
             "interval": [
               [
                 "2019-01-01T00:00:00.000Z",
-                "2022-01-01T00:00:00.000Z"
+                "2021-01-01T00:00:00.000Z"
               ]
             ]
           }        
     },
-    "license": "MIT",
-    "description": "2019-2021 Gridded 30m Boreal Aboveground Biomass using ICESat-2 and Harmonized Landsat Sentinel",
+    "license": "CC-BY",
+    "dashboard:is_periodic": true,
+    "description": "Aboveground biomass density c.2020 gridded to 30m derived from ICESat-2, Harmonized Landsat-Sentinel2 and Copernicus DEM. Band 1 is the data band. Band 2 is the standard deviation.",
     "item_assets": {
         "cog_default": {
             "type": "image/tiff; application=geotiff; profile=cloud-optimized",
@@ -39,7 +40,7 @@
             ],
             "title": "Find and open data with STAC",
             "description": "Find and open data with STAC",
-            "href": "https://docs.maap-project.org/en/stac/tutorials/stac-icesat2-boreal-example.html"
+            "href": "https://docs.maap-project.org/en/stac/search/searching_the_stac_catalog.html"
         }        
     },
     "stac_version": "1.0.0"
