@@ -1,6 +1,6 @@
 import re
 from typing import Callable, Dict, Tuple, Union
-from datetime import datetime
+from datetime import datetime, timezone
 from dateutil.relativedelta import relativedelta
 
 from . import events
@@ -42,13 +42,15 @@ def extract_dates(
 
     # Find dates in filename
     dates = []
-    for (pattern, dateformat) in DATE_REGEX_STRATEGIES:
+    for pattern, dateformat in DATE_REGEX_STRATEGIES:
         dates_found = re.compile(pattern).findall(filename)
         if not dates_found:
             continue
 
         for date_str in dates_found:
-            dates.append(datetime.strptime(date_str, dateformat))
+            date = datetime.strptime(date_str, dateformat)
+            date_tz = date.replace(tzinfo=timezone.utc)
+            dates.append(date_tz)
 
         break
 

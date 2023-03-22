@@ -35,7 +35,6 @@ This project uses AWS CDK to deploy AWS resources to the cloud.
 
 ```bash
 ENV="<dev/staging/prod>"
-SECRET_NAME="<secret-name-for-database>"
 COGNITO_APP_SECRET="<secret-name-for-pgstac-access>"
 APP_NAME="veda-data-pipelines"
 STAC_INGESTOR_API_URL="<url-for-ingestor-api>"

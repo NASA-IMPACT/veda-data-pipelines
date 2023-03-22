@@ -1,0 +1,43 @@
+{
+    "id": "CMIP245-winter-median-pr",
+    "type": "Collection",
+    "links":[],
+    "title":"Projected changes to winter (January, February, and March) cumulative daily precipitation",
+    "extent":{
+        "spatial":{
+            "bbox":[
+                [
+                    -127,
+                    29,
+                    -103,
+                    52
+                ]
+            ]
+        },
+        "temporal":{
+            "interval":[
+                [
+                    "1995-01-01T00:00:00Z",
+                    "2095-03-31T00:00:00Z"
+                ]
+            ]
+        }
+    },
+    "license":"MIT",
+    "description": "Differences in winter (January, February, and March) cumulative daily precipitation between a historical period (1995 - 2014) and multiple 20-year periods from an ensemble of CMIP6 climate projections (SSP2-4.5) downscaled by NASA Earth Exchange (NEX-GDDP-CMIP6)",
+    "stac_version": "1.0.0",
+    "dashboard:is_periodic": false,
+    "dashboard:time_density": null,
+    "item_assets": {
+        "cog_default": {
+            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+            "roles": [
+                "data",
+                "layer"
+            ],
+            "title": "Default COG Layer",
+            "description": "Cloud optimized default layer to display on map"
+        }
+    }
+}
+
