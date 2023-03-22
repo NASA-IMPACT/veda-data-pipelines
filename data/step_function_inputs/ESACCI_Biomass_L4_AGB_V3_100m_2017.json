@@ -1,0 +1,12 @@
+{
+    "queue_messages": "true",
+    "collection": "ESACCI_Biomass_L4_AGB_V3_100m_2017",
+    "version": "1",
+    "discovery": "cmr",
+    "mode": "cmr",
+    "asset_name": "data",
+    "asset_roles": ["data"],
+    "cmr_api_url": "https://cmr.maap-project.org",
+    "asset_media_type": "image/tiff",
+    "link_rel": "http://esipfed.org/ns/fedsearch/1.1/data#"
+}
