@@ -32,6 +32,17 @@
          "trs": "http://www.opengis.net/def/uom/ISO-8601/0/Gregorian"
       }
    },
+   "item_assets": {
+      "cog_default": {
+          "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+          "roles": [
+              "data",
+              "layer"
+          ],
+          "title": "Default COG Layer",
+          "description": "Cloud optimized default layer to display on map"
+      }
+  },
    "license":"public-domain",
    "stac_version": "1.0.0",
    "dashboard:is_periodic": true,
