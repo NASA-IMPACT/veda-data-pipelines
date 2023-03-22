@@ -25,7 +25,7 @@ else
         stacIngestorUrl=$devStacIngestorUrl
     fi
 
-    export DATA_MANAGEMENT_ROLE_ARN="arn:aws:iam::xxxxxx:role/xxxxx"
+    export EXTERNAL_ROLE_ARN="arn:aws:iam::xxxxxx:role/xxxxx"
     export EARTHDATA_USERNAME=XXXX
     export EARTHDATA_PASSWORD=XXXX
 
@@ -33,11 +33,7 @@ else
     export ENV=$1
     export APP_NAME="veda-data-pipelines"
 
-    export VPC_ID=$vpcId
-    export SECURITY_GROUP_ID=$sgId
-    export SECRET_NAME=$pgSecret
-
-    export STAC_INGESTOR_API_URL=$stacIngestorUrl
+        export STAC_INGESTOR_URL=$stacIngestorUrl
 
     echo "$1 environment set"
 fi
