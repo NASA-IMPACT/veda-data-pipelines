@@ -2,6 +2,8 @@ on:
   workflow_call:
     inputs:
       deploy_env:
+        description: 'Deploy environment'
+        default: 'dev'
         required: true
         type: string
     secrets:
@@ -15,10 +17,24 @@ on:
 jobs:
   deploy_oidc:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     environment: ${{ inputs.deploy_env }}
     steps:
+      # echo ${{ github.events.inputs.deploy_env }}, fail if not populated
+      - name: Echo deploy_env for testing
+        run: echo ${{ inputs.deploy_env }}
+
       - name: Check out repo
         uses: actions/checkout@v3
+      
+      - name: Configure awscli (non-local runner)
+        if: ${{ !env.ACT }}
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::853558080719:role/veda-data-pipelines-dev-u-datapipelinesoidcroledev-RQ3C9BJO2C0E
+          aws-region: us-west-2
 
       - name: Set up Python, caching dependencies
         uses: actions/setup-python@v4
@@ -45,19 +61,10 @@ jobs:
           echo "AWS_DEFAULT_REGION=us-west-2" >> $GITHUB_ENV
           echo "AWS_REGION=us-west-2" >> $GITHUB_ENV
 
-      - name: Configure awscli (non-local runner)
-        if: ${{ !env.ACT }}
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ secrets.OIDC_ROLE_ARN }}
-          aws-region: us-west-2
-
-      - name: Get environment configuration from AWS Secrets Manager
+      - name: Deploy CDK
         run: |
-          aws secretsmanager get-secret-value --secret-id data-pipelines-env-secret-${{ github.event.inputs.DEPLOY_ENV }} --query SecretString --output text --region us-west-2 | jq -r "to_entries|map(\"\(.key)=\(.value|tostring)\")|.[]" >> $GITHUB_ENV
-      
-      - name: deploy
-        run: cd deploy && cdk deploy --all --require-approval never
+          aws secretsmanager get-secret-value --secret-id data-pipelines-env-secret-${{ inputs.deploy_env }} --query SecretString --output text --region us-west-2 | jq -r "to_entries|map(\"\(.key)=\(.value|tostring)\")|.[]" >> deploy/.env
+          cd deploy && cdk deploy --all --require-approval never
         env:
-          ENV: ${{ github.event.inputs.DEPLOY_ENV }} # ensure deployment to correct environment
+          ENV: ${{ inputs.deploy_env }} # ensure deployment to correct environment
 
