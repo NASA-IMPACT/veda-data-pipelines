@@ -81,12 +81,20 @@ class DataPipelineUtilStack(Stack):
             resources=[secret_arn],
         )
 
+        # NOTE - this can be refined later using cloudtrail to limit access to specific actions
+        # enables cdk deployment from github action
+        deploy_statement = iam.PolicyStatement(
+            effect=iam.Effect.ALLOW,
+            actions=["sts:AssumeRole"],
+            resources=["arn:aws:iam::*:role/cdk-*"],
+        )
+
         oidc_policy = iam.Policy(
             self,
             f"data-pipelines-oidc-policy-{stage}",
             policy_name=f"data-pipelines-oidc-policy-{stage}",
             roles=[oidc_role],
-            statements=[get_secret_statement],
+            statements=[get_secret_statement, deploy_statement],
         )
         return oidc_role, oidc_policy, oidc_provider
 
