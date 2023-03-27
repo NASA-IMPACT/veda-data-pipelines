@@ -28,7 +28,7 @@ jobs:
         if: ${{ !env.ACT }}
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::853558080719:role/veda-data-pipelines-dev-u-datapipelinesoidcroledev-RQ3C9BJO2C0E
+          role-to-assume: ${{ secrets.oidc_role_arn }}
           aws-region: us-west-2
 
       - name: Set up Python, caching dependencies
