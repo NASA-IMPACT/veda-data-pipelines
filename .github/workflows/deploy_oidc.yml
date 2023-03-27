@@ -21,8 +21,17 @@ jobs:
       id-token: write
       contents: read
     environment: ${{ inputs.deploy_env }}
+    steps:
       - name: Check out repo
         uses: actions/checkout@v3
+
+      - name: Configure awscli (local runner)
+        if: ${{ env.ACT }} # OIDC doesn't work when using ACT, as AWS user accounts don't have access to the OIDC role by default
+        run: |
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "AWS_DEFAULT_REGION=us-west-2" >> $GITHUB_ENV
+          echo "AWS_REGION=us-west-2" >> $GITHUB_ENV
       
       - name: Configure awscli (non-local runner)
         if: ${{ !env.ACT }}
@@ -48,18 +57,9 @@ jobs:
       - name: Install AWS CDK
         run: npm install -g aws-cdk
 
-      - name: Configure awscli (local runner)
-        if: ${{ env.ACT }} # OIDC doesn't work when using ACT, as AWS user accounts don't have access to the OIDC role by default
-        run: |
-          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
-          echo "AWS_DEFAULT_REGION=us-west-2" >> $GITHUB_ENV
-          echo "AWS_REGION=us-west-2" >> $GITHUB_ENV
-
       - name: Deploy CDK
         run: |
           aws secretsmanager get-secret-value --secret-id data-pipelines-env-secret-${{ inputs.deploy_env }} --query SecretString --output text --region us-west-2 | jq -r "to_entries|map(\"\(.key)=\(.value|tostring)\")|.[]" >> deploy/.env
           cd deploy && cdk deploy --all --require-approval never
         env:
           ENV: ${{ inputs.deploy_env }} # ensure deployment to correct environment
-

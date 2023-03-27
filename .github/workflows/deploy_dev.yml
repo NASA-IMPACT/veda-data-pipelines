@@ -1,6 +1,6 @@
 on:
   push:
-    branches: [develop, ci/oidc-test]
+    branches: [develop]
 
 jobs:
   deploy:
