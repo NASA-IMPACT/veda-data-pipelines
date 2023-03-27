@@ -21,11 +21,6 @@ jobs:
       id-token: write
       contents: read
     environment: ${{ inputs.deploy_env }}
-    steps:
-      # echo ${{ github.events.inputs.deploy_env }}, fail if not populated
-      - name: Echo deploy_env for testing
-        run: echo ${{ inputs.deploy_env }}
-
       - name: Check out repo
         uses: actions/checkout@v3
       
