@@ -1,0 +1,7 @@
+{
+    "collection": "s1-rtc-seasonal-composite",
+    "discovery": "inventory",
+    "inventory_url": "s3://maap-ops-workspace/shared/nathanmthomas/sentinel1_seasonal_comps/inventory.csv",
+    "cogify": false,
+    "upload": false
+}
