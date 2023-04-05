@@ -46,7 +46,7 @@ def create_item(
                 or "image/tiff; application=geotiff; profile=cloud-optimized"
             ),
             geom_densify_pts=10,
-            geom_precision=5
+            geom_precision=5,
         )
 
     rasterio_kwargs = {}
