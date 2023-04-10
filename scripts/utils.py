@@ -10,28 +10,28 @@ import boto3
 DATA_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "data")
 
 
-sts = boto3.client("sts")
-ACCOUNT_ID = sts.get_caller_identity().get("Account")
-REGION = os.environ.get("AWS_REGION", "us-west-2")
-APP_NAME = os.environ.get("APP_NAME")
-ENV = os.environ.get("ENV", "dev")
+def data_files(data, data_path):
+    files = []
+    for item in data:
+        files.extend(glob.glob(os.path.join(data_path, f"{item}*.json")))
+    return files
 
-SUBMIT_STAC_FUNCTION_NAME = f"{APP_NAME}-{ENV}-lambda-submit-stac-fn"
-INGESTION_STEP_MACHINE_ARN = f"arn:aws:states:{REGION}:{ACCOUNT_ID}:stateMachine:{APP_NAME}-{ENV}-stepfunction-discover"
-DISCOVERY_TRIGGER_ARN = f"arn:aws:lambda:{REGION}:{ACCOUNT_ID}:function:{APP_NAME}-{ENV}-lambda-trigger-discover-fn"
+
+def get_items(query):
+    items_path = os.path.join(DATA_PATH, "step_function_inputs")
+    return data_files(query, items_path)
+
+
+def get_collections(query):
+    collections_path = os.path.join(DATA_PATH, "collections")
+    return data_files(query, collections_path)
+
 
 def arguments():
     if len(argv) <= 1:
         print("No collection provided")
         return
     return argv[1:]
-
-
-def data_files(data, data_path):
-    files = []
-    for item in data:
-        files.extend(glob.glob(os.path.join(data_path, f"{item}*.json")))
-    return files
 
 
 def args_handler(func):
@@ -45,11 +45,9 @@ def args_handler(func):
 
 def get_secret(secret_name: str) -> None:
     """Retrieve secrets from AWS Secrets Manager
-
     Args:
         secret_name (str): name of aws secrets manager secret containing database connection secrets
         profile_name (str, optional): optional name of aws profile for use in debugger only
-
     Returns:
         secrets (dict): decrypted secrets in dict
     """
@@ -70,3 +68,12 @@ def get_secret(secret_name: str) -> None:
         return json.loads(get_secret_value_response["SecretString"])
     else:
         return json.loads(base64.b64decode(get_secret_value_response["SecretBinary"]))
+
+
+def get_sf_ingestion_arn():
+    sts = boto3.client("sts")
+    ACCOUNT_ID = sts.get_caller_identity().get("Account")
+    REGION = os.environ.get("AWS_REGION", "us-west-2")
+    APP_NAME = os.environ.get("APP_NAME")
+    ENV = os.environ.get("ENV", "dev")
+    return f"arn:aws:states:{REGION}:{ACCOUNT_ID}:stateMachine:{APP_NAME}-{ENV}-stepfunction-discover"

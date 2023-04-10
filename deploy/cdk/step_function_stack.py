@@ -88,7 +88,6 @@ class StepFunctionStack(core.Stack):
             max_attempts=5,
         )
 
-
         inventory_task = self._lambda_task(
             "Inventory Task",
             lambda_stack.inventory_lambda,
@@ -155,7 +154,7 @@ class StepFunctionStack(core.Stack):
             .when(
                 stepfunctions.Condition.string_equals("$.discovery", "inventory"),
                 inventory_task.next(maybe_cogify),
-            )            
+            )
             .otherwise(stepfunctions.Fail(self, "Discovery Type not supported"))
         )
 
@@ -206,7 +205,6 @@ class StepFunctionStack(core.Stack):
         self,
         lambda_stack: "LambdaStack",
     ) -> stepfunctions.StateMachine:
-
         transfer_task = self._lambda_task(
             "Data Transfer Task",
             lambda_stack.data_transfer_lambda,

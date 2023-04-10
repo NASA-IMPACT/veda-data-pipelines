@@ -44,7 +44,7 @@ def handler(event, context):
 
         target_key = f"{object.get('collection')}/{filename}"
         # The file-staging directory is the default for MAAP's bucket
-        directory = object.get('directory', 'file-staging')
+        directory = object.get("directory", "file-staging")
         if directory:
             target_key = f"{directory}/{target_key}"
         target_url = f"s3://{TARGET_BUCKET}/{target_key}"
@@ -78,7 +78,7 @@ if __name__ == "__main__":
             "remote_fileurl": "s3://maap-ops-workspace/lduncanson/dps_output/run_boreal_biomass_quick_v2_ubuntu/map_boreal_2022_rh_noground_v4/2023/02/07/17/26/40/509524/boreal_agb_202302071675790681_27635.tif",
             "upload": True,
             "user_shared": False,
-            "properties": None
+            "properties": None,
         }
     ]
 

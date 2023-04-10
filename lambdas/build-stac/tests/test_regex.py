@@ -143,7 +143,7 @@ def test_date_extraction(test_input, expected):
             events.BaseEvent.parse_obj(
                 {
                     "collection": "NO2",
-                    "s3_filename": "s3://OMNO2d_HRM/OMI_trno20.10x0.10_201601_Col3_V4.nc.tif",
+                    "remote_fileurl": "s3://OMNO2d_HRM/OMI_trno20.10x0.10_201601_Col3_V4.nc.tif",
                     "id_regex": r"s3://([^/]*)/(.+).tif$",
                 }
             ),
@@ -153,7 +153,7 @@ def test_date_extraction(test_input, expected):
             events.BaseEvent.parse_obj(
                 {
                     "collection": "NO2",
-                    "s3_filename": "s3://OMNO2d_HRMDifference/OMI_trno20.10x0.10_201601_Col3_V4.nc.tif",
+                    "remote_fileurl": "s3://OMNO2d_HRMDifference/OMI_trno20.10x0.10_201601_Col3_V4.nc.tif",
                     "id_regex": r"s3://([^/]*)/(.+).tif$",
                 }
             ),

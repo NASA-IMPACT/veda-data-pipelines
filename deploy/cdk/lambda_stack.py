@@ -73,12 +73,13 @@ class LambdaStack(core.Stack):
 
         # Discovers files from cmr
         self.inventory_lambda = self._lambda(
-            f"{construct_id}-inventory-fn", "../lambdas/inventory",
+            f"{construct_id}-inventory-fn",
+            "../lambdas/inventory",
             role=external_role,
             env={
                 "BUCKET": config.MCP_BUCKETS.get(config.ENV, ""),
                 "DATA_MANAGEMENT_ROLE_ARN": config.DATA_MANAGEMENT_ROLE_ARN,
-            }
+            },
         )
 
         # Cogify files

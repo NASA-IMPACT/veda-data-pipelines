@@ -6,6 +6,7 @@ import boto3
 from csv import DictReader
 from urllib.parse import urlparse
 
+
 def assume_role(role_arn, session_name):
     sts = boto3.client("sts")
     creds = sts.assume_role(
@@ -13,10 +14,11 @@ def assume_role(role_arn, session_name):
         RoleSessionName=session_name,
     )
     return creds["Credentials"]
- 
+
+
 def handler(event, context):
     inventory_url = event.get("inventory_url")
-    file_url_key = event.get('file_url_key', 's3_path')
+    file_url_key = event.get("file_url_key", "s3_path")
     parsed_url = urlparse(inventory_url, allow_fragments=False)
     bucket = parsed_url.netloc
     inventory_filename = parsed_url.path.strip("/")
@@ -34,7 +36,7 @@ def handler(event, context):
             "aws_access_key_id": creds["AccessKeyId"],
             "aws_secret_access_key": creds["SecretAccessKey"],
             "aws_session_token": creds["SessionToken"],
-        }    
+        }
     s3client = boto3.client("s3", **kwargs)
     start_after = event.pop("start_after", 0)
 
@@ -42,11 +44,13 @@ def handler(event, context):
     payload = {**event, "cogify": cogify, "objects": []}
 
     local_filename = f"/tmp/{inventory_filename.split('/')[-1]}"
-    s3client.download_file(Bucket=bucket, Key=inventory_filename, Filename=local_filename)
-    with open(local_filename, 'r') as f:
-         dict_reader = DictReader(f)
-         list_of_dict = list(dict_reader)
-         for file_dict in list_of_dict[start_after:]:
+    s3client.download_file(
+        Bucket=bucket, Key=inventory_filename, Filename=local_filename
+    )
+    with open(local_filename, "r") as f:
+        dict_reader = DictReader(f)
+        list_of_dict = list(dict_reader)
+        for file_dict in list_of_dict[start_after:]:
             filename = file_dict[file_url_key]
             if filename_regex and not re.match(filename_regex, filename):
                 continue
@@ -58,7 +62,7 @@ def handler(event, context):
                 "remote_fileurl": f"{filename}",
                 "upload": event.get("upload", False),
                 "user_shared": event.get("user_shared", False),
-                "properties": event.get('properties', None)
+                "properties": event.get("properties", None),
             }
             payload["objects"].append(file_obj)
             file_obj_size = len(json.dumps(file_obj, ensure_ascii=False).encode("utf8"))
@@ -75,7 +79,7 @@ if __name__ == "__main__":
         "inventory_url": "s3://maap-data-store-test/AGB_tindex_master.csv",
         "discovery": "inventory",
         "file_url_key": "s3_path",
-        "upload": True
+        "upload": True,
     }
 
     handler(sample_event, {})

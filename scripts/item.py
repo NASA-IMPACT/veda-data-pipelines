@@ -1,11 +1,8 @@
-import os
 import json
 import boto3
 
-from .utils import args_handler, data_files, DATA_PATH, DISCOVERY_TRIGGER_ARN
-
-items_path = os.path.join(DATA_PATH, "step_function_inputs")
-sf_client = boto3.client("stepfunctions")
+from dotenv import load_dotenv
+from .utils import args_handler, get_items, get_sf_ingestion_arn
 
 
 def insert_items(files):
@@ -15,20 +12,20 @@ def insert_items(files):
         events = json.load(open(filename))
         if type(events) != list:
             events = [events]
-        for event in events:
-            lambda_client = boto3.client("lambda")
-            response = lambda_client.invoke(
-                FunctionName=DISCOVERY_TRIGGER_ARN,
-                InvocationType="Event",
-                Payload=json.dumps(event),
-            )
 
+        sf_client = boto3.client("stepfunctions")
+        sf_arn = get_sf_ingestion_arn()
+        for event in events:
+            response = sf_client.start_execution(
+                stateMachineArn=sf_arn, input=json.dumps(event)
+            )
             print(response)
 
 
 @args_handler
 def insert(items):
-    files = data_files(items, items_path)
+    load_dotenv()
+    files = get_items(items)
     insert_items(files)
 
 
