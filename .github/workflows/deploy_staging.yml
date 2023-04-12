@@ -1,16 +1,16 @@
-on:
-  push:
-    branches: [main]
+# on:
+#   push:
+#     branches: [main]
 
-jobs:
-  deploy:
-    name: Deploy to staging environment
-    uses: ./.github/workflows/deploy.yml
-    with:
-      deploy_env: staging
-    secrets:
-      cognito_app_secret: ${{ secrets.cognito_app_secret }}
-      aws_access_key_id: ${{ secrets.aws_access_key_id }}
-      aws_secret_access_key: ${{ secrets.aws_secret_access_key }}
-      stac_ingestor_api_url: ${{ secrets.stac_ingestor_api_url }}
-      data_management_role_arn: ${{ secrets.data_management_role_arn }}
+# jobs:
+#   deploy:
+#     name: Deploy to staging environment
+#     uses: ./.github/workflows/deploy.yml
+#     with:
+#       deploy_env: staging
+#     secrets:
+#       cognito_app_secret: ${{ secrets.cognito_app_secret }}
+#       aws_access_key_id: ${{ secrets.aws_access_key_id }}
+#       aws_secret_access_key: ${{ secrets.aws_secret_access_key }}
+#       stac_ingestor_api_url: ${{ secrets.stac_ingestor_api_url }}
+#       data_management_role_arn: ${{ secrets.data_management_role_arn }}
