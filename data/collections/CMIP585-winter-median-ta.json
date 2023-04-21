@@ -15,7 +15,7 @@
   "description": "Differences in winter (January, February, and March) average daily air temperature between a historical period (1995 - 2014) and multiple 20-year periods from an ensemble of CMIP6 climate projections (SSP5-8.5) downscaled by NASA Earth Exchange (NEX-GDDP-CMIP6)",
   "stac_version": "1.0.0",
   "dashboard:is_periodic": false,
-  "dashboard:time_density": null,
+  "dashboard:time_density": "year",
   "item_assets": {
     "cog_default": {
       "type": "image/tiff; application=geotiff; profile=cloud-optimized",

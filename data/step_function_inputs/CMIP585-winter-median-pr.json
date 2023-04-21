@@ -1,8 +1,42 @@
-{
-  "collection": "CMIP585-winter-median-pr",
-  "prefix": "EIS/NEX-GDDP-CMIP6/",
-  "bucket": "veda-data-store-staging",
-  "filename_regex": "^(.*)_pr(.*)ssp585(.*).cog.tif$",
-  "discovery": "s3",
-  "upload": false
-}
+[
+  {
+    "collection": "CMIP585-winter-median-pr",
+    "prefix": "EIS/NEX-GDDP-CMIP6/",
+    "bucket": "veda-data-store-staging",
+    "filename_regex": "^(.*)_pr(.*)ssp585_2025(.*).cog.tif$",
+    "discovery": "s3",
+    "upload": false,
+    "start_datetime": "2025-01-01T00:00:00Z",
+    "end_datetime": "2025-03-31T12:00:00Z"
+  },
+  {
+    "collection": "CMIP585-winter-median-pr",
+    "prefix": "EIS/NEX-GDDP-CMIP6/",
+    "bucket": "veda-data-store-staging",
+    "filename_regex": "^(.*)_pr(.*)ssp585_2045(.*).cog.tif$",
+    "discovery": "s3",
+    "upload": false,
+    "start_datetime": "2045-01-01T00:00:00Z",
+    "end_datetime": "2045-03-31T12:00:00Z"
+  },
+  {
+    "collection": "CMIP585-winter-median-pr",
+    "prefix": "EIS/NEX-GDDP-CMIP6/",
+    "bucket": "veda-data-store-staging",
+    "filename_regex": "^(.*)_pr(.*)ssp585_2065(.*).cog.tif$",
+    "discovery": "s3",
+    "upload": false,
+    "start_datetime": "2065-01-01T00:00:00Z",
+    "end_datetime": "2065-03-31T12:00:00Z"
+  },
+  {
+    "collection": "CMIP585-winter-median-pr",
+    "prefix": "EIS/NEX-GDDP-CMIP6/",
+    "bucket": "veda-data-store-staging",
+    "filename_regex": "^(.*)_pr(.*)ssp585_2085(.*).cog.tif$",
+    "discovery": "s3",
+    "upload": false,
+    "start_datetime": "2085-01-01T00:00:00Z",
+    "end_datetime": "2085-03-31T12:00:00Z"
+  }
+]
