@@ -18,6 +18,7 @@ assignees: ''
   - title:
   - description:
   - license:
+  - provider(s): (producer, processor, licensor)
   - temporal interval:
   - whether it is periodic on the dashboard (periodic = regular time series of layers without gaps):
   - the dashboard time density:
