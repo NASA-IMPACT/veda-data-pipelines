@@ -1,0 +1,8 @@
+{
+    "collection": "ls8-surface-temperature-covid-19-changing-landscapes",
+    "prefix": "standalone/ls8-surface-temperature/",
+    "bucket": "veda-data-store-staging",
+    "filename_regex": "^(.*).cog.tif$",
+    "discovery": "s3",
+    "upload": false
+}
