@@ -1,5 +1,9 @@
 # veda-data-pipelines
 
+**NOTE**: This repository is being sunsetted.
+Please do not open any new issues or PRs on this repository; use <https://github.com/NASA-IMPACT/veda-data> instead.
+Once all issues are transferred from this repository to **veda-data**, this repository will be archived.
+
 This repo houses function code and deployment code for producing cloud-optimized
 data products and STAC metadata for interfaces such as https://github.com/NASA-IMPACT/delta-ui.
 
