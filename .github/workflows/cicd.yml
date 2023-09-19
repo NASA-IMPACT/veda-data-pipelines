@@ -33,3 +33,24 @@ jobs:
     uses: ./.github/workflows/test_python_lambda.yml
     with:
       path_to_lambda: lambdas/data-transfer
+
+  validate-collections:
+    name: Validate collections
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install poetry
+        run: pipx install poetry
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.8" # NOTE: Should match Lambda runtime specified in CDK code
+          cache: "poetry"
+          cache-dependency-path: |
+            poetry.lock
+            labmdas/build-stac/requirements**.txt
+      - name: Install requirements
+        run: |
+          poetry install
+          poetry add $(cat lambdas/build-stac/requirements**.txt )
+      - name: Validate collections
+        run: scripts/validate_collections.py
